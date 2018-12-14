@@ -1,0 +1,233 @@
+---
+title: "Quality checks"
+author: "Douwe Molenaar"
+date: "9/29/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning=FALSE)
+```
+
+```{r preparation}
+library(rrdm) # Ask Douwe Molenaar (d.molenaar@vu.nl) for a copy of the rdmtool package
+library(readr)
+library(tidyr)
+library(dplyr)
+library(rrdm)
+library(ggplot2)
+```
+
+## Testing which genome to use for read mapping
+The following genomes were used for read mapping, with te corresponding annotation files in __gtf__-format:
+
+- [Mouse GRCm38 'primary assembly'](ftp://ftp.ensembl.org/pub/release-93/fasta/mus_musculus/dna)
+    - [download fasta](ftp://ftp.ensembl.org/pub/release-93/fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna_sm.primary_assembly.fa.gz)
+    - [download gtf](ftp://ftp.ensembl.org/pub/release-93/gtf/mus_musculus/Mus_musculus.GRCm38.93.gtf.gz)
+- [Mouse C57BL_6NJ 'toplevel'](ftp://ftp.ensembl.org/pub/release-93/fasta/mus_musculus_c57bl6nj/dna)
+    - [download fasta](ftp://ftp.ensembl.org/pub/release-93/fasta/mus_musculus_c57bl6nj/dna/Mus_musculus_c57bl6nj.C57BL_6NJ_v1.dna_sm.toplevel.fa.gz)
+    - [download gtf](ftp://ftp.ensembl.org/pub/release-93/gtf/mus_musculus_c57bl6nj/Mus_musculus_c57bl6nj.C57BL_6NJ_v1.93.gtf.gz)
+    
+Mapping was performed using STAR aligner version 2.6.0a, see https://github.com/alexdobin/STAR
+
+```{r}
+rdm <- RDMfolder('../')
+annotations <- read_tsv(file_path(rdm, 'aimms.labs.vu.nl',
+                                    'research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug',
+                                    'annotations.csv'))
+desired_characteristics <- c(
+  'Number of input reads',
+  'Uniquely mapped reads %',
+  '% of reads mapped to multiple loci',
+  '% of reads mapped to too many loci',
+  '% of reads unmapped: too many mismatches',
+  '% of reads unmapped: too short',
+  '% of reads unmapped: other',
+  '% of chimeric reads'
+)
+characteristic_names <- c(
+  'mapped.unique',
+  'mapped.multilocus',
+  'mapped.toomany',
+  'unmapped.mismatches',
+  'unmapped.short',
+  'unmapped.other',
+  'chimeric'
+)
+
+samples <- lapply(annotations$fileprefix, function(x) x)
+names(samples) <- annotations$fileprefix
+
+STAR_folders <- list(
+  'GRCm38' = '/data/temporary/align-grcm38/star-align/',
+  'C57BL_6NJ' = '/data/temporary/align-c57bl6nj/star-align/'
+)
+
+read_STAR_logfile <- function(directory) {
+    STAR_logfile <- file.path(directory, 'Log.final.out')
+    ureads <- read_delim(STAR_logfile, delim='|', trim_ws = TRUE, col_names = c('characteristic','value')) %>% 
+    filter(!is.na(value)) %>%
+    separate(value, into=c('dummy','value'), sep='\t') %>%
+    select(-dummy) %>%
+    separate(value, into=c('value','dummy'), sep='%') %>%
+    select(-dummy) %>%
+    filter(characteristic %in% desired_characteristics) %>%
+    select(value) %>%
+    unlist() %>%
+    as.numeric()
+    names(ureads) <- c('total.reads', characteristic_names)
+    return(ureads)
+}
+
+ureads <- lapply(STAR_folders, function(folder) {
+  sapply(samples, function(sample) {
+    read_STAR_logfile(file.path(folder,sample))
+  })
+})
+
+ureads <- lapply(names(ureads), function(x) {
+    ut <- t(ureads[[x]])
+    samplenames <- rownames(ut)
+    utb <- as_tibble(ut)
+    utb$fileprefix <- samplenames
+    utb$genome <- x
+    return(utb)
+  }
+) %>% bind_rows()
+
+summary <- ureads %>% 
+  transmute_at(characteristic_names, function(x) round(x * .$total.reads / 100)) %>%
+  bind_cols(ureads %>% select(-characteristic_names)) %>%
+  gather(key = 'type', value = 'reads', characteristic_names) %>%
+  left_join(annotations)
+```
+
+
+### Differences in mapping efficiency between genomes
+The percentages of total mapped and unmapped reads were calculated per sample and per mapping genome. The results are listed below in two boxplots.
+
+```{r}
+mapped <- characteristic_names[1:3]
+unmapped <- characteristic_names[-c(1:3)]
+summary.mapped <- summary %>% group_by(fileprefix, genome) %>%
+  filter(type %in% mapped) %>%
+  summarise(mapped.reads = sum(reads))
+summary.unmapped <- summary %>% group_by(fileprefix, genome) %>%
+  filter(type %in% unmapped) %>%
+  summarise(unmapped.reads = sum(reads))
+summary.unique <- summary %>% group_by(fileprefix, genome) %>% 
+  filter(type=='mapped.unique') %>%
+  summarise(uniquely.mapped = sum(reads))
+comparison <- summary.unique %>% full_join(summary.mapped) %>% 
+  full_join(summary.unmapped) %>% 
+  full_join(summary %>% select(fileprefix, genome, total.reads) %>% distinct()) %>%
+  mutate(uniquely.mapped.perc = uniquely.mapped*100/total.reads) %>%
+  mutate(mapped.perc = mapped.reads*100/total.reads) %>%
+  mutate(unmapped.perc = unmapped.reads*100/total.reads) %>%
+  select(fileprefix, genome, total.reads, uniquely.mapped.perc, mapped.perc, unmapped.perc)
+
+#knitr::kable(comparison, digits = 1)
+```
+
+```{r, fig.width = 6, fig.height=6}
+p1 <- ggplot(comparison, aes(x=genome, y=uniquely.mapped.perc)) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_jitter(width=0.05) +
+  labs(x='Genome used for mapping', y='Percentage uniquely mapped reads')
+p2 <- ggplot(comparison, aes(x=genome, y=mapped.perc)) + 
+  geom_boxplot(outlier.shape = NA) + 
+  geom_jitter(width=0.05) +
+  labs(x='Genome used for mapping', y='Percentage mapped reads')
+
+print(p1)
+print(p2)
+```
+
+#### Conclusion
+The C57BL_6NJ genome consistently yields a better result in uniquely mapped as well as in total mapped reads.
+
+## More detailed view
+A more detailed view of the mapping results is shown in the barcharts below
+
+### Pilot experiment
+
+```{r, fig.width=10}
+p <- ggplot(summary %>% filter(experiment=='pilot'), aes(x=fileprefix, y=reads, fill=type)) +
+  geom_bar(stat='identity') +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=6)) + coord_flip() +
+  facet_grid(.~genome)
+
+print(p)
+```
+
+
+### Time series
+
+```{r, fig.width=11, fig.height=12}
+p <- ggplot(summary %>% filter(experiment=='timeseries'), aes(x=fileprefix, y=reads, fill=type)) +
+  geom_bar(stat='identity') +
+  theme(axis.text.x  = element_text(angle=90, vjust=0.5, size=6)) + coord_flip() +
+  facet_grid(.~genome)
+
+print(p)
+```
+
+Clearly, the results from the time series experiment are more variable.
+
+## Counting high-quality cells
+
+```{r}
+codecount_file <- '/data/temporary/codecounts-all/alcounts.txt'
+barcodes <- read_tsv(file_path(rdm, 'aimms.labs.vu.nl',
+                               'research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common',
+                               'celseq_barcodes.192.txt'),
+                     col_names = c('codenr', 'cellcode'))
+
+all_counts <- read_csv(codecount_file)
+
+all_counts <- all_counts %>%
+  left_join(annotations %>% select(fileprefix, experiment, time)) %>%
+  left_join(barcodes, by=c('celbc'='cellcode'))
+
+total_reads_per_file <- all_counts %>%
+  group_by(fileprefix) %>%
+  summarise(totalReads = sum(reads, na.rm=TRUE))
+
+assigned_reads_per_file <- all_counts %>%
+  filter(!is.na(codenr)) %>%
+  group_by(fileprefix) %>%
+  summarise(totalAssignedReads = sum(reads, na.rm = TRUE))
+
+hqcells <- all_counts %>%
+  inner_join(barcodes, by=c('celbc'='cellcode')) %>%
+  group_by(fileprefix, celbc) %>%
+  summarise(readsPerCel = sum(reads, na.rm = TRUE)) %>%
+  filter(readsPerCel>=1000) %>%
+  select(fileprefix, celbc) %>%
+  summarise(hqcells = n())
+
+summary_per_file <- annotations %>%
+  left_join(total_reads_per_file) %>%
+  left_join(assigned_reads_per_file) %>%
+  left_join(hqcells) %>%
+  mutate(assignedPercentage = totalAssignedReads*100/totalReads)
+
+```
+
+The following table summarizes per sequence file:
+
+* **totalreads**: The total number of reads in the file
+* **assignedreads**: The total number of reads with an exact match to a cell barcode
+* **hqcells**: The number of 'high quality' cells (those having at least 1000 reads)
+* **experiment**: The pilot or time series experiment
+* **time**: The time in weeks after birth at which the sample was taken
+* **plate**: The plate nr on which the cells were sorted
+* **sample**: the sample nr from which the cells originated
+* **assignedPercentage**: percentage of reads assigned to cells
+
+Notice that files with low numbers of sequences are in sample nr 11 (4/5), 3 and 7 (2/4). Is that a coincidence?
+
+```{r}
+knitr::kable(summary_per_file, digits=1)
+```
+

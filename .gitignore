@@ -1,0 +1,14 @@
+.Rhistory
+.Rproj.user
+.vscode
+obsolete/
+*.sif
+*.code-workspace
+*.Rproj
+.snakemake/
+Log.*
+_STARtmp/
+*.sam
+*.bam
+reports/
+results/

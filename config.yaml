@@ -1,0 +1,65 @@
+# This file should contain everything to configure the workflow on a global scale.
+
+# The data directory
+data: /home/douwe/data
+# data: /data
+# NOTE: all subsequent paths should be given relative to the 'data' path.
+# Directory where large temporary files stored
+tmpstore: temporary
+# Directory with reference genomes
+refdir: genomes
+# the STAR index main directory
+index: genomes/STAR
+# The local data repository
+repo: mouse-lymph-node-stromal-cell-time-series
+# directory with sequence files
+sequences: mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+# file with sample annotations
+samples: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
+# file with reference genome annotations
+references: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
+# folder with reference genome files in its subfolders. The subfolders are registered in
+# the 'references' file
+genomes: genomes
+# file with known cell barcodes
+celbc: mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
+
+
+# The reference genome, see the 'references' file for valid entries
+reference: mouse-grcm38
+# reference: mouse-c57bl6nj
+
+# Whether this is a test run
+# istest: false
+istest: true
+# Samples for test runs. 
+# The names must be taken from the 'fileprefix' column in the 'samples' file 
+testset:
+  - LNS2_1
+  - LNS_W0_P2_7
+
+# The file suffix indicates which files contain sequences  and codecounts.
+# The complete filename is reconstructed as {fileprefix}{filesuffix}
+filesuffix:
+  align:
+    - _R2.fastq.gz
+  codecount:
+    - _R1.fastq.gz
+
+# Parameters for running programs
+params:
+  # Extra parameters when running STAR in align mode 
+  star:
+    # keep the STAR index in memory for the next aligment run
+    # saves time because loading an index takes approximatley 5 min 
+    - "--genomeLoad LoadAndKeep"
+  # Extra parameters when running STAR in genomeGenerate (index generating) mode 
+  starindex:
+    # the default value
+    - "--sjdbOverhang 100"
+  # Extra parameters for featureCounts
+  featureCounts:
+    - '-F GTF'
+    - '-g gene_id'
+    - '-t exon'
+    - '--primary'

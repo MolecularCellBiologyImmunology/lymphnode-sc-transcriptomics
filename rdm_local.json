@@ -1,0 +1,19 @@
+{
+  "local-copies": [
+    {
+      "host": "aimms.labs.vu.nl",
+      "collection": "research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug",
+      "local-directory": "~/data/mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug"
+    },
+    {
+      "host": "aimms.labs.vu.nl",
+      "collection": "research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common",
+      "local-directory": "~/data/mouse-lymph-node-stromal-cell-time-series/annotations_common"
+    },
+    {
+      "host": "aimms.labs.vu.nl",
+      "collection": "research-sbi-mouse-lymph-node-stromal-cell-time-series/Heidelberg_count_tables_2018_Aug",
+      "local-directory": "~/data/mouse-lymph-node-stromal-cell-time-series/Heidelberg_count_tables_2018_Aug"
+    }
+  ]
+}

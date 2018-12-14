@@ -1,0 +1,24 @@
+# snakemake workflow for generating index files of a reference sequence
+
+include: "../common.snakefile"
+
+# STAR extra options
+extra = ' '.join(config['params']['starindex'])
+
+# Expected index files
+indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
+
+##### target rules #####
+# pseudorule consuming all the final output
+rule all:
+    input: expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
+
+# the alignment by STAR
+rule index:
+    input:
+        fastafile,
+        gtffile
+    output:
+        genomedir = indexdir
+    shell:
+        'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {output[genomedir]} --genomeFastaFiles {input[fastafile]} --sjdbGTFfile {input[gtffile]} {extra}'

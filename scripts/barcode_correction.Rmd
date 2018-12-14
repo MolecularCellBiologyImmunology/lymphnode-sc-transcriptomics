@@ -1,0 +1,56 @@
+---
+title: "Feasibility of barcode correction"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+```
+
+
+```{r}
+library(rrdm) # Ask Douwe Molenaar (d.molenaar@vu.nl) for a copy of the rdmtool package
+library(readr)
+library(tidyr)
+library(dplyr)
+library(utils)
+rdm <- RDMfolder()
+barcodes <- read_tsv(
+  file_path(rdm, 
+            'aimms.labs.vu.nl',
+            'research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common',
+            'celseq_barcodes.192.txt'),
+  col_names = c('codenr', 'cellcode')
+)
+n <- length(barcodes$codenr)
+editdist <- matrix(nrow=n, ncol=n)
+rownames(editdist) <- barcodes$codenr
+colnames(editdist) <- barcodes$codenr
+for (i in 1:(n-1)) {
+  for (j in (i+1):n) {
+    editdist[i,j] <- adist(barcodes$cellcode[i], barcodes$cellcode[j])
+  }
+}
+```
+
+## Can we use reads with cell-barcodes that differ one or more nucleotides from the list of cell barcodes?
+There are 192 different cell barcodes used. Below I plot a histogram of the edit-distance between all pairs of these 192 barcodes. The histogram shows that the edit-distance between any pair of nucleotides is at least 2. This implies that if we find a cell barcode in a read that differs by 1 nucleotide from one of the 192 listed barcodes, it may originate from either of 2 listed barcodes. So we would not be able to use this read with 1 error in the barcode.
+
+```{r}
+library(ggplot2)
+a <- data.frame(edit_distance = editdist[!is.na(editdist)])
+ggplot(a, aes(x=edit_distance)) + geom_histogram()
+```
+
+```{r, echo=TRUE}
+dist2pairs <- which(editdist==2, arr.ind = TRUE)
+all(1:192 %in% unique(c(dist2pairs[,'col'],dist2pairs[,'row'])))
+sort(table(c(dist2pairs[,'col'],dist2pairs[,'row'])))
+```
+
+In fact, since any of the 192 nucleotides has an edit-distance of 2 to at least 6 other cell barcode nucleotides, the resriction mentioned above is true for all cell barcodes.
+
+In fact, if you want to accomodate edit-distance of at least 3 for any pair of 192 nucleotides, you need a barcode of at least 7 nucleotides, see [this paper](https://dx.doi.org/10.1186%2F1471-2105-14-272).
+
+## Conclusion
+We should **not** use reads with a cell barcode that differs from the reported 192 cell barcodes. All those reads should be filtered out, because we can not assign them unambiguously to one cell.

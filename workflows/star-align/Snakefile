@@ -1,0 +1,45 @@
+include: "../common.snakefile"
+
+##### functions producing input #####
+# construct path to a fastq sequence file
+def get_fastq(wildcards):
+    seqbase = os.path.join(config['data'], config['sequences'], '')
+    path = seqbase + "{fileprefix}{filesuffix}".format( 
+                filesuffix=config['filesuffix']['align'][0], **wildcards)
+    return path
+
+##### target rules #####
+# pseudorule consuming all the final output
+rule all:
+    input:
+        expand("{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam", 
+               fileprefix=samples['fileprefix'], tmpstore=tmpstore, reference=config['reference'])
+
+# the alignment by STAR
+rule align:
+    input:
+        fq = get_fastq
+    output:
+        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam'
+    params:
+        index = indexdir,
+        extra = ' '.join(config['params']['star'])
+    threads: 24
+    script: 'scripts/STAR_align.py'
+
+# Loading a STAR index file is time-consuming. We therefore use the option
+# in STAR to load the index in memory once for all sequence files that must 
+# be mapped against the same genome
+onstart:
+    print('Loading the genome index file')
+    shell('STAR --genomeLoad LoadAndExit --genomeDir ' + indexdir)
+
+# Remove the index from memory when finished mapping all sequence files
+onsuccess:
+    print('Removing the genome index file from memory')
+    shell('STAR --genomeLoad Remove --genomeDir ' + indexdir)
+
+# Remove the index from memory when exiting due to an error
+onerror:
+    print('Removing the genome index file from memory')
+    shell('STAR --genomeLoad Remove --genomeDir ' + indexdir)

@@ -1,0 +1,32 @@
+%appfiles subread
+    subread.sh bin/
+%appinstall subread
+    apt-get -y install make 
+    apt-get -y install gcc zlib1g-dev 
+    apt-get -y install wget
+    VER=1.6.3
+    wget https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
+    tar -xvzf subread-${VER}-source.tar.gz
+    cd subread-${VER}-source/src
+    make -f Makefile.Linux
+    cp ../bin/utilities/* /scif/apps/subread/bin
+    rm -rf ../bin/utilities
+    cp ../bin/* /scif/apps/subread/bin
+    cd ../.. && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
+%apphelp subread
+    subread provides featureCounts from the Subread package, http://subread.sourceforge.net/
+    It is recommended to create the following alias:
+    alias subread="singularity run --app subread \${SINGULARITY_CONTAINER}"
+    More help is then available by running
+    subread --help
+%applabels subread
+    MAINTAINER d.molenaar@vu.nl
+    VERSION $VER
+%appenv subread
+    SUBREAD_VERSION=${VER}
+    export SUBREAD_VERSION
+%apprun subread
+#    exec /bin/bash subread.sh "$@"
+# the line above would execute a shellscript calling any program from the package
+# Since i'm only using featureCounts, i make this the only entrypoint for this scif
+    featureCounts "$@"

@@ -1,0 +1,4 @@
+reference:
+  # the STAR index directory
+  # index: /data/genomes/STAR/mouse-primary
+  index: testsuccess.txt

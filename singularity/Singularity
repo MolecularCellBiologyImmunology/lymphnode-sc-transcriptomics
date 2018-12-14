@@ -1,0 +1,29 @@
+Bootstrap: docker
+From: continuumio/miniconda3
+
+# sudo singularity build single-cell.sif Singularity
+
+%runscript
+    exec /opt/conda/bin/scif "$@"
+
+%labels
+    MAINTAINER d.molenaar@vu.nl
+
+%files
+    pigz.scif /opt
+    star.scif /opt
+    subread.scif /opt
+
+%post
+    apt-get update && apt-get install -y git build-essential
+    /opt/conda/bin/pip install dateutils
+
+    # Install SCIF
+    cd /opt && git clone https://www.github.com/vsoch/scif.git
+    cd scif
+    /opt/conda/bin/pip install setuptools
+    /opt/conda/bin/pip install -e .
+    # Install applications
+    /opt/conda/bin/scif install /opt/pigz.scif
+    /opt/conda/bin/scif install /opt/star.scif
+    /opt/conda/bin/scif install /opt/subread.scif
