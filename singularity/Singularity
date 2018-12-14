@@ -1,29 +1,65 @@
 Bootstrap: docker
 From: continuumio/miniconda3
 
-# sudo singularity build single-cell.sif Singularity
-
-%runscript
-    exec /opt/conda/bin/scif "$@"
+#%runscript
+#    exec /opt/conda/bin/scif "$@"
 
 %labels
     MAINTAINER d.molenaar@vu.nl
 
-%files
-    pigz.scif /opt
-    star.scif /opt
-    subread.scif /opt
+# %files
+#     pigz.scif /opt
+#     star.scif /opt
+#     subread.scif /opt
 
 %post
-    apt-get update && apt-get install -y git build-essential
-    /opt/conda/bin/pip install dateutils
+    # General
+    apt-get update
+    # apt-get install -y git build-essential
 
-    # Install SCIF
-    cd /opt && git clone https://www.github.com/vsoch/scif.git
-    cd scif
-    /opt/conda/bin/pip install setuptools
-    /opt/conda/bin/pip install -e .
-    # Install applications
-    /opt/conda/bin/scif install /opt/pigz.scif
-    /opt/conda/bin/scif install /opt/star.scif
-    /opt/conda/bin/scif install /opt/subread.scif
+    # Define the installation directory for executables 
+    ULBIN=/usr/local/bin
+    
+    # Install pigz, the parallel implementation of gzip
+    apt-get -y install pigz
+
+    # Install STAR
+    apt-get -y install make 
+    apt-get -y install gcc zlib1g-dev g++ cmake 
+    apt-get -y install wget
+    VER=2.6.1d
+    wget https://github.com/alexdobin/STAR/archive/${VER}.tar.gz
+    tar -xzf ${VER}.tar.gz
+    cd STAR-${VER}/source
+    make CXXFLAGSextra=-march=native STAR && make CXXFLAGSextra=-march=native STARlong
+    cp STAR ${ULBIN}
+    cp STARlong ${ULBIN}
+    cd ../..
+    rm -r STAR-${VER}
+    rm ${VER}.tar.gz
+
+    # Install the subread package
+    # Subread provides the featureCounts program, http://subread.sourceforge.net/
+    apt-get -y install make 
+    apt-get -y install gcc zlib1g-dev 
+    apt-get -y install wget
+    VER=1.6.3
+    wget https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
+    tar -xvzf subread-${VER}-source.tar.gz
+    cd subread-${VER}-source/src
+    make -f Makefile.Linux
+    cp ../bin/utilities/* ${ULBIN}
+    rm -rf ../bin/utilities
+    cp ../bin/* ${ULBIN}
+    cd ../.. && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
+
+    # /opt/conda/bin/pip install dateutils
+
+%runscript
+exec. echo "Run with --app star/featurecounts/pigz"
+
+%apprun star
+exec STAR "$@"
+
+%apprun featurecounts
+exec featureCounts "$@"

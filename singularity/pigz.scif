@@ -1,6 +1,0 @@
-%appinstall pigz
-    apt-get -y install pigz
-%apprun pigz
-    pigz "$@"
-%apphelp pigz
-    pigz is a parallel implementation of gzip
