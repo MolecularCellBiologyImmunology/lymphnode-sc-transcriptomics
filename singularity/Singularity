@@ -10,8 +10,9 @@ From: debian:8.11-slim
 IncludeCmd: yes
 
 %help
-    This container provides STAR.
-    Run it with 'singularity run --app star <containername> <arguments for STAR>'
+    This container provides STAR, pigz and featureCounts
+    Run them with 
+    'singularity run <containername> <program name> <arguments>'
 
 %labels
     MAINTAINER d.molenaar@vu.nl
@@ -20,12 +21,14 @@ IncludeCmd: yes
     # #######################################
     # General
     # #######################################
-    # Define the installation directory for executables 
+    # Define the installation directory for 
+    # executables 
     BIN=/usr/local/bin
     apt-get update
 
     # #######################################
-    # Install pigz, the parallel implementation of gzip
+    # Install pigz, the parallel implementa-
+    # tion of gzip
     # #######################################
     apt-get -y install pigz
 
@@ -46,7 +49,8 @@ IncludeCmd: yes
     
     # #######################################
     # Install the Subread package
-    # Subread provides the featureCounts program
+    # Subread provides the featureCounts pro-
+    # gram
     # http://subread.sourceforge.net/
     # #######################################
     apt-get -y install make 
