@@ -1,65 +1,64 @@
-Bootstrap: docker
-From: continuumio/miniconda3
+# #######################################
+# Build from minimal Debian Jessie image 
+#
+# Use the docker CMD which is 'bash' 
+# for this container
+# #######################################
 
-#%runscript
-#    exec /opt/conda/bin/scif "$@"
+Bootstrap: docker
+From: debian:8.11-slim
+IncludeCmd: yes
+
+%help
+    This container provides STAR.
+    Run it with 'singularity run --app star <containername> <arguments for STAR>'
 
 %labels
     MAINTAINER d.molenaar@vu.nl
 
-# %files
-#     pigz.scif /opt
-#     star.scif /opt
-#     subread.scif /opt
-
 %post
+    # #######################################
     # General
-    apt-get update
-    # apt-get install -y git build-essential
-
+    # #######################################
     # Define the installation directory for executables 
-    ULBIN=/usr/local/bin
-    
+    BIN=/usr/local/bin
+    apt-get update
+
+    # #######################################
     # Install pigz, the parallel implementation of gzip
+    # #######################################
     apt-get -y install pigz
 
+    # #######################################
     # Install STAR
-    apt-get -y install make 
-    apt-get -y install gcc zlib1g-dev g++ cmake 
-    apt-get -y install wget
+    # #######################################
     VER=2.6.1d
-    wget https://github.com/alexdobin/STAR/archive/${VER}.tar.gz
+    apt-get -y install make 
+    apt-get -y install gcc zlib1g-dev g++ cmake
+    apt-get -y install wget
+    URL=https://github.com/alexdobin/STAR/archive/${VER}.tar.gz
+    wget ${URL}
     tar -xzf ${VER}.tar.gz
     cd STAR-${VER}/source
     make CXXFLAGSextra=-march=native STAR && make CXXFLAGSextra=-march=native STARlong
-    cp STAR ${ULBIN}
-    cp STARlong ${ULBIN}
-    cd ../..
-    rm -r STAR-${VER}
-    rm ${VER}.tar.gz
-
-    # Install the subread package
-    # Subread provides the featureCounts program, http://subread.sourceforge.net/
+    cp STAR ${BIN} && cp STARlong ${BIN}
+    cd / && rm -r STAR-${VER} && rm ${VER}.tar.gz
+    
+    # #######################################
+    # Install the Subread package
+    # Subread provides the featureCounts program
+    # http://subread.sourceforge.net/
+    # #######################################
     apt-get -y install make 
     apt-get -y install gcc zlib1g-dev 
     apt-get -y install wget
     VER=1.6.3
-    wget https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
+    URL=https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
+    wget ${URL}
     tar -xvzf subread-${VER}-source.tar.gz
     cd subread-${VER}-source/src
     make -f Makefile.Linux
-    cp ../bin/utilities/* ${ULBIN}
+    cp ../bin/utilities/* ${BIN}
     rm -rf ../bin/utilities
-    cp ../bin/* ${ULBIN}
-    cd ../.. && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
-
-    # /opt/conda/bin/pip install dateutils
-
-%runscript
-exec. echo "Run with --app star/featurecounts/pigz"
-
-%apprun star
-exec STAR "$@"
-
-%apprun featurecounts
-exec featureCounts "$@"
+    cp ../bin/* ${BIN}
+    cd / && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
