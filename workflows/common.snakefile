@@ -39,4 +39,4 @@ indexdir = str(data / config['index'] / config['reference'])
 # the location of the gtf file of a reference genome
 gtffile = str(data / config['reference'] / references.loc[config['reference'], 'gtffile'])
 # the location of the fasta file of a reference genome
-fastafile = str(data / config['reference'] / references.loc[config['reference'], 'genomefile'])
+compressedfastafile = str(data / config['reference'] / references.loc[config['reference'], 'compressedgenomefile'])
