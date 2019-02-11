@@ -30,8 +30,8 @@ reference: mouse-grcm38
 # reference: mouse-c57bl6nj
 
 # Whether this is a test run
-# istest: false
-istest: true
+istest: false
+# istest: true
 # Samples for test runs. 
 # The names must be taken from the 'fileprefix' column in the 'samples' file 
 testset:
