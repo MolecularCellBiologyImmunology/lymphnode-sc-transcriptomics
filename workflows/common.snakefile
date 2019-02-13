@@ -37,6 +37,7 @@ tmpstore = str(data / config['tmpstore'])
 # directory where the STAR index files for a reference genome are stored 
 indexdir = str(data / config['index'] / config['reference'])
 # the location of the gtf file of a reference genome
-gtffile = str(data / config['reference'] / references.loc[config['reference'], 'gtffile'])
+gtffile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile'])
 # the location of the fasta file of a reference genome
-fastafile = str(data / config['reference'] / references.loc[config['reference'], 'genomefile'])
+# TODO: repair this
+# compressedfastafile = str(data / config['reference'] / references.loc[config['reference'], 'compressedgenomefile'])

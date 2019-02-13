@@ -25,6 +25,7 @@ rule all:
                 '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'],
                fileprefix=samples['fileprefix'], reference=config['reference'], tmpstore=tmpstore)
 
+# convert bam files to sam format using samtools
 rule bamtosam:
     input:
         tmpstore + '/star-align/' + config['reference'] + '/{fileprefix}/Aligned.out.bam'
@@ -43,6 +44,7 @@ rule addbc:
     script:
         'scripts/add_barcodes.py'
 
+# convert sam files with barcodes to bam format again
 rule barcoded_samtobam:
     input:
         '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
@@ -51,7 +53,7 @@ rule barcoded_samtobam:
     shell:
         'samtools view -b -o {output} {input}'
 
-# extract the barcodes
+# run featureCounts (from the Subread package)
 rule map_barcoded:
     input:
         bamfile = '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam',
@@ -63,6 +65,7 @@ rule map_barcoded:
     shell: 
         'featureCounts -a {input[gtffile]} -R SAM -o {output[1]} {extrafc} {input[bamfile]}'
 
+# convert the featureCounts sam file to bam format
 rule featurecount_samtobam:
     input:
         '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam',
@@ -71,7 +74,7 @@ rule featurecount_samtobam:
     shell:
         'samtools view -b -o {output} {input}'
 
-# filter high-quality mapping reads
+# filter high-quality mapping reads using samtools
 rule filterhq:
     input:
         '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'
@@ -80,7 +83,7 @@ rule filterhq:
     shell:
         'samtools view -q 255 {input} -o {output}'
 
-# generate a tsv table of high-quality mapping reads
+# generate a tsv table of high-quality mapping reads using a custom python script
 rule tablehq:
     input:
         '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam'
@@ -89,7 +92,7 @@ rule tablehq:
     script:
         'scripts/generate_featureCounts_table.py'
 
-# generate a tsv table of unique umi's per gene and true cell barcode
+# generate a tsv table of unique umi's per gene and true cell barcode using a custom R script
 rule simplecounts:
     input:
         featuretable='{tmpstore}/mapping/{reference}/{fileprefix}/HqFeatureCounts.tsv',

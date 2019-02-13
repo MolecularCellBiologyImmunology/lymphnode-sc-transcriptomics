@@ -1,8 +1,8 @@
 # This file should contain everything to configure the workflow on a global scale.
 
 # The data directory
-data: /home/douwe/data
-# data: /data
+# data: /home/douwe/data
+data: /data
 # NOTE: all subsequent paths should be given relative to the 'data' path.
 # Directory where large temporary files stored
 tmpstore: temporary
@@ -30,8 +30,8 @@ reference: mouse-grcm38
 # reference: mouse-c57bl6nj
 
 # Whether this is a test run
-# istest: false
-istest: true
+istest: false
+# istest: true
 # Samples for test runs. 
 # The names must be taken from the 'fileprefix' column in the 'samples' file 
 testset:
