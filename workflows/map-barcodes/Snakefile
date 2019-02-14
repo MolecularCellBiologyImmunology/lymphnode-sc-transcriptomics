@@ -21,6 +21,7 @@ def get_fastq(wildcards):
 rule all:
     input:
         expand(['{tmpstore}/mapping/{reference}/{fileprefix}/counts.tsv',
+                '{tmpstore}/mapping/{reference}/{fileprefix}/report.html',
                 '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam',
                 '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'],
                fileprefix=samples['fileprefix'], reference=config['reference'], tmpstore=tmpstore)
@@ -93,6 +94,13 @@ rule tablehq:
         'scripts/generate_featureCounts_table.py'
 
 # generate a tsv table of unique umi's per gene and true cell barcode using a custom R script
+# TODO: This sometimes fails when running parallel jobs:
+    # RuleException:
+    # CalledProcessError in line 104 of /home/douwe/single-cell-fastqc/workflows/map-barcodes/Snakefile:
+    # Command ' set -euo pipefail;  Rscript /home/douwe/single-cell-fastqc/workflows/map-barcodes/.snakemake/scripts/tmpk4ti7o3z.render_reports.R ' returned non-zero exit status 1.
+    #   File "/home/douwe/single-cell-fastqc/workflows/map-barcodes/Snakefile", line 104, in __rule_simplecounts
+    #   File "/home/douwe/anaconda3/envs/scRNA/lib/python3.6/concurrent/futures/thread.py", line 56, in run
+
 rule simplecounts:
     input:
         featuretable='{tmpstore}/mapping/{reference}/{fileprefix}/HqFeatureCounts.tsv',
