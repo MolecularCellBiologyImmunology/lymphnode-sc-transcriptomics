@@ -1,8 +1,8 @@
 # This file should contain everything to configure the workflow on a global scale.
 
 # The data directory
-# data: /home/douwe/data
-data: /data
+data: /home/douwe/data
+# data: /data
 # NOTE: all subsequent paths should be given relative to the 'data' path.
 # Directory where large temporary files stored
 tmpstore: temporary
@@ -11,23 +11,21 @@ refdir: genomes
 # the STAR index main directory
 index: genomes/STAR
 # The local data repository
-repo: mouse-lymph-node-stromal-cell-time-series
+repo: ecoli-test-star-workflow
 # directory with sequence files
-sequences: mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+sequences: ecoli-test-star-workflow/sequences
 # file with sample annotations
-samples: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
+samples: ecoli-test-star-workflow/annotations/annotations.tsv
 # file with reference genome annotations
-references: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
+references: ecoli-test-star-workflow/annotations/reference.tsv
 # folder with reference genome files in its subfolders. The subfolders are registered in
 # the 'references' file
 genomes: genomes
 # file with known cell barcodes
-celbc: mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
+celbc: ecoli-test-star-workflow/annotations_common/celseq_barcodes.192.txt
 
-
-# The reference genome, see the 'references' file for valid entries
-reference: mouse-grcm38
-# reference: mouse-c57bl6nj
+# The reference genome, see the 'reference.tsv' file for valid entries
+reference: ecoli-mg1655
 
 # Whether this is a test run
 istest: false
@@ -56,7 +54,9 @@ params:
   # Extra parameters when running STAR in genomeGenerate (index generating) mode 
   starindex:
     # the default value
-    - "--sjdbOverhang 100"
+    # - "--sjdbOverhang 99"
+    # for bacterial genomes (please check whether CDS and exon are features in the GFF file)
+    - "--sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript gene"
   # Extra parameters for featureCounts
   featureCounts:
     - '-F GTF'
