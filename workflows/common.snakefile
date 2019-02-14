@@ -1,43 +1,48 @@
-# Common settings in the workflows
+# Common Import Settings in the Workflows
 import pandas as pd
 from snakemake.utils import min_version
 from snakemake.shell import shell
 import pathlib
 
-##### set minimum snakemake version #####
+##### Set minimum Snakemake Version #####
+
 min_version("5.2.4")
 
-##### load config and sample sheets #####
+##### Load Config and Sample Sheets #####
 
 configfile: "../../config.yaml"
 
-##### data path #####
+##### Set Data Path #####
 
 data = pathlib.Path(config['data'])
 
-##### annotations #####
+##### Annotations #####
 
-# file with sample annotations
+# File with Sample Annotations
 annotationfile = data / config['samples']
 samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
 if config['istest']:
     samples = samples.loc[config['testset']]
 
-# file with reference genome annotations
+# File with Reference Genome Annotations
 referencefile = data / config['references']
 references = pd.read_table(referencefile).set_index('reference', drop=False)
 
-# file with cell barcodes
+# File with Cell Barcodes
 cellbcfile = data / config['celbc']
 
-##### other paths #####
+##### Other Paths #####
 
-# directory for temporary files, intermediate results
+# Directory for Temporary Files, Intermediate Results
 tmpstore = str(data / config['tmpstore'])
-# directory where the STAR index files for a reference genome are stored 
+
+# Directory Where the STAR Index Files for a Reference Genome are stored 
 indexdir = str(data / config['index'] / config['reference'])
-# the location of the gtf file of a reference genome
+
+# The Location of the GTF File of a Reference Genome
 gtffile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile'])
-# the location of the fasta file of a reference genome
+
 # TODO: repair this
-# compressedfastafile = str(data / config['reference'] / references.loc[config['reference'], 'compressedgenomefile'])
+# # The Location of the Fasta file of a Reference Genome
+# compressedfastafile = str(data / config['reference'] \
+# / references.loc[config['reference'], 'compressedgenomefile'])
