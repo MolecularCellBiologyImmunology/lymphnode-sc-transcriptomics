@@ -27,6 +27,9 @@ celbc: ecoli-test-star-workflow/annotations_common/celseq_barcodes.192.txt
 # The reference genome, see the 'reference.tsv' file for valid entries
 reference: ecoli-mg1655
 
+# The kind of annotation format that is used (refers to entries in params:starindex)
+annotationformat: gff
+
 # Whether this is a test run
 istest: false
 # istest: true
@@ -53,10 +56,14 @@ params:
     - "--genomeLoad LoadAndKeep"
   # Extra parameters when running STAR in genomeGenerate (index generating) mode 
   starindex:
-    # the default value
-    # - "--sjdbOverhang 99"
-    # for bacterial genomes (please check whether CDS and exon are features in the GFF file)
-    - "--sjdbGTFfeatureExon CDS --sjdbGTFtagExonParentTranscript gene"
+    gtf:
+      # for GTF files (eukaryotes)
+      - "--sjdbOverhang 100" # the default value
+    gff:
+      # for bacterial genomes having GFF-3 format genome annotation file 
+      # Check whether CDS and exon are features in the GFF file
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
   # Extra parameters for featureCounts
   featureCounts:
     - '-F GTF'

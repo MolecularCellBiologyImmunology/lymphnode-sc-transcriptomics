@@ -1,9 +1,9 @@
-# snakemake workflow for generating index files of a reference sequence
+# snakemake workflow for generating STAR index files of a reference sequence
 
 include: "../common.snakefile"
 
 # STAR extra options
-extra = ' '.join(config['params']['starindex'])
+extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 
 # Expected index files
 indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
@@ -27,7 +27,5 @@ rule index:
         gtffile = gtffile
     output:
         expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
-    singularity:
-        "../singularity/single-cell.sif"
     shell:
         'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {indexdir} --genomeFastaFiles {input[fastafile]} --sjdbGTFfile {input[gtffile]} {extra}'
