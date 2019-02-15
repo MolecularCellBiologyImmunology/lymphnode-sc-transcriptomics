@@ -1,20 +1,19 @@
 ## install required packages (only at first time)
 install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan"))
 
+########## TODO: Import user path here ##########
 ## load class definition and functions
 source("RaceID2_StemID_class.R")
 
-## input data
-x <- read.csv("transcript_counts_intestine_5days_YFP.xls",sep="\t",header=TRUE)
+########## TODO: Import output file of filter here ##########
+
+# Provided data has to be loaded
+x <- read.csv("testfile_cleaned.csv",sep="\t",header=TRUE)
 rownames(x) <- x$GENEID
-# prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
-prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ## RaceID2
 # initialize SCseq object with transcript counts
 sc <- SCseq(prdata)
-# filtering of expression data
-sc <- filterdata(sc, mintotal=3000, minexpr=5, minnumber=1, maxexpr=500, downsample=TRUE, dsn=1, rseed=17000)
 # k-medoids clustering
 sc <- clustexp(sc,clustnr=30,bootnr=50,metric="pearson",do.gap=FALSE,sat=TRUE,SE.method="Tibs2001SEmax",SE.factor=.25,B.gap=50,cln=0,rseed=17000,FUNcluster="kmedoids")
 # compute t-SNE map
@@ -62,10 +61,10 @@ cdiff <- clustdiffgenes(sc,pvalue=.01)
 ## write results to text files
 # final clusters 
 x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
-write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+write.table(x[order(x$cluster,decreasing=FALSE),],"/testfile_output/cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
   
 # differentially expressed genes in cluster
-for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("/testfile_output/cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
 # differentially expressed genes between two sets of clusters, e. g. cluster 1 and clusters 2,3
 d <- diffgenes(sc,cl1=1,cl2=c(2,3),mincount=5)
@@ -119,10 +118,7 @@ head(x$diffgenes$z)
 # plotting the cells on the two branches as additional clusters in the t-SNE map
 plottsne(x$scl)
 
-
 ## computing the StemID score
 x <- compscore(ltr,nn=1)
 #plotting the StemID score
 plotscore(ltr,1)
-
- 

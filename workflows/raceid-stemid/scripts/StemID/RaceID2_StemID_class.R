@@ -50,11 +50,15 @@ setGeneric("filterdata", function(object, mintotal=3000, minexpr=5, minnumber=1,
 setMethod("filterdata",
           signature = "SCseq",
           definition = function(object,mintotal,minexpr,minnumber,maxexpr,downsample,dsn,rseed) {
-            if ( ! is.numeric(mintotal) ) stop( "mintotal has to be a positive number" ) else if ( mintotal <= 0 ) stop( "mintotal has to be a positive number" )
-            if ( ! is.numeric(minexpr) ) stop( "minexpr has to be a non-negative number" ) else if ( minexpr < 0 ) stop( "minexpr has to be a non-negative number" )
-            if ( ! is.numeric(minnumber) ) stop( "minnumber has to be a non-negative integer number" ) else if ( round(minnumber) != minnumber | minnumber < 0 ) stop( "minnumber has to be a non-negative integer number" )
+            if ( ! is.numeric(mintotal) ) stop( "mintotal has to be a positive number" ) 
+            else if ( mintotal <= 0 ) stop( "mintotal has to be a positive number" )
+            if ( ! is.numeric(minexpr) ) stop( "minexpr has to be a non-negative number" ) 
+            else if ( minexpr < 0 ) stop( "minexpr has to be a non-negative number" )
+            if ( ! is.numeric(minnumber) ) stop( "minnumber has to be a non-negative integer number" ) 
+            else if ( round(minnumber) != minnumber | minnumber < 0 ) stop( "minnumber has to be a non-negative integer number" )
             if ( ! ( is.numeric(downsample) | is.logical(downsample) ) ) stop( "downsample has to be logical (TRUE/FALSE)" )
-            if ( ! is.numeric(dsn) ) stop( "dsn has to be a positive integer number" ) else if ( round(dsn) != dsn | dsn <= 0 ) stop( "dsn has to be a positive integer number" )
+            if ( ! is.numeric(dsn) ) stop( "dsn has to be a positive integer number" ) 
+            else if ( round(dsn) != dsn | dsn <= 0 ) stop( "dsn has to be a positive integer number" )
             object@filterpar <- list(mintotal=mintotal, minexpr=minexpr, minnumber=minnumber, maxexpr=maxexpr, downsample=downsample, dsn=dsn)
             object@ndata <- object@expdata[,apply(object@expdata,2,sum,na.rm=TRUE) >= mintotal]
             if ( downsample ){
@@ -1472,6 +1476,3 @@ setMethod("branchcells",
             return( list(n=n,scl=scl,k=k,diffgenes=z) )
           }
           )
-
-
-
