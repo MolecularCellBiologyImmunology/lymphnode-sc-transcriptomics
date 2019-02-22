@@ -3,13 +3,13 @@ install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattic
 
 ########## TODO: Import user path here ##########
 ## load class definition and functions
-source("RaceID2_StemID_class.R")
+source("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/RaceID2_StemID_class.R")
 
 ########## TODO: Import output file of filter here ##########
 
 # Provided data has to be loaded
-x <- read.csv("testfile_cleaned.csv",sep="\t",header=TRUE)
-rownames(x) <- x$GENEID
+prdata <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
+rownames(prdata) <- prdata$GENEID
 
 ## RaceID2
 # initialize SCseq object with transcript counts
