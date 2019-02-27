@@ -11,18 +11,18 @@ refdir: genomes
 # the STAR index main directory
 index: genomes/STAR
 # The local data repository
-repo: ecoli-test-star-workflow
+repo: mouse-lymph-node-stromal-cell-time-series
 # directory with sequence files
-sequences: ecoli-test-star-workflow/sequences
+sequences: mouse-lymph-node-stromal-cell-time-series/sequences
 # file with sample annotations
-samples: ecoli-test-star-workflow/annotations/annotations.tsv
+samples: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
 # file with reference genome annotations
-references: ecoli-test-star-workflow/annotations/reference.tsv
+references: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
 # folder with reference genome files in its subfolders. The subfolders are registered in
 # the 'references' file
 genomes: genomes
 # file with known cell barcodes
-celbc: ecoli-test-star-workflow/annotations_common/celseq_barcodes.192.txt
+celbc: mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
 # The reference genome, see the 'references' file for valid entries
 reference: mouse-grcm38
@@ -32,8 +32,8 @@ reference: mouse-grcm38
 annotationformat: gff
 
 # Whether this is a test run
-istest: false
-# istest: true
+# istest: false
+istest: true
 # Samples for test runs. 
 # The names must be taken from the 'fileprefix' column in the 'samples' file 
 testset:
