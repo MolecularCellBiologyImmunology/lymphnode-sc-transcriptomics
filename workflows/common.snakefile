@@ -18,10 +18,10 @@ data = pathlib.Path(config['data'])
 ##### annotations #####
 
 # file with sample annotations
-annotationfile = data / config['samples']
-samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
-if config['istest']:
-    samples = samples.loc[config['testset']]
+#annotationfile = data / config['samples']
+#samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
+#if config['istest']:
+#    samples = samples.loc[config['testset']]
 
 # file with reference genome annotations
 referencefile = data / config['references']
@@ -40,4 +40,4 @@ indexdir = str(data / config['index'] / config['reference'])
 gtffile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile'])
 # the location of the fasta file of a reference genome
 # TODO: repair this
-# compressedfastafile = str(data / config['reference'] / references.loc[config['reference'], 'compressedgenomefile'])
+fastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
