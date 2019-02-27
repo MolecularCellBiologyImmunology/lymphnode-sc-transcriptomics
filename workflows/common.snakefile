@@ -18,10 +18,10 @@ data = pathlib.Path(config['data'])
 ##### annotations #####
 
 # file with sample annotations
-#annotationfile = data / config['samples']
-#samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
-#if config['istest']:
-#    samples = samples.loc[config['testset']]
+annotationfile = data / config['samples']
+samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
+if config['istest']:
+   samples = samples.loc[config['testset']]
 
 # file with reference genome annotations
 referencefile = data / config['references']
