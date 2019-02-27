@@ -24,10 +24,12 @@ genomes: genomes
 # file with known cell barcodes
 celbc: mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
-
 # The reference genome, see the 'references' file for valid entries
 reference: mouse-grcm38
 # reference: mouse-c57bl6nj
+
+# The kind of annotation format that is used (refers to entries in params:starindex)
+annotationformat: gff
 
 # Whether this is a test run
 istest: false
@@ -55,8 +57,14 @@ params:
     - "--genomeLoad LoadAndKeep"
   # Extra parameters when running STAR in genomeGenerate (index generating) mode 
   starindex:
-    # the default value
-    - "--sjdbOverhang 100"
+    gtf:
+      # for GTF files (eukaryotes)
+      - "--sjdbOverhang 100" # the default value
+    gff:
+      # for bacterial genomes having GFF-3 format genome annotation file 
+      # Check whether CDS and exon are features in the GFF file
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
   # Extra parameters for featureCounts
   featureCounts:
     - '-F GTF'
