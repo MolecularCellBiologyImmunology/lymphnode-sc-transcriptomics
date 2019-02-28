@@ -4,7 +4,7 @@
 # input[0]: the fastq (fastq.gz) file
 # input[1]: the file with known cell barcodes
 # output[0]: the file with all code combinations counted
-# output[1]: the file with only known cel codes
+# output[1]: the file with only known cell codes
 
 import sys
 from gatb import Bank
