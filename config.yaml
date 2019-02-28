@@ -1,8 +1,8 @@
 # This file should contain everything to configure the workflow on a global scale.
 
 # The data directory
-# data: /home/douwe/data
-data: /data
+data: /home/douwe/data
+# data: /data
 # NOTE: all subsequent paths should be given relative to the 'data' path.
 # Directory where large temporary files stored
 tmpstore: temporary
@@ -13,7 +13,7 @@ index: genomes/STAR
 # The local data repository
 repo: mouse-lymph-node-stromal-cell-time-series
 # directory with sequence files
-sequences: mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+sequences: mouse-lymph-node-stromal-cell-time-series/sequences
 # file with sample annotations
 samples: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
 # file with reference genome annotations
@@ -24,14 +24,16 @@ genomes: genomes
 # file with known cell barcodes
 celbc: mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
-
 # The reference genome, see the 'references' file for valid entries
 reference: mouse-grcm38
 # reference: mouse-c57bl6nj
 
+# The kind of annotation format that is used (refers to entries in params:starindex)
+annotationformat: gff
+
 # Whether this is a test run
-istest: false
-# istest: true
+# istest: false
+istest: true
 # Samples for test runs. 
 # The names must be taken from the 'fileprefix' column in the 'samples' file 
 testset:
@@ -55,8 +57,14 @@ params:
     - "--genomeLoad LoadAndKeep"
   # Extra parameters when running STAR in genomeGenerate (index generating) mode 
   starindex:
-    # the default value
-    - "--sjdbOverhang 100"
+    gtf:
+      # for GTF files (eukaryotes)
+      - "--sjdbOverhang 100" # the default value
+    gff:
+      # for bacterial genomes having GFF-3 format genome annotation file 
+      # Check whether CDS and exon are features in the GFF file
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
   # Extra parameters for featureCounts
   featureCounts:
     - '-F GTF'
