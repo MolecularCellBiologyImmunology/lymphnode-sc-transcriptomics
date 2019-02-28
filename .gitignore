@@ -1,6 +1,6 @@
 .Rhistory
-.Rproj.user
-.vscode
+.Rproj.user/
+.vscode/
 obsolete/
 *.sif
 *.code-workspace
