@@ -19,7 +19,7 @@ sc <- clustexp(sc,clustnr=30,bootnr=50,metric="pearson",do.gap=FALSE,sat=TRUE,SE
 # compute t-SNE map
 sc <- comptsne(sc,rseed=15555)
 # detect outliers and redefine clusters
-sc <- findoutliers(sc, outminc=5,outlg=2,probthr=1e-3,thr=2**-(1:40),outdistquant=.95)
+sc <- findoutliers(sc, outminc=5,outlg=2,probthr=1e-3,thr=-2**(1:40),outdistquant=.95)
 
 ## diagnostic plots
 # gap statistics: only if do.gap == TRUE

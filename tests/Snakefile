@@ -15,10 +15,10 @@ rule a:
 
 onstart:
     print('Making filec.txt')
-    shell('touch ' + config['reference']['index'])
+    shell('echo ' + config['reference']['index'])
 
 onsuccess:
-    print('Removing the genome index file from memory becuase of successful termination')
+    print('Stopping because Succes')
 
 onerror:
-    print('Removing the genome index file from memory because of error')
+    print('Stopping because Error')

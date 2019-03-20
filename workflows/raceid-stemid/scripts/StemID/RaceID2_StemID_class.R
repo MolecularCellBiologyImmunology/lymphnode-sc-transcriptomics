@@ -416,7 +416,7 @@ setMethod("clustexp",
           }
           )
 
-setGeneric("findoutliers", function(object,outminc=5,outlg=2,probthr=1e-3,thr=2**-(1:40),outdistquant=.95) standardGeneric("findoutliers"))
+setGeneric("findoutliers", function(object,outminc=5,outlg=2,probthr=1e-3,thr=-2**(1:40),outdistquant=.95) standardGeneric("findoutliers"))
 
 setMethod("findoutliers",
           signature = "SCseq",
@@ -456,7 +456,8 @@ setMethod("findoutliers",
             stest <- rep(0,length(thr))
             cprobs <- c()
             for ( n in 1:max(object@cluster$kpart) ){     
-              if ( sum(object@cluster$kpart == n) == 1 ){ cprobs <- append(cprobs,.5); names(cprobs)[length(cprobs)] <- names(object@cluster$kpart)[object@cluster$kpart == n]; next }
+              if ( sum(object@cluster$kpart == n) == 1 ){ cprobs <- append(cprobs,.5); names(cprobs)[length(cprobs)] <- names(object@cluster$kpart)[object@cluster$kpart == n]; next 
+              }
               x <- object@fdata[,object@cluster$kpart == n]
               x <- x[apply(x,1,max) > outminc,]
               z <- t( apply(x,1,function(x){ apply( cbind( pnbinom(round(x,0),mu=mean(x),size=object@background$lsize(mean(x),object)) , 1 - pnbinom(round(x,0),mu=mean(x),size=object@background$lsize(mean(x),object)) ),1, min) } ) )
