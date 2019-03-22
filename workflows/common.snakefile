@@ -45,5 +45,5 @@ gtffile = str(data / config['refdir'] / config['reference'] / references.loc[con
 # The Location of the Fasta file of a Reference Genome
 fastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
 
-##### RaceID/StemID Setting #####
+##### RaceID/StemID Settings #####
 

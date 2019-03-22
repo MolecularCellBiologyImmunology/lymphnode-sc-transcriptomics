@@ -1,5 +1,6 @@
-# snakemake workflow for generating STAR index files of a reference sequence
+# Snakemake Workflow for Module 1: Generating STAR Index Files of a reference sequence
 
+# Include common settings
 include: "../common.snakefile"
 
 # STAR extra options
@@ -8,8 +9,9 @@ extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 # Expected index files
 indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 
-##### target rules #####
-# pseudorule consuming all the final output
+##### Target Rules #####
+
+# Pseudorule consuming all the final output
 rule all:
     input: expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
 
@@ -20,7 +22,7 @@ rule all:
 #     shell: 
 #         'unpigz -k {compressedfastafile}' 
 
-# the alignment by STAR
+# Rule for Module 2: The alignment by STAR
 rule index:
     input:
         fastafile = fastafile,

@@ -1,0 +1,12 @@
+# Snakemake Workflow for Module 6: Running RaceID / StemID on a single normalized count table
+
+# Include common settings
+include: "../common.snakefile"
+
+rule raceid-stemid:
+    input:
+        '{tmpstore}/combine_plates/{reference}/{fileprefix}/counts_filtered.tsv'
+    output:
+        '{output}/quality_filters/{reference}/{fileprefix}/counts_filtered.tsv')
+    script:
+        'Race_D2_StemID_sample.R'

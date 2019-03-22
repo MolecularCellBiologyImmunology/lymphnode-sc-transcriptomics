@@ -1,3 +1,6 @@
+# Snakemake Workflow for Module 3: Mapping the reads into barcodes
+
+# Include common settings
 include: "../common.snakefile"
 
 ##### featureCount settings #####

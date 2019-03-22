@@ -1,9 +1,9 @@
 ## install required packages (only at first time)
-install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan"))
+install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan","markdown"))
 
 ########## TODO: Import user path here ##########
 ## load class definition and functions
-source("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/RaceID2_StemID_class.R")
+source("./RaceID2_StemID_class.R")
 
 ########## TODO: Import output file of filter here ##########
 
@@ -122,3 +122,5 @@ plottsne(x$scl)
 x <- compscore(ltr,nn=1)
 #plotting the StemID score
 plotscore(ltr,1)
+
+rmarkdown::render()

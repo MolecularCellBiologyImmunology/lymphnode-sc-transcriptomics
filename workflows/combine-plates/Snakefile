@@ -1,0 +1,12 @@
+# Snakemake Workflow for Module 5: When multiple plates are present, combining all plate count tables into a single normalized count table
+
+# Include common settings
+include: "../common.snakefile"
+
+rule combine-plates:
+    input:
+        '{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered.tsv'
+    output:
+        temporary('{tmpstore}/combine_plates/{reference}/{fileprefix}/counts_combined.tsv')
+    script:
+        'combine-plates.R'

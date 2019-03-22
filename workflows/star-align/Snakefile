@@ -1,6 +1,9 @@
+# Snakemake Workflow for Module 2: Aligning sequences with STAR Index Files, when needed
+
+# Include common settings
 include: "../common.snakefile"
 
-##### functions producing input #####
+##### Functions Producing Input #####
 # construct path to a fastq sequence file
 def get_fastq(wildcards):
     seqbase = os.path.join(config['data'], config['sequences'], '')
