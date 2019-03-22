@@ -4,48 +4,42 @@
 include: "./workflows/common.snakefile"
 
 # Modulization through Subworkflows: 
-subworkflow star-index
-    workdir:
+subworkflow star_index:
         workdir:
             "./workflows/star-index"
         snakefile:
             "./workflows/star-index/Snakefile"
 
-subworkflow star-align
-    workdir:
+subworkflow star_align:
         workdir:
             "./workflows/star-align"
         snakefile:
             "./workflows/star-align/Snakefile"
 
-subworkflow map-barcodes
-    workdir:
+subworkflow map_barcodes:
         workdir:
             "./workflows/map-barcodes"
         snakefile:
             "./workflows/map-barcodes/Snakefile"
 
 
-subworkflow quality-filters
-    workdir:
+subworkflow quality_filters:
         workdir:
             "./workflows/quality-filters"
         snakefile:
             "./workflows/quality-filters/Snakefile"
 
 
-subworkflow combine-plates
-    workdir:
+subworkflow combine_plates:
         workdir:
             "./workflows/combine-plates"
         snakefile:
             "./workflows/combine-plates/Snakefile"
 
 
-subworkflow raceid-stemid
+subworkflow raceid_stemid:
     workdir:
-        workdir:
-            "./workflows/raceid-stemid"
-        snakefile:
-            "./workflows/raceid-stemid/Snakefile"
+        "./workflows/raceid-stemid"
+    snakefile:
+        "./workflows/raceid-stemid/Snakefile"
 

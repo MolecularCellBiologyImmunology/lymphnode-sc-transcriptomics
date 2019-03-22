@@ -10,7 +10,7 @@ min_version("5.2.4")
 
 ##### Load Config and Sample Sheets #####
 
-configfile: "../../config.yaml"
+configfile: "./config.yaml"
 
 ##### Set Data Path #####
 

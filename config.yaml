@@ -1,19 +1,19 @@
 # This file should contain everything to configure the workflow on a global scale.
 
-# The data directory
-data: /home/douwe/data
+# The location of the main data directory (located inside the one with this file)
+data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Scripts/lymphnode-sc-transcriptomics/data
 # data: /data
 # NOTE: all subsequent paths should be given relative to the 'data' path.
 # Directory where large temporary files stored
-tmpstore: temporary
+tmpstore: temporary files
 # Directory with reference genomes
-refdir: genomes
+refdir: input/genomes
 # the STAR index main directory
-index: genomes/STAR
+index: input/star_index
 # The local data repository
-repo: mouse-lymph-node-stromal-cell-time-series
+repo: sequences/mouse-lymph-node-stromal-cell-time-series
 # directory with sequence files
-sequences: mouse-lymph-node-stromal-cell-time-series/sequences
+sequences: sequences/mouse-lymph-node-stromal-cell-time-series/mouse-lymph-node-stromal-cell-time-series/sequences
 # file with sample annotations
 samples: mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
 # file with reference genome annotations
