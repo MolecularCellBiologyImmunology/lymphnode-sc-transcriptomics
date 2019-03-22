@@ -16,7 +16,7 @@ def get_fastq(wildcards):
 rule all:
     input:
         expand("{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam", 
-               fileprefix=samples['fileprefix'], tmpstore=tmpstore, reference=config['reference'])
+               fileprefix=samples['filePrefix'], tmpstore=tmpstore, reference=config['reference'])
 
 # the alignment by STAR
 rule align:

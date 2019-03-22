@@ -10,7 +10,8 @@ min_version("5.2.4")
 
 ##### Load Config and Sample Sheets #####
 
-configfile: "./config.yaml"
+# TODO: Give this path in shell when starting snakemake
+configfile: "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/data/snakemake_config.yaml"
 
 ##### Set Data Path #####
 

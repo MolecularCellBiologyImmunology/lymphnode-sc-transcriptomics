@@ -25,7 +25,7 @@ setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/C:/Users/M
 #   tables[[prefix]] <- table
 # }
 # tables <- reduce(tables, full_join, by="GENEID")
-
+# tables[is.na(tables)] <- 0
 
 tables <- lapply(annotations$fileprefix, function(x) {read_tsv(paste(x,'.coutt.csv',sep="")) %>% mutate('Plate'=x)}) %>% lapply(function(x) {gather(x, key='cellnr', value='count', -c('Plate','GENEID'))}) %>% bind_rows() %>% mutate("CellID" = paste(Plate,cellnr, sep = ".")) 
 cells <- tables %>% select("Plate", "CellID") %>% unique()
