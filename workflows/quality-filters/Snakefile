@@ -5,8 +5,8 @@ include: "../common.snakefile"
 
 rule qualitychecks:
     input:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/counts.tsv'
+        counts = '{tmpstore}/mapping/{reference}/{fileprefix}/counts.tsv'
     output:
-        temporary('{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered.tsv')
+        countsfiltered = '{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered.tsv'
     script:
         'filter.R'

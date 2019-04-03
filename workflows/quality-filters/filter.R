@@ -1,10 +1,10 @@
-# Note: This Script is mostly based on the instruction manual of RaceID2 and StemID.
+# Note: This Script is mostly based on the filter function of RaceID2 and StemID.
 # First this script, then RaceID2_StemID_sample.R should be run.
 
 # Install & load required packages
 
 # Provided data has to be loaded #### TODO: Import input file path of here #####
-data <-read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/testfile.xls", sep="\t", header=TRUE)
+data <-read.csv(snakemake@input, sep="\t", header=TRUE)
 #### TODO: data <-read.csv("testfile.xls", sep="\t", header=TRUE)
 
 # The first column contains unique gene ids and has to be assigned as rownames:
@@ -16,13 +16,13 @@ data <-data[grep("ERCC",rownames(data),invert=TRUE),-1]
 # Filtering of expression data (previously through RaceID)
 # TODO: Copy the main changes this function makes from class script
 
-mintotal = 3000
-minexpr = 5
-minnumber = 1
-maxexpr = Inf
-dodownsample = TRUE
-dsn = 1
-rseed = 17000
+mintotal = snakemake@mintotal
+minexpr = snakemake@minexpr
+minnumber = snakemake@minnumber
+maxexpr = snakemake@maxexpr
+dodownsample = snakemake@dodownsample
+dsn = snakemake@dsn
+rseed = snakemake@rseed
 
 if ( ! is.numeric(mintotal) ) stop( "mintotal has to be a positive number" ) else if ( mintotal <= 0 ) stop( "mintotal has to be a positive number" )
 if ( ! is.numeric(minexpr) ) stop( "minexpr has to be a non-negative number" ) else if ( minexpr < 0 ) stop( "minexpr has to be a non-negative number" )

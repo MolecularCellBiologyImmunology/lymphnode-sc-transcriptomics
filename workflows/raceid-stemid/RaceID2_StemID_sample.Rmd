@@ -11,6 +11,7 @@ source("./RaceID2_StemID_class.R")
 prdata <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
 rownames(prdata) <- prdata$GENEID
 
+
 ## RaceID2
 # initialize SCseq object with transcript counts
 sc <- SCseq(prdata)

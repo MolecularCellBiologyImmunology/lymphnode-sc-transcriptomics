@@ -5,9 +5,9 @@ include: "../common.snakefile"
 
 rule combine-plates:
     input:
-        '{tmpstore}/combine_plates/{reference}/{fileprefix}/counts_combined.tsv'
+        countscombined = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv'
     output:
-        'RaceID2_StemID_sample.Rmd'
-        # Cluter Tables
+        stemraceidreport = '{output}/RaceID2_StemID_results.html'
+        clustertables = '{output}/cell_clust.xlx'
     script:
         'RaceID2_StemID_sample.R'

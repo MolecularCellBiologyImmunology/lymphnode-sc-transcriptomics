@@ -5,8 +5,8 @@ include: "../common.snakefile"
 
 rule combine-plates:
     input:
-        '{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered_*.tsv'
+        plates = '{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered_*.tsv'
     output:
-        temporary('{tmpstore}/combine_plates/{reference}/{fileprefix}/counts_combined.tsv')
+        combinedplates = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv')
     script:
         'combine-plates.R'

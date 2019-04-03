@@ -12,6 +12,7 @@ min_version("5.2.4")
 ##### Load Config and Sample Sheets #####
 
 # TODO: Give this path in shell when starting snakemake
+print("Please choose a config file to run Snakemake with.")
 configfile: easygui.fileopenbox()
 
 ##### Set Data Path #####
@@ -46,6 +47,16 @@ gtffile = str(data / config['refdir'] / config['reference'] / references.loc[con
 
 # The Location of the Fasta file of a Reference Genome
 fastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
+
+##### Filter Settings #####
+
+mintotal = config['mintotal']
+minexpr = config['minexpr']
+minnumber = config['minnumber']
+maxexpr = config['maxexpr']
+dodownsample = config['dodownsample']
+dsn = config['dsn']
+rseed = config['rseed']
 
 ##### RaceID/StemID Settings #####
 
