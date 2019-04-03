@@ -28,6 +28,7 @@ dependencies:
   - decorator=4.3.0
   - docutils=0.14
   - dropbox=9.2.0
+  - easygui=0.98.1
   - expat=2.2.5
   - filechunkio=1.8
   - fontconfig=2.13.1

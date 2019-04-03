@@ -3,6 +3,7 @@ import pandas as pd
 from snakemake.utils import min_version
 from snakemake.shell import shell
 import pathlib
+import easygui
 
 ##### Set minimum Snakemake Version #####
 
@@ -11,7 +12,7 @@ min_version("5.2.4")
 ##### Load Config and Sample Sheets #####
 
 # TODO: Give this path in shell when starting snakemake
-configfile: "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/data/snakemake_config.yaml"
+configfile: easygui.fileopenbox()
 
 ##### Set Data Path #####
 
