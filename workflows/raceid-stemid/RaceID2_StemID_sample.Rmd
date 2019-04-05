@@ -8,7 +8,7 @@ source("./RaceID2_StemID_class.R")
 ########## TODO: Import output file of filter here ##########
 
 # Provided data has to be loaded
-prdata <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
+prdata <- read.csv(snakemake@inputfile,sep=",",header=TRUE, row.names = 1)
 rownames(prdata) <- prdata$GENEID
 
 

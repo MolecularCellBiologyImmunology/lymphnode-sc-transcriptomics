@@ -3,11 +3,12 @@
 # Include common settings
 include: "../common.snakefile"
 
-rule combine-plates:
+rule raceid-stemid:
     input:
         countscombined = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv'
     output:
         stemraceidreport = '{output}/RaceID2_StemID_results.html'
-        clustertables = '{output}/cell_clust.xlx'
+        clustercells = '{output}/cell_clust.xlx'
+        clustergenes = '{output}/cell_clust_diff_genes_cl_*'
     script:
         'RaceID2_StemID_sample.R'

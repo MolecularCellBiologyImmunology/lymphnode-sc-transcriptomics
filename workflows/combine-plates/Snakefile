@@ -7,6 +7,6 @@ rule combine-plates:
     input:
         plates = '{tmpstore}/quality_filters/{reference}/{fileprefix}/counts_filtered_*.tsv'
     output:
-        combinedplates = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv')
+        combinedplates = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv'
     script:
         'combine-plates.R'

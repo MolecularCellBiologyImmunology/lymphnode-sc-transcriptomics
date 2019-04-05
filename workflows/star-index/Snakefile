@@ -6,21 +6,11 @@ include: "../common.snakefile"
 # STAR extra options
 extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 
-# Expected index files
-indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
-
 ##### Target Rules #####
 
 # Pseudorule consuming all the final output
 rule all:
     input: expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
-
-# unpacking the compressed fasta file
-# rule decompress:
-#     input: compressedfastafile
-#     output: fastafile
-#     shell: 
-#         'unpigz -k {compressedfastafile}' 
 
 # Rule for Module 2: The alignment by STAR
 rule index:

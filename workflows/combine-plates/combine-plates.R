@@ -7,13 +7,11 @@ library(purrr)
 library(dplyr)
 library(tidyr)
 
-
 # Paths and Annotations         TODO: file.path()
 setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/combine-plates")
 annotations <- read.csv("annotations.tsv", sep = "\t")
 annotations <- filter(annotations, experiment == "timeseries", time == "2")
 setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data/research-sbi-mouse-lymph-node-stromal-cell-time-series\Heidelberg_count_tables_2018_Aug/Heidelberg_count_tables_2018_Aug")
-
 
 ### Old Way
 # tables <- list()
