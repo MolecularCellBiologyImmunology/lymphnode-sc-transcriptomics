@@ -12,6 +12,4 @@ _STARtmp/
 *.bam
 reports/
 results/
-data/input/
-data/temporary files/
-data/output/
+data/
