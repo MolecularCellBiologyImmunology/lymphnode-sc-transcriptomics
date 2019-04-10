@@ -1,14 +1,6 @@
-## install required packages (only at first time)
-install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan","markdown"))
-
-########## TODO: Import user path here ##########
-## load class definition and functions
-source("./RaceID2_StemID_class.R")
-
-########## TODO: Import output file of filter here ##########
 
 # Provided data has to be loaded
-prdata <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/lymphnode-sc-transcriptomics/workflows/raceid-stemid/scripts/StemID/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
+prdata <- read.csv("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
 rownames(prdata) <- prdata$GENEID
 
 ## RaceID2
@@ -122,5 +114,3 @@ plottsne(x$scl)
 x <- compscore(ltr,nn=1)
 #plotting the StemID score
 plotscore(ltr,1)
-
-rmarkdown::render()
