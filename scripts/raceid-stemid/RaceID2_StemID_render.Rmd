@@ -2,10 +2,10 @@ install.packages("rmarkdown")
 
 
 # set working directory
-setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/scripts/raceid-stemid/")
+setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/scripts/raceid-stemid")
 
 # load class definition and functions
-source("./RaceID2_StemID_class.R")
+source("RaceID2_StemID_class.R")
 
 # run stem/raceID and render report 
 rmarkdown::render("RaceID2_StemID_sample.R", "pdf_document")

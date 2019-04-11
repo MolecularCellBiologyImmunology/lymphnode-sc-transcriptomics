@@ -1,20 +1,22 @@
 # Note: This Script is mostly based on the instruction manual of RaceID2 and StemID.
+install.packages("dplyr")
+library(dplyr)
 
-setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data")
+setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data")
 annotations <- read.csv("annotations.tsv", sep = "\t", strip.white=TRUE)
 
-mintotal = 3000
+mintotal = 1500
 minexpr = 5
 minnumber = 1
-maxexpr = Inf
-dodownsample = TRUE
+maxexpr = 500
+dodownsample = FALSE
 dsn = 1
 rseed = 17000
 
 for(file in annotations$fileprefix) {
   
   # Provided data has to be loaded
-  setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/1 - rawcounts")
+  setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data/1 - rawcounts")
   print(paste("Filtering File ", file, sep= ""))  
   data <-read.csv(paste(file,'.coutt.csv', sep=""), sep="\t", header=TRUE)
   
@@ -51,7 +53,7 @@ for(file in annotations$fileprefix) {
       rownames(z) <- as.vector(z$GENEID)
       ds <- if ( j == 1 ) z[,-1] else ds + z[,-1]
     }
-    ds <- ds/dsn + .1
+    ds <- ds/dsn  # Removed +0.1
     return(ds)
   }
   
@@ -61,7 +63,7 @@ for(file in annotations$fileprefix) {
       ndata <- downsample(data,n=mintotal,dsn=dsn)
   }else{
       x <- ndata
-      ndata <- as.data.frame( t(t(x)/apply(x,2,sum))*median(apply(x,2,sum,na.rm=TRUE)) + .1 )
+      ndata <- as.data.frame( t(t(x)/apply(x,2,sum))*median(apply(x,2,sum,na.rm=TRUE))   ) # Removed +0.1
   }
   x <- ndata
   fdata <- x[apply(x>=minexpr,1,sum,na.rm=TRUE) >= minnumber,]
@@ -69,8 +71,9 @@ for(file in annotations$fileprefix) {
   fdata <- x[apply(x,1,max,na.rm=TRUE) < maxexpr,]
   
   # Write results
-  setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/2 - filteredcounts")
-  write.csv(fdata, file = paste(file,'.coutt.csv', sep=""))
+  fdata <- add_rownames(fdata, "GENEID")
+  setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data/2 - filteredcounts")
+  write_tsv(fdata, paste(file,'.coutt.csv', sep=""), append = FALSE)
   
 
 }

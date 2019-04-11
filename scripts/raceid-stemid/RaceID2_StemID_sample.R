@@ -1,6 +1,6 @@
 
 # Provided data has to be loaded
-prdata <- read.csv("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/testfile_cleaned.csv",sep=",",header=TRUE, row.names = 1)
+prdata <- read.table("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data/3 - combinedcounts/normalized_counts.csv",sep=",",header=TRUE, row.names = 1)
 rownames(prdata) <- prdata$GENEID
 
 ## RaceID2
