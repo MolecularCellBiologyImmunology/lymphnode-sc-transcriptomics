@@ -7,12 +7,12 @@ library(tidyr)
 library(dplyr)
 
 # Paths and Annotations      
-setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data")
+setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data")
 annotations <- read.csv("annotations.tsv", sep = "\t")
 
 
 
-setwd("D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data/2 - filteredcounts")
+setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/1 - rawcounts")
 
 
 tables <- lapply(annotations$fileprefix, function(x) {read_tsv(paste(x,'.coutt.csv',sep="")) %>% mutate('Plate'=x)}) %>% lapply(function(x) {gather(x, key='cellnr', value='count', -c('Plate','GENEID'))}) %>% bind_rows() %>% mutate("CellID" = paste(Plate,cellnr, sep = ".")) 
@@ -22,4 +22,5 @@ tables[is.na(tables)] <- 0
 
 
 # Write results
-write.csv(tables, file = "D:/Userdata/jj.koning/MIKE/lymphnode-sc-transcriptomics-seperatescripts/data/3 - combinedcounts/normalized_counts.csv", row.names = FALSE)
+write.csv(tables, file = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/2 - combinedcounts/normalized_counts.csv", row.names = FALSE)
+write.csv(tables, file = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/platecellids.csv", row.names = FALSE)
