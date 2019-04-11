@@ -1,13 +1,10 @@
 ## install required packages (only at first time)
 install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan"))
 
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/StemID-master")
-
-## load class definition and functions
-source("RaceID2_StemID_class.R")
+setwd("D:/Userdata/jj.koning/MIKE/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/2 - combinedcounts")
 
 ## input data
-x <- read.csv("transcript_counts_intestine_5days_YFP.xls",sep="\t",header=TRUE)
+x <- read.csv("normalized_counts.csv",sep=",",header=TRUE)
 rownames(x) <- x$GENEID
 # prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
 prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
@@ -16,7 +13,7 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 # initialize SCseq object with transcript counts
 sc <- SCseq(prdata)
 # filtering of expression data
-sc <- filterdata(sc, mintotal=3000, minexpr=5, minnumber=1, maxexpr=Inf, downsample=TRUE, dsn=1, rseed=17000)
+sc <- filterdata(sc, mintotal=1500, minexpr=5, minnumber=1, maxexpr=500, downsample=FALSE, dsn=1, rseed=17000)
 # k-medoids clustering
 sc <- clustexp(sc,clustnr=30,bootnr=50,metric="pearson",do.gap=FALSE,sat=TRUE,SE.method="Tibs2001SEmax",SE.factor=.25,B.gap=50,cln=0,rseed=17000,FUNcluster="kmedoids")
 # compute t-SNE map
