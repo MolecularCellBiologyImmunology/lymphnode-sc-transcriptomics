@@ -12,3 +12,4 @@ _STARtmp/
 *.bam
 reports/
 results/
+.RData

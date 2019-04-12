@@ -87,7 +87,7 @@ plotsymbolstsne(sc,types=sub("(\\_\\d+)$","", names(sc@ndata)))
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
 
-changewd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/All")
+setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/All")
 
 ## write results to text files
 # final clusters 
