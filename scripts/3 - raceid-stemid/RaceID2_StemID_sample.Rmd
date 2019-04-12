@@ -1,13 +1,32 @@
-## install required packages (only at first time)
-install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan"))
+---
+title: "RaceId2_StemID_sample"
+author: "Jasper Koning & Michael de Kok"
+---
 
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts")
+## Setup
+
+```{r Setup, include=TRUE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+source("RaceID2_StemID_class.R")
+
+## install required packages (only at first time)
+install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","permute","amap","locfit","vegan"), repos = "http://cran.us.r-project.org")
+
 
 ## input data
-x <- read.csv("normalized_counts.csv",sep=",",header=TRUE)
+x <- read.csv("D:/Userdata/jj.koning/MIKE/seperatescripts v3/data/3 - combinedcounts/normalized_counts.csv",sep=",",header=TRUE)
 rownames(x) <- x$GENEID
+
 # prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
 prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
+
+```
+
+## RaceID Script
+
+```{r RaceID, include=TRUE}
 
 ## RaceID2
 # initialize SCseq object with transcript counts
@@ -19,8 +38,13 @@ sc <- clustexp(sc,clustnr=30,bootnr=50,metric="pearson",do.gap=FALSE,sat=TRUE,SE
 # compute t-SNE map
 sc <- comptsne(sc,rseed=15555)
 # detect outliers and redefine clusters
-sc <- findoutliers(sc, outminc=5,outlg=2,probthr=1e-3,thr=-2**(1:40),outdistquant=.95)
+sc <- findoutliers(sc, outminc=5,outlg=2,probthr=1e-3,thr=2**-(1:40),outdistquant=.95)
 
+```
+
+## RaceID Diagnostic Plots
+
+```{r RaceIDPlots, include=TRUE}
 ## diagnostic plots
 # gap statistics: only if do.gap == TRUE
 ##plotgap(sc)
@@ -53,10 +77,17 @@ plotsymbolstsne(sc,types=sub("(\\_\\d+)$","", names(sc@ndata)))
 # highlight transcirpt counts of a set of genes in t-SNE map, e. g. all Apoa genes
 g <- c("Apoa1__chr9", "Apoa1bp__chr3", "Apoa2__chr1", "Apoa4__chr9", "Apoa5__chr9")
 plotexptsne(sc,g,n="Apoa genes",logsc=TRUE)
+```
+
+## RaceID Results
+
+```{r RaceIDResults, include=TRUE}
 
 ## identification of marker genes
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
+
+changewd("D:/Userdata/jj.koning/MIKE/seperatescripts v3/data/4 - raceidstemid/All")
 
 ## write results to text files
 # final clusters 
@@ -70,7 +101,11 @@ for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdi
 d <- diffgenes(sc,cl1=1,cl2=c(2,3),mincount=5)
 plotdiffgenes(d,gene=names(d$z)[1])
 
+```
 
+## StemID Script
+
+```{r StemID, include=TRUE}
 ## StemID
 
 # initialization
@@ -80,12 +115,16 @@ ltr <- compentropy(ltr)
 # computation of the projections for all cells
 ltr <- projcells(ltr,cthr=2,nmode=FALSE)
 # computation of the projections for all cells after randomization
-ltr <- projback(ltr,pdishuf=2000,nmode=FALSE,rseed=17000)
+ltr <- projback(ltr,pdishuf=100,nmode=FALSE,rseed=17000)                  # NOTE: TEMPORARILY CHANGED THIS TO 100 FOR TESTING PURPOSES, TAKES 10min, WAS 2000!
 # assembly of the lineage tree
 ltr <- lineagetree(ltr,pthr=0.01,nmode=FALSE)
 # determination of significant differentiation trajectories
 ltr <- comppvalue(ltr,pethr=0.01,nmode=FALSE)
+```
 
+## StemID Diagnostic Plots
+
+```{r StemIDPlots}
 ## diagnostic plots
 # histogram of ratio between cell-to-cell distances in the embedded and the input space
 plotdistanceratio(ltr)
@@ -103,7 +142,11 @@ plotlinkpv(ltr)
 plotlinkscore(ltr)
 # heatmap showing the fold enrichment (or depletion) for significantly enriched or depleted links
 projenrichment(ltr)
+```
 
+## StemID Results
+
+```{r StemIDResults}
 ## extract projections onto all links for all cells in a given cluster i
 x <- getproj(ltr,i=1)
 # heatmap of all projections for cluster i
@@ -124,4 +167,5 @@ x <- compscore(ltr,nn=1)
 #plotting the StemID score
 plotscore(ltr,1)
 
- 
+```
+
