@@ -2,10 +2,10 @@ install.packages("rmarkdown")
 require(rmarkdown)
 
 # set working directory
-setwd("D:/Userdata/jj.koning/MIKE/seperatescripts v3/scripts/3 - filter-raceid-stemid")
+setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/3 - raceid-stemid")
 
 # load class definition and functions
 source("RaceID2_StemID_class.R")
 
 # run stem/raceID and render report 
-rmarkdown::render("RaceID2_StemID_sample.Rmd", "html_document", output_dir = "D:/Userdata/jj.koning/MIKE/seperatescripts v3/data/4 - raceidstemid")
+rmarkdown::render("RaceID2_StemID_sample.Rmd", "html_document", output_dir = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid")

@@ -16,7 +16,7 @@ install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattic
 
 
 ## input data
-x <- read.csv("D:/Userdata/jj.koning/MIKE/seperatescripts v3/data/3 - combinedcounts/normalized_counts.csv",sep=",",header=TRUE)
+x <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
 rownames(x) <- x$GENEID
 
 # prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
@@ -87,7 +87,7 @@ plotexptsne(sc,g,n="Apoa genes",logsc=TRUE)
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
 
-changewd("D:/Userdata/jj.koning/MIKE/seperatescripts v3/data/4 - raceidstemid/All")
+changewd("DC:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/All")
 
 ## write results to text files
 # final clusters 
