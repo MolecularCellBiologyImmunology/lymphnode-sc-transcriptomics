@@ -257,7 +257,7 @@ setMethod("plottsne",
             part <- if ( final ) object@cpart else object@cluster$kpart
             plot(object@tsne,xlab="Dim 1",ylab="Dim 2",pch=20,cex=1.5,col="lightgrey")
             for ( i in 1:max(part) ){
-              if ( sum(part == i) > 0 ) text(object@tsne[part == i,1],object@tsne[part == i,2],i,col=object@fcol[i],cex=.75,font=4)
+              if ( sum(part == i) > 0 ) text(object@tsne[part == i,1],object@tsne[part == i,2],i,col=object@fcol[i],cex=.75,font=10)
             }
           }
           )
@@ -1433,11 +1433,11 @@ setMethod("plotscore",
           definition = function(object,nn){
             if ( length(object@cdata) <= 0 ) stop("run comppvalue before plotscore")
             x <- compscore(object,nn)
-            layout(1:3)
+            # layout(1:3)
             barplot(x$links,names.arg=sub("cl\\.","",object@ldata$m),xlab="Cluster",ylab="Number of links",cex.names=1)
             barplot(x$entropy,names.arg=sub("cl\\.","",object@ldata$m),xlab="Cluster",ylab="Delta-Entropy",cex.names=1)
             barplot(x$StemIDscore,names.arg=sub("cl\\.","",object@ldata$m),xlab="Cluster",ylab="Number of links * Delta-Entropy",cex.names=1)
-            layout(1)
+            # layout(1)
           }
           )
 
