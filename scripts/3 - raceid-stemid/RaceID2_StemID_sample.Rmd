@@ -16,7 +16,7 @@ install.packages(c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattic
 
 
 ## input data
-x <- read.csv("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
+x <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
 rownames(x) <- x$GENEID
 
 # prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
@@ -90,7 +90,7 @@ plotsymbolstsne(sc,types=sub("(\\_\\d+)$","", names(sc@ndata)))
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
 
-setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid")
+setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid")
 
 ## write results to text files
 # final clusters 
@@ -114,7 +114,7 @@ ltr <- compentropy(ltr)
 # computation of the projections for all cells
 ltr <- projcells(ltr,cthr=2,nmode=FALSE)
 # computation of the projections for all cells after randomization
-ltr <- projback(ltr,pdishuf=2000,nmode=FALSE,rseed=17000)                ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+ltr <- projback(ltr,pdishuf=200,nmode=FALSE,rseed=17000)                ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
 # assembly of the lineage tree
 ltr <- lineagetree(ltr,pthr=0.01,nmode=FALSE)
 # determination of significant differentiation trajectories
