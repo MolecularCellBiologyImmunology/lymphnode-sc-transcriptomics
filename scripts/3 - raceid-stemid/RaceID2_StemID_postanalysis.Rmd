@@ -27,7 +27,7 @@ author: "Jasper Koning & Michael de Kok"
 
 
 
-## Analysis of Specific Cluster
+## Analysis of Specific Clusters
 
 ```{r ClusterAnalysis, include=TRUE}
 
