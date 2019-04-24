@@ -25,7 +25,7 @@ for(filter in unique(annotations$time)) {
   
   # Combine All Tables
   tables <- lapply(annotations$fileprefix, function(x) {read_tsv(paste(x,'.coutt.csv',sep="")) %>% mutate('Plate'=x)}) %>% lapply(function(x) {gather(x, key='cellnr', value='count', -c('Plate','GENEID'))}) %>% bind_rows() %>% mutate("CellID" = paste(Plate,cellnr, sep = ".")) 
-  cells <- tables %>% select("Plate", "CellID") %>% unique()
+  cells <- tables %>% select("Plate", "CellID") %>% distinct()
   tables <- tables %>% select(-"cellnr", -"Plate") %>% spread(CellID,count)
   tables[is.na(tables)] <- 0
   
