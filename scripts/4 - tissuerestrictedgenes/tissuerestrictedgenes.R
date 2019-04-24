@@ -4,7 +4,9 @@ library(dplyr)
 
 # Input Tissue Restricted Genes
 
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/4 - tissuerestrictedgenes")
+#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/4 - tissuerestrictedgenes")
+setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/scripts/4 - tissuerestrictedgenes")
+
 y <- read_tsv("Sansom Supplemental_Table2.txt", skip=2)
 y = y[-1,]
 colnames(y)[colnames(y)=="Gene Symbol"] <- "GENEID"
@@ -18,7 +20,8 @@ output = data.frame()
 
 # For Each cluster
 
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/All Plates")
+#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
+setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
 
 for (file in list.files(path = ".",pattern="cell_clust_diff_genes_cl_")) {
 
@@ -36,7 +39,8 @@ for (file in list.files(path = ".",pattern="cell_clust_diff_genes_cl_")) {
   output <- rbind(output,z)
 }
 
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/5 - tissuerestrictedgenes/")
+#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/5 - tissuerestrictedgenes/")
+setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/5 - tissuerestrictedgenes/")
 output <- output[order( output["Cluster"], output["GNF GeneAtlas Specificity"], output["GENEID"], decreasing = FALSE ),  ]
 row.names(output) <- NULL 
 write.table(output, 'tissuerestrictedgenes.txt', sep = "\t")
