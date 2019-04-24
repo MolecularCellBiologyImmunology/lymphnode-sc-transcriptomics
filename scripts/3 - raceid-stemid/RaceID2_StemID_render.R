@@ -8,14 +8,7 @@ setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/se
 source("RaceID2_StemID_class.R")
 
 # Run Initial Stem/RaceID Algorithm and Render Initial Report 
-<<<<<<< HEAD
 rmarkdown::render("RaceID2_StemID_sample.Rmd", "html_document", output_dir = "D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
 
 # Run Post-Analysis on specific Genes/Clusters based on Initial Report 
 rmarkdown::render("RaceID2_StemID_postanalysis.Rmd", "html_document", output_dir = "D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
-=======
-rmarkdown::render("RaceID2_StemID_sample.Rmd", "html_document", output_dir = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid")
-
-# Run Post-Analysis on specific Genes/Clusters based on Initial Report 
-rmarkdown::render("RaceID2_StemID_postanalysis.Rmd", "html_document", output_dir = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/")
->>>>>>> 0c848fd190eab580f8044964595443931847b510

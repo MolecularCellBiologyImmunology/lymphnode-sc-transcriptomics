@@ -1,0 +1,239 @@
+---
+title: "RaceId3/StemID2 Initial Analysis"
+author: "Jasper Koning & Michael de Kok"
+---
+
+## Setup
+
+```{r Setup, include=TRUE}
+
+knitr::opts_chunk$set(echo = TRUE)
+
+## Load Sources and install required Packages, but only if needed
+source("RaceID3_StemID2_class.R")
+
+list.of.packages <- c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","Rtsne","scran","DESeq2","amap","locfit","vegan","rmarkdown", "permute", "randomForest", "rgl", "kohonen", "som")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+
+source("https://bioconductor.org/biocLite.R")
+biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
+
+
+## input data
+#x <- read.csv("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
+x <- read.csv("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
+rownames(x) <- x$GENEID
+
+# prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
+prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
+
+```
+
+## RaceID algorithm (has much unnessessary output, so hidden here)
+
+```{r Filter, include=FALSE}
+
+## RaceID3
+# initialize SCseq object with transcript counts
+sc <- SCseq(prdata)
+# filtering of expression data
+sc <- filterdata(sc, mintotal=3000, minexpr=5, minnumber=1, maxexpr=Inf, downsample=FALSE, sfn=FALSE, hkn=FALSE, dsn=1, rseed=17000, CGenes=NULL, FGenes=NULL, ccor=.4)
+
+# regress out the batch effect
+# optional:
+#vars <- data.frame(row.names=names(sc@fdata),batch=sub("(_|)\\d.+","",names(sc@fdata)))
+#sc@fdata <- varRegression(sc@fdata,vars)
+
+# correct for cell cycle, proliferation, and expression of degradation markers by PCA
+# optional:
+require(biomaRt)
+mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
+g   <- sub("__chr.+","",rownames(sc@fdata));
+k   <- getBM(attributes = c("external_gene_name", "go_id","name_1006"),filters="external_gene_name",values=g,mart=mart)
+gCC <- name2id( k$external_gene_name[k$name_1006 == "cell cycle"],rownames(sc@fdata)) 
+gCP <- name2id( k$external_gene_name[k$name_1006 == "cell proliferation"],rownames(sc@fdata))
+vset <- list(gCC,gCP)
+x <- CCcorrect(sc@fdata,vset=vset,CGenes=NULL,ccor=.4,nComp=NULL,pvalue=.05,quant=.01,mode="pca")
+# number of principal components that have been removed
+x$n
+# loadings of the first principal component that has been removed
+y <- x$pca$rotation[,x$n[1]]
+# genes from vset are either enriched in the head or the tail of this list
+tail(y[order(y,decreasing=TRUE)],10)
+# reassign the corrected expression matrix to sc@fdata
+sc@fdata <- x$xcor
+
+```
+
+```{r RaceID, include=FALSE}
+
+# k-medoids clustering
+sc <- clustexp(sc,clustnr=30,bootnr=100,metric="pearson",do.gap=FALSE,sat=TRUE,SE.method="Tibs2001SEmax",SE.factor=.25,B.gap=50,cln=0,rseed=17000,FUNcluster="kmedoids",FSelect=TRUE)
+# compute t-SNE map
+sc <- comptsne(sc,rseed=15555,sammonmap=FALSE,initial_cmd=TRUE,fast=TRUE,perplexity=30)
+# detect outliers and redefine clusters
+sc <- findoutliers(sc, outminc=5,outlg=2,probthr=1e-3,thr=2**-(1:40),outdistquant=.95)
+# reassign clusters based on random forest
+sc <- rfcorrect(sc,rfseed=12345,final=TRUE,nbfactor=5)
+
+```
+
+## RaceID Results
+
+```{r RaceIDPlots, include=TRUE}
+
+## Print amount of cells and outliers
+print( paste(length(sc@out[[1]]), "Outliers Identified from", length(sc@fdata), "Cells", sep=" " ))
+
+## diagnostic plots
+
+# gap statistics: only if do.gap == TRUE
+##plotgap(sc)
+
+# plot within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+plotsaturation(sc,disp=TRUE)
+
+# plot change of the within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+plotsaturation(sc)
+
+# silhouette of k-medoids clusters          ### NOTE: DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
+#plotsilhouette(sc)  
+
+# Jaccard's similarity of k-medoids clusters
+plotjaccard(sc)
+
+# barchart of outlier probabilities
+plotoutlierprobs(sc)
+
+# regression of background model
+plotbackground(sc)
+
+# dependence of outlier number on probability threshold (probthr)
+plotsensitivity(sc)
+
+# heatmap of k-medoids cluster
+clustheatmap(sc,final=FALSE,hmethod="single")
+
+# heatmap of final cluster
+clustheatmap(sc,final=TRUE,hmethod="single")
+
+# highlight k-medoids clusters in t-SNE map
+plottsne(sc,final=FALSE)
+
+# highlight final clusters in t-SNE map
+plottsne(sc,final=TRUE)
+
+# highlight cell labels in t-SNE map  ### NOTE: BAD IDEA FOR THOUSANDS OF CELLS!
+#plotlabelstsne(sc,labels=sub("(\\_\\d+)","",names(sc@ndata)))
+
+# highlight groups of cells by symbols in t-SNE map
+weeks <- c("LNS_W0","LNS_W1","LNS_W2","LNS_W6")
+plotsymbolstsne(sc,types=sub("(\\_\\d+)$", weeks, names(sc@ndata)))
+
+# plot 3D tSNE
+plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
+
+```
+
+## RaceID Output
+
+```{r RaceIDResults, include=TRUE}
+
+## identification of marker genes
+# differentially regulated genes in each cluster compared to the full ensemble
+cdiff <- clustdiffgenes(sc,pvalue=.01)
+
+setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
+
+## write results to text files
+# final clusters 
+x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
+write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+  
+# differentially expressed genes in cluster
+for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+
+```
+
+## StemID Algorithm (has much unnessessary output, so hidden here)
+
+```{r StemID, include=FALSE}
+
+## StemID
+
+# initialization
+ltr <- Ltree(sc)
+# computation of the entropy
+ltr <- compentropy(ltr)
+# computation of the projections for all cells
+ltr <- projcells(ltr,cthr=2,nmode=FALSE)
+# computation of the projections for all cells after randomization
+ltr <- projback(ltr,pdishuf=10000,nmode=FALSE,fast=FALSE,rseed=17000)            ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+# assembly of the lineage tree
+ltr <- lineagetree(ltr,pthr=0.05,nmode=FALSE,fast=FALSE)
+# determination of significant differentiation trajectories
+ltr <- comppvalue(ltr,pethr=0.05,nmode=FALSE,fast=FALSE)
+
+```
+
+## StemID Results
+
+```{r StemIDResults, include=TRUE}
+
+## diagnostic plots
+# histogram of ratio between cell-to-cell distances in the embedded and the input space
+plotdistanceratio(ltr)
+# t-SNE map of the clusters with more than cthr cells including a minimum spanning tree for the cluster medoids
+plotmap(ltr)
+# visualization of the projections in t-SNE space overlayed with a minimum spanning tree connecting the cluster medoids
+plotmapprojections(ltr)
+# lineage tree showing the projections of all cells in t-SNE space
+plottree(ltr,showCells=TRUE,nmode=FALSE,scthr=.3)                        ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+# lineage tree without showing the projections of all cells
+plottree(ltr,showCells=FALSE,nmode=FALSE,scthr=.3)                       ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+# heatmap of the enrichment p-values for all inter-cluster links
+plotlinkpv(ltr)
+# heatmap of the link score for all inter-cluster links
+plotlinkscore(ltr)
+# heatmap showing the fold enrichment (or depletion) for significantly enriched or depleted links
+projenrichment(ltr)
+
+## computing the StemID2 score
+x <- compscore(ltr,nn=1,scthr=0)
+
+#plotting the StemID2 score
+plotscore(ltr,nn=1,scthr=0)
+
+# retrieve cells from branch in pseudo-temporal order as inferred by the projection coordinates
+n <- cellsfromtree(ltr,c(3,2,11,4))
+
+# filter out lowly expressed genes
+fs  <- filterset(ltr@sc@ndata,n=n$f,minexpr=2,minnumber=1)
+# compute self organizing map (SOM) of co-expressed genes
+s1d <- getsom(fs,nb=1000,k=5,locreg=TRUE,alpha=.5)
+ps  <- procsom(s1d,corthr=.85,minsom=3)
+
+# # coloring scheme for clusters ( vector with colours)
+# fcol <- ltr@sc@fcol
+# y    <- ltr@sc@cpart[n$f]
+# # plot average z-score for all modules derived from the SOM
+# plotheatmap(ps$nodes.z,xpart=y,xcol=fcol,ypart=unique(ps$nodes),xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
+# # plot z-score profile of each gene
+# plotheatmap(ps$all.z,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
+# # plot normalized expression profile of each gene
+# plotheatmap(ps$all.e,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
+# # plot binarized expression profile of each gene (z-score < -1, -1 < z-score < 1, z-score > 1)
+# plotheatmap(ps$all.b,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
+# 
+# # extract all genes from node 1 of the SOM
+# g <- names(ps$nodes)[ps$nodes == 1]
+# # plot average expression profile of these genes along the trajectory
+# plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=NULL)
+# # plot expression of a single gene
+# plotexpression(fs,y,"Clca4__chr3",n$f,k=25,col=fcol,cluster=FALSE,locreg=TRUE,alpha=.5,types=NULL)
+# # plot average expression profile of these genes along the trajectory, highlighting batch origin
+# plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=sub("\\_\\d+","",n$f))
+
+```
+
