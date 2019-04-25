@@ -9,6 +9,8 @@ author: "Jasper Koning & Michael de Kok"
 
 knitr::opts_chunk$set(echo = TRUE)
 
+setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/scripts/3 - raceid3stemid2")
+
 ## Load Sources and install required Packages, but only if needed
 source("RaceID3_StemID2_class.R")
 
@@ -22,7 +24,7 @@ biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
 
 ## input data
 #x <- read.csv("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
-x <- read.csv("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_UNFILTERED.csv",sep=",",header=TRUE)
+x <- read.csv(file.choose(),sep=",",header=TRUE)
 #x <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_FILTERED.csv",sep=",",header=TRUE)
 rownames(x) <- x$GENEID
 
@@ -39,7 +41,8 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 # initialize SCseq object with transcript counts
 sc <- SCseq(prdata)
 # filtering of expression data
-sc <- filterdata(sc, mintotal=3000, minexpr=100, minnumber=1, maxexpr=Inf, downsample=FALSE, sfn=FALSE, hkn=FALSE, dsn=1, rseed=17000, CGenes=NULL, FGenes=NULL, ccor=.4)
+CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
+sc <- filterdata(sc, mintotal=1500, minexpr=5, minnumber=1, maxexpr=500, downsample=FALSE, sfn=FALSE, hkn=FALSE, dsn=1, rseed=17000, CGenes=TRUE, FGenes=NULL, ccor=.4)
 
 # regress out the batch effect
 # optional:
@@ -144,15 +147,15 @@ plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=F
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
 
-setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlatesUnfiltered")
+setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts")
 
 ## write results to text files
 # final clusters 
 x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
-write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+write.table(x[order(x$cluster,decreasing=FALSE),],"data/4 - raceidstemid/German/cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
   
 # differentially expressed genes in cluster
-for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("data/4 - raceidstemid/German/cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
 ```
 
