@@ -1,0 +1,86 @@
+---
+title: "RaceId2/StemID Post-Analysis"
+author: "Jasper Koning & Michael de Kok"
+---
+
+```{r Setup, include=FALSE}
+
+## Load Sources and install required Packages, but only if needed
+source("RaceID3_StemID2_class.R")
+
+list.of.packages <- c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","Rtsne","scran","DESeq2","amap","locfit","vegan","rmarkdown", "permute", "randomForest", "rgl", "kohonen", "som")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
+
+source("https://bioconductor.org/biocLite.R")
+biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
+
+
+
+```
+
+
+## Highlight transcirpt counts of a set of genes in t-SNE map
+
+```{r Genes, include=TRUE}
+
+#g <- c("Apoa1__chr9", "Apoa1bp__chr3", "Apoa2__chr1", "Apoa4__chr9", "Apoa5__chr9")
+#plotexptsne(sc,g,n="Apoa genes",logsc=TRUE)
+
+```
+
+
+
+## Analysis of Differentially expressed genes between two sets of clusters
+
+```{r DiffClusters, include=TRUE}
+
+#d <- diffgenes(sc,cl1=3,cl2=c(2,11),mincount=1)
+#plotdiffgenes(d,gene=names(d$z)[1])
+
+```
+
+
+# differentially expressed genes between two sets of cells, e. g. cluster 3 and clusters 2,11 by a different approach based on the overlap of transctipt count distributions
+
+```{r DiffCells, include=TRUE}
+
+#A <- names(sc@cpart)[sc@cpart == 3]
+#B <- names(sc@cpart)[sc@cpart %in% c(2,11)]
+#x <- diffexpnb(sc@ndata, A=A, B=B, method="pooled",norm=FALSE, DESeq=FALSE, vfit=sc@background$vfit, locreg=FALSE)
+#plotdiffgenesnb(x,pthr=.05,lthr=1,mthr=1,Aname="Cl.3",Bname="Cl.2,11",show_names=TRUE,padj=TRUE)
+
+```
+
+## Analysis of Specific Clusters
+
+```{r ClusterAnalysis, include=TRUE}
+
+## extract projections onto all links for all cells in a given cluster i
+#x <- getproj(ltr,i=3)
+
+## heatmap of all projections for cluster i
+#pheatmap(x$pr)
+
+## heatmap of z-score for all projections for cluster i
+#pheatmap(x$prz)
+
+```
+
+
+
+## Analysis of Branch Cells 
+
+```{r BranchCells, include=TRUE}
+
+## extracting all cells on two branches sharing the same cluster and computing differentially expressed genes between these two branches
+#x <- branchcells(ltr,list("3.7","2.3"))
+
+## z-scores for differentially expressed genes
+#head(x$diffgenes$z)
+
+## plotting the cells on the two branches as additional clusters in the t-SNE map
+#plottsne(x$scl)
+
+```
+
