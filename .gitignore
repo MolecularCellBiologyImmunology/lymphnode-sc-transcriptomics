@@ -21,3 +21,6 @@ data/3 - combinedcounts/LNS_W1_unfiltered_combined.csv
 data/3 - combinedcounts/LNS_W0_unfiltered_combined.csv
 data/3 - combinedcounts/LNS_W2_unfiltered_combined.csv
 data/3 - combinedcounts/LNS_W6_unfiltered_combined.csv
+data/4 - raceidstemid/wk0_unfiltered.RData
+data/4 - raceidstemid/wk2_unfiltered.RData
+data/4 - raceidstemid/wk6_unfiltered.RData
