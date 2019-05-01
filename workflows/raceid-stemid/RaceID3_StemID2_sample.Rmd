@@ -1,18 +1,41 @@
 ---
 title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
+date: r! Sys.Date()
+params: # DO NOT CHANGE
+  scriptdirectory: x 
+  inputdata: x 
+  outputdirectory: x
+
+  mintotal: 3000
+  minexpr: 5
+  minnumber: 5
+  maxexpr: 9999
+  downsample: FALSE
+  sfn: FALSE
+  hkn: FALSE
+  dsn: 1
+  rseed: 17000
+  CGenes: c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
+  FGenes: NULL
+  ccor: 0.4
+  
+  maxclustnr: 30
+  bootnr: 50
+  
+  RunStemID: TRUE
+  pdishuf: 2000
+  scthr: 0.3
 ---
 
 ## Setup
 
 ```{r Setup, include=TRUE}
 
-knitr::opts_chunk$set(echo = TRUE)
-
-setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/scripts/3 - raceid3stemid2")
+knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
 ## Load Sources and install required Packages, but only if needed
-source("RaceID3_StemID2_class.R")
+source(paste(params$scriptdirectory, "RaceID3_StemID2_class.R", sep = "/"))
 
 list.of.packages <- c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","Rtsne","scran","DESeq2","amap","locfit","vegan","rmarkdown", "permute", "randomForest", "rgl", "kohonen", "som")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -23,9 +46,9 @@ biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
 
 
 ## input data
-#x <- read.csv("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data/3 - combinedcounts/LNS_W_ALL.csv",sep=",",header=TRUE)
-x <- read.csv(file.choose(),sep=",",header=TRUE)
-#x <- read.csv("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_FILTERED.csv",sep=",",header=TRUE)
+print(params$inputdata)
+x <- read.csv(params$inputdata,sep=",",header=TRUE)
+
 rownames(x) <- x$GENEID
 
 # prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
@@ -33,16 +56,15 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```
 
-## RaceID algorithm (has much unnessessary output, so hidden here)
+## Filters
 
-```{r Filter, include=FALSE}
+```{r Filter, include=TRUE}
 
 ## RaceID3
 # initialize SCseq object with transcript counts
 sc <- SCseq(prdata)
 # filtering of expression data
-CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
-sc <- filterdata(sc, mintotal=1500, minexpr=5, minnumber=1, maxexpr=500, downsample=FALSE, sfn=FALSE, hkn=FALSE, dsn=1, rseed=17000, CGenes=TRUE, FGenes=NULL, ccor=.4)
+sc <- filterdata(sc, params$mintotal, params$minexpr, params$minnumber, params$maxexpr, params$downsample, params$sfn, params$hkn, params$dsn, params$rseed, params$CGenes, params$FGenes, params$ccor)
 
 # regress out the batch effect
 # optional:
@@ -70,10 +92,12 @@ sc@fdata <- x$xcor
 
 ```
 
-```{r RaceID, include=FALSE}
+## RaceID algorithm
+
+```{r RaceID, include=TRUE}
 
 # k-medoids clustering
-sc <- clustexp(sc,clustnr=30,bootnr=50,metric="pearson",do.gap=FALSE,sat=TRUE,SE.method="Tibs2001SEmax",SE.factor=.25,B.gap=50,cln=0,rseed=17000,FUNcluster="kmedoids",FSelect=TRUE)
+sc <- clustexp(sc,params$maxclustnr,params$bootnr,metric="pearson",do.gap=FALSE,sat=TRUE,SE.method="Tibs2001SEmax",SE.factor=.25,B.gap=50,cln=0,rseed=17000,FUNcluster="kmedoids",FSelect=TRUE)
 # compute t-SNE map
 sc <- comptsne(sc,rseed=15555,sammonmap=FALSE,initial_cmd=TRUE,fast=TRUE,perplexity=30)
 # detect outliers and redefine clusters
@@ -101,7 +125,7 @@ plotsaturation(sc,disp=TRUE)
 # plot change of the within-cluster dispersion as a function of the cluster number: only if sat == TRUE
 plotsaturation(sc)
 
-# silhouette of k-medoids clusters          ### NOTE: DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
+# silhouette of k-medoids clusters          ### DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
 #plotsilhouette(sc)  
 
 # Jaccard's similarity of k-medoids clusters
@@ -132,10 +156,10 @@ plottsne(sc,final=TRUE)
 #plotlabelstsne(sc,labels=sub("(\\_\\d+)","",names(sc@ndata)))
 
 # highlight groups of cells by symbols in t-SNE map
-plotsymbolstsne(sc,types=sub("(^.*_.*\\.X\\d+)$","Pilot (W2)",(sub("(_P.*_.*\\.X\\d+)$","", names(sc@ndata)))))
+plotsymbolstsne(sc,types=sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", names(sc@ndata))))
 
 # plot 3D tSNE
-plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
+# plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
 
 ```
 
@@ -147,21 +171,25 @@ plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=F
 # differentially regulated genes in each cluster compared to the full ensemble
 cdiff <- clustdiffgenes(sc,pvalue=.01)
 
-setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts")
+setwd(outputdirectory)
 
 ## write results to text files
 # final clusters 
 x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
-write.table(x[order(x$cluster,decreasing=FALSE),],"data/4 - raceidstemid/German/cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
   
 # differentially expressed genes in cluster
-for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("data/4 - raceidstemid/German/cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+
+if (!params$RunStemID) {save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))}
+if (!params$RunStemID) {knitr::knit_exit()}
+
 
 ```
 
-## StemID Algorithm (has much unnessessary output, so hidden here)
+## StemID Algorithm 
 
-```{r StemID, include=FALSE}
+```{r StemID, include=TRUE}
 
 ## StemID
 
@@ -172,7 +200,7 @@ ltr <- compentropy(ltr)
 # computation of the projections for all cells
 ltr <- projcells(ltr,cthr=2,nmode=FALSE)
 # computation of the projections for all cells after randomization
-ltr <- projback(ltr,pdishuf=10000,nmode=FALSE,fast=FALSE,rseed=17000)            ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+ltr <- projback(ltr,params$pdishuf,nmode=FALSE,fast=FALSE,rseed=17000)
 # assembly of the lineage tree
 ltr <- lineagetree(ltr,pthr=0.05,nmode=FALSE,fast=FALSE)
 # determination of significant differentiation trajectories
@@ -192,9 +220,9 @@ plotmap(ltr)
 # visualization of the projections in t-SNE space overlayed with a minimum spanning tree connecting the cluster medoids
 plotmapprojections(ltr)
 # lineage tree showing the projections of all cells in t-SNE space
-plottree(ltr,showCells=TRUE,nmode=FALSE,scthr=.3)                        ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+plottree(ltr,showCells=TRUE,nmode=FALSE,params$scthr)
 # lineage tree without showing the projections of all cells
-plottree(ltr,showCells=FALSE,nmode=FALSE,scthr=.3)                       ### NOTE: SHOULD BE CHANGEABLE IN SNAKEMAKE
+plottree(ltr,showCells=FALSE,nmode=FALSE,params$scthr)
 # heatmap of the enrichment p-values for all inter-cluster links
 plotlinkpv(ltr)
 # heatmap of the link score for all inter-cluster links
@@ -238,5 +266,6 @@ ps  <- procsom(s1d,corthr=.85,minsom=3)
 # # plot average expression profile of these genes along the trajectory, highlighting batch origin
 # plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=sub("\\_\\d+","",n$f))
 
+save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))
 ```
 
