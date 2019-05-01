@@ -1,7 +1,7 @@
 ---
 title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
-date: Sys.Date()
+date: r! Sys.Date()
 params: # DO NOT CHANGE
   scriptdirectory: x 
   inputdata: x 
@@ -35,8 +35,7 @@ params: # DO NOT CHANGE
 knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
 ## Load Sources and install required Packages, but only if needed
-setwd(params$scriptdirectory)
-source("RaceID3_StemID2_class.R")
+source(paste(params$scriptdirectory, "RaceID3_StemID2_class.R", sep = "/"))
 
 list.of.packages <- c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","Rtsne","scran","DESeq2","amap","locfit","vegan","rmarkdown", "permute", "randomForest", "rgl", "kohonen", "som")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
@@ -182,9 +181,8 @@ write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FAL
 # differentially expressed genes in cluster
 for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
-if (!params$RunStemID) 
-  save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/")) 
-  knitr::knit_exit()
+if (!params$RunStemID) {save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))}
+if (!params$RunStemID) {knitr::knit_exit()}
 
 
 ```
@@ -268,6 +266,6 @@ ps  <- procsom(s1d,corthr=.85,minsom=3)
 # # plot average expression profile of these genes along the trajectory, highlighting batch origin
 # plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=sub("\\_\\d+","",n$f))
 
-save.image(paste("outputdirectory","R Workspace.RData", sep = "/"))
+save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))
 ```
 
