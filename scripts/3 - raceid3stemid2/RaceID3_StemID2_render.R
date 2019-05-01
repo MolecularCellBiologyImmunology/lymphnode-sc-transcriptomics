@@ -14,7 +14,7 @@ parameters = list(
   scriptdirectory = scriptdirectory,
   inputdata = inputdata,
   outputdirectory = outputdirectory,
-  RunStemID = FALSE,
+  
   mintotal = 1500,
   minexpr = 5,
   minnumber = 1,
@@ -27,9 +27,12 @@ parameters = list(
   CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"),
   FGenes = NULL,
   ccor = 0.4,
+  
   maxclustnr = 30,
   bootnr = 50,
-  pdishuf=10000,
+  
+  RunStemID = TRUE,
+  pdishuf=2000,
   scthr = 0.3)
 
 # Run Initial Stem/RaceID Algorithm and Render Initial Report 

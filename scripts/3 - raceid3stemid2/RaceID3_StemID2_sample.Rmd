@@ -6,11 +6,11 @@ params: # DO NOT CHANGE
   scriptdirectory: x 
   inputdata: x 
   outputdirectory: x
-  RunStemID: TRUE
-  mintotal: 1500
+
+  mintotal: 3000
   minexpr: 5
-  minnumber: 1
-  maxexpr: 500
+  minnumber: 5
+  maxexpr: 9999
   downsample: FALSE
   sfn: FALSE
   hkn: FALSE
@@ -19,9 +19,12 @@ params: # DO NOT CHANGE
   CGenes: c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
   FGenes: NULL
   ccor: 0.4
+  
   maxclustnr: 30
   bootnr: 50
-  pdishuf: 1000
+  
+  RunStemID: TRUE
+  pdishuf: 2000
   scthr: 0.3
 ---
 
@@ -154,7 +157,7 @@ plottsne(sc,final=TRUE)
 #plotlabelstsne(sc,labels=sub("(\\_\\d+)","",names(sc@ndata)))
 
 # highlight groups of cells by symbols in t-SNE map
-plotsymbolstsne(sc,types=sub("(.*\\_\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", names(sc@ndata))))
+plotsymbolstsne(sc,types=sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", names(sc@ndata))))
 
 # plot 3D tSNE
 # plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
