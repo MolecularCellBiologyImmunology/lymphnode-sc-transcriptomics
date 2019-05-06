@@ -28,11 +28,11 @@ subworkflow map_barcodes:
         snakefile:
             "./workflows/map-barcodes/Snakefile"
 
-# subworkflow filters:
-#         workdir:
-#             "./workflows/quality-filters"
-#         snakefile:
-#             "./workflows/quality-filters/Snakefile"
+subworkflow spreadcounts:
+        workdir:
+            "./workflows/spread-counts"
+        snakefile:
+            "./workflows/spread-counts/Snakefile"
 
 subworkflow combineplates:
         workdir:
@@ -54,7 +54,7 @@ rule all:
         alignment = star_align(expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=fileprefixes)),
         countsfile = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/counts.tsv',  tmpstore=tmpstore, fileprefix=fileprefixes)),
         countsreport = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/report.html', tmpstore=tmpstore, fileprefix=fileprefixes)),
-        # filtered = filters(expand('{tmpstore}/quality_filters/{fileprefix}/counts_filtered.tsv', tmpstore=tmpstore, fileprefix=fileprefixes)),
+        spread = spreadcounts(expand('{tmpstore}/counts/{fileprefix}.tsv', tmpstore=tmpstore, fileprefix=fileprefixes)),
         combined = combineplates(expand('{output}/counts_combined.tsv', output=output)),
         stemidreport = raceid_stemid(expand('{output}/RaceID2_StemID_results.html', output=output)),
         clustercells = raceid_stemid(expand('{output}/cell_clust.xlx', output=output)),

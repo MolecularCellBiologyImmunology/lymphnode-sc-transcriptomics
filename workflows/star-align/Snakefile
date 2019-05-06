@@ -1,4 +1,4 @@
-# Snakemake Workflow for Module 2: Aligning sequences with STAR Index Files, when needed
+# Snakemake Workflow for Module 2: Aligning sequences with STAR Index Files
 
 # Include common settings
 include: "../common.snakefile"
