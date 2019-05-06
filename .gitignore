@@ -13,15 +13,10 @@ _STARtmp/
 reports/
 results/
 .RData
-scripts/3.5 - raceid3/jasper_week0126.RData
-data/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_UNFILTERED.csv
-data/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_UNFILTERED.rar
-scripts/3 - raceid3stemid2/jasper_week0126.RData
-data/3 - combinedcounts/LNS_W1_unfiltered_combined.csv
-data/3 - combinedcounts/LNS_W0_unfiltered_combined.csv
-data/3 - combinedcounts/LNS_W2_unfiltered_combined.csv
-data/3 - combinedcounts/LNS_W6_unfiltered_combined.csv
-data/4 - raceidstemid/wk0_unfiltered.RData
-data/4 - raceidstemid/wk2_unfiltered.RData
-data/4 - raceidstemid/wk6_unfiltered.RData
-data/4 - raceidstemid/W2/R Workspace.RData
+data - heidelberg/3 - combinedcounts/LNS_W_ALL_GENECOUNTS_UNFILTERED.csv
+data - heidelberg/3 - combinedcounts/LNS_W0_unfiltered_combined.csv
+data - heidelberg/3 - combinedcounts/LNS_W1_unfiltered_combined.csv
+data - heidelberg/3 - combinedcounts/LNS_W2_unfiltered_combined.csv
+data - heidelberg/3 - combinedcounts/LNS_W6_unfiltered_combined.csv
+data - heidelberg/4 - raceidstemid/W2/R Workspace.RData
+data - heidelberg/4 - raceidstemid/W6/R Workspace.RData
