@@ -18,81 +18,81 @@ def get_fastq(wildcards):
 # pseudorule consuming ALL the final output
 # rule all:
 #     input:
-#         expand("{tmpstore}/mapping/{reference}/{fileprefix}/{fileprefix}.txt",
-#                fileprefix=samples['fileprefix'], reference=config['reference'], tmpstore=tmpstore)
+#         expand("{tmpstore}/mapping/{fileprefix}/{fileprefix}.txt",
+#                fileprefix=samples['fileprefix'], tmpstore=tmpstore)
 
 rule all:
     input:
-        expand(['{tmpstore}/mapping/{reference}/{fileprefix}/counts.tsv',
-                '{tmpstore}/mapping/{reference}/{fileprefix}/report.html',
-                '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam',
-                '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'],
-               fileprefix=samples['fileprefix'], reference=config['reference'], tmpstore=tmpstore)
+        expand(['{tmpstore}/mapping/{fileprefix}/counts.tsv',
+                '{tmpstore}/mapping/{fileprefix}/report.html',
+                '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam',
+                '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam'],
+               fileprefix=samples['fileprefix'], tmpstore=tmpstore)
 
 # convert bam files to sam format using samtools
 rule bamtosam:
     input:
-        tmpstore + '/star-align/' + config['reference'] + '/{fileprefix}/Aligned.out.bam'
+        tmpstore + '/star-align/' + '{fileprefix}/Aligned.out.bam'
     output:
-        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam')
+        temporary('{tmpstore}/star-align/{fileprefix}/Aligned.out.sam')
     shell:
         'samtools view -h {input} -o {output}'
 
 # add cell and umi barcodes in the samfile
 rule addbc:
     input:
-        samfile = '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam',
+        samfile = '{tmpstore}/star-align/{fileprefix}/Aligned.out.sam',
         fastqfile = get_fastq
     output:
-        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam')
+        temporary('{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.sam')
     script:
         'scripts/add_barcodes.py'
 
 # convert sam files with barcodes to bam format again
 rule barcoded_samtobam:
     input:
-        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
+        '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.sam'
     output:
-        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'
+        '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam'
     shell:
         'samtools view -b -o {output} {input}'
 
 # run featureCounts (from the Subread package)
 rule map_barcoded:
     input:
-        bamfile = '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam',
+        bamfile = '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam',
         gtffile = gtffile
     output:
-        temporary('{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'),
-        '{tmpstore}/mapping/{reference}/{fileprefix}/{fileprefix}.txt',
-        '{tmpstore}/mapping/{reference}/{fileprefix}/{fileprefix}.txt.summary'
+        temporary('{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'),
+        '{tmpstore}/mapping/{fileprefix}/{fileprefix}.txt',
+        '{tmpstore}/mapping/{fileprefix}/{fileprefix}.txt.summary'
     shell: 
         'featureCounts -a {input[gtffile]} -R SAM -o {output[1]} {extrafc} {input[bamfile]}'
 
 # convert the featureCounts sam file to bam format
 rule featurecount_samtobam:
     input:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam',
+        '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam',
     output:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
+        '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
     shell:
         'samtools view -b -o {output} {input}'
 
 # filter high-quality mapping reads using samtools
 rule filterhq:
     input:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'
+        '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'
     output:
-        temporary('{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam')
+        temporary('{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam')
     shell:
         'samtools view -q 255 {input} -o {output}'
 
 # generate a tsv table of high-quality mapping reads using a custom python script
 rule tablehq:
     input:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam'
+        '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam'
     output:
-        '{tmpstore}/mapping/{reference}/{fileprefix}/HqFeatureCounts.tsv'
+        '{tmpstore}/mapping/{fileprefix}/HqFeatureCounts.tsv'
     script:
         'scripts/generate_featureCounts_table.py'
 
@@ -106,13 +106,13 @@ rule tablehq:
 
 rule simplecounts:
     input:
-        featuretable='{tmpstore}/mapping/{reference}/{fileprefix}/HqFeatureCounts.tsv',
+        featuretable='{tmpstore}/mapping/{fileprefix}/HqFeatureCounts.tsv',
         cellbcfile=cellbcfile
     output:
-        countsfile='{tmpstore}/mapping/{reference}/{fileprefix}/counts.tsv',
-        report='{tmpstore}/mapping/{reference}/{fileprefix}/report.html'
+        countsfile='{tmpstore}/mapping/{fileprefix}/counts.tsv',
+        report='{tmpstore}/mapping/{fileprefix}/report.html'
     params:
-        outputdir='{tmpstore}/mapping/{reference}/{fileprefix}',
+        outputdir='{tmpstore}/mapping/{fileprefix}',
         outputfile='report.html'
     script:
         'scripts/render_reports.R'

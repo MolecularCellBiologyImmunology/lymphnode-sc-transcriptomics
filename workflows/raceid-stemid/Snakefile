@@ -1,14 +1,33 @@
-# Snakemake Workflow for Module 6: Running RaceID / StemID on normalized combined count tables
+# Snakemake Workflow for Module 5: Running RaceID / StemID on normalized combined count tables
 
 # Include common settings
 include: "../common.snakefile"
 
 rule raceid-stemid:
     input:
-        countscombined = '{output}/combine_plates/{reference}/{fileprefix}/counttables_combined.tsv'
+        countscombined = '{output}/combine_plates/{fileprefix}/counttables_combined.tsv'
     output:
         stemraceidreport = '{output}/RaceID2_StemID_results.html'
         clustercells = '{output}/cell_clust.xlx'
         clustergenes = '{output}/cell_clust_diff_genes_cl_*'
+    params:
+        mintotal = mintotal
+        minexpr = minexpr
+        minnumber = minnumber
+        maxexpr = maxexpr
+        downsample = downsample
+        sfn = sfn
+        hkn = hkn
+        dsn = dsn
+        rseed = rseed
+        CGenes = CGenes
+        FGenes = FGenes
+        ccor = ccor
+        maxclustnr = maxclustnr
+        bootnr = bootnr
+        RunStemID = RunStemID
+        pdishuf = pdishuf
+        scthr = scthr
+        outputdir = '{output}'
     script:
         'RaceID2_StemID_sample.R'

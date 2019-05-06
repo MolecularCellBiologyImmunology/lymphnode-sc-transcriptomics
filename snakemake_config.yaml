@@ -1,0 +1,102 @@
+# This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
+
+# The location of the main data directory. NOTE: Use / for folders.
+data: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data
+
+# NOTE: All subsequent paths should be given relative to the 'data' path.
+# Directory with reference genomes
+refdir: reference-sequences/genomes
+# the STAR index main directory
+index: reference-sequences/indexed-genomes
+
+# The local data repository relevant for the analyzed experiment. If you followed the advice at the start of this file, this would be the path to the directory where this config file resides.
+repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
+# Directory name where large temporary files will be stored
+tmpstore: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files
+# Directory where output files will be stored
+output: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_output
+# directory with sequence files
+sequences: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+# file with sample annotations
+samples: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
+# file with reference genome annotations
+references: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
+# file with known cell barcodes
+celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
+
+# The reference genome, see the 'references' file for valid entries
+reference: mouse-grcm38
+# reference: mouse-c57bl6nj
+
+# The kind of annotation format that is used (refers to entries in params:starindex)
+annotationformat: gff
+
+# Whether this is a test run. This limits the amounts of samples used to speed up testing.
+istest: true
+# Samples for test runs. The names must be taken from the 'fileprefix' column in the 'samples' file 
+testset:
+  - LNS2_1 
+  - LNS_W0_P2_7
+
+# The file suffix indicates which files contain sequences  and codecounts.
+# The complete filename is reconstructed as {fileprefix}{filesuffix}
+filesuffix:
+  align:
+    - _R2.fastq.gz
+  codecount:
+    - _R1.fastq.gz
+
+
+# Parameters for sample filtering   
+mintotal: 1500
+minexpr: 5
+minnumber: 1
+maxexpr: 500
+dodownsample: FALSE
+sfn: FALSE
+hkn: FALSE
+dsn: 1
+rseed: 17000  
+CGenes: ["Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"]
+FGenes: NULL
+ccor: 0.4
+
+
+# Parameters for RaceID3 algorithm
+maxclustnr: 30
+bootnr: 50
+
+
+# Parameters for StemID2 algorithm
+RunStemID: TRUE
+pdishuf: 2000
+scthr: 0.3
+
+
+# Shell Parameters for running STAR
+params:
+  
+  # Extra parameters when running STAR in align mode 
+  star:
+    # keep the STAR index in memory for the next aligment run
+    # saves time because loading an index takes approximatley 5 min 
+    - "--genomeLoad LoadAndKeep"
+  
+  # Extra parameters when running STAR in genomeGenerate (index generating) mode 
+  starindex:
+    gtf:
+      # for GTF files (eukaryotes)
+      - "--sjdbOverhang 100" # the default value
+    gff:
+      # for bacterial genomes having GFF-3 format genome annotation file 
+      # Check whether CDS and exon are features in the GFF file
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
+  
+  # Extra parameters for featureCounts
+  featureCounts:
+    - '-F GTF'
+    - '-g gene_id'
+    - '-t exon'
+    - '--primary'
+    # Quality Filter Settings (Filtering Per Plate)

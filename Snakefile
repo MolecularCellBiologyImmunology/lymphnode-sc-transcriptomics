@@ -28,11 +28,11 @@ subworkflow map_barcodes:
         snakefile:
             "./workflows/map-barcodes/Snakefile"
 
-subworkflow filters:
-        workdir:
-            "./workflows/quality-filters"
-        snakefile:
-            "./workflows/quality-filters/Snakefile"
+# subworkflow filters:
+#         workdir:
+#             "./workflows/quality-filters"
+#         snakefile:
+#             "./workflows/quality-filters/Snakefile"
 
 subworkflow combineplates:
         workdir:
@@ -47,15 +47,15 @@ subworkflow raceid_stemid:
         "./workflows/raceid-stemid/Snakefile"
 
 
-# Main workflow rule
+# Main workflow rule, determining output
 rule all:
     input:
         index = star_index(expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)),
         alignment = star_align(expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=fileprefixes)),
         countsfile = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/counts.tsv',  tmpstore=tmpstore, fileprefix=fileprefixes)),
         countsreport = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/report.html', tmpstore=tmpstore, fileprefix=fileprefixes)),
-        filtered = filters(expand('{tmpstore}/quality_filters/{fileprefix}/counts_filtered.tsv', tmpstore=tmpstore, fileprefix=fileprefixes)),
-        combined = combineplates(expand('{output}/combinedplates/{fileprefix}/counts_combined.tsv', output=output, fileprefix=fileprefixes)),
+        # filtered = filters(expand('{tmpstore}/quality_filters/{fileprefix}/counts_filtered.tsv', tmpstore=tmpstore, fileprefix=fileprefixes)),
+        combined = combineplates(expand('{output}/counts_combined.tsv', output=output)),
         stemidreport = raceid_stemid(expand('{output}/RaceID2_StemID_results.html', output=output)),
         clustercells = raceid_stemid(expand('{output}/cell_clust.xlx', output=output)),
         clustergenes = raceid_stemid(expand('{output}/cell_clust_diff_genes_cl_*', output=output))
