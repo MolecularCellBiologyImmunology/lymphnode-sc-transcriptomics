@@ -9,6 +9,7 @@ Insert your code into the respective folders, i.e. `scripts`, `rules`, and `envs
 ## Authors
 
 * Douwe Molenaar (@douwemolenaar)
+* Michael de Kok (@MikedeKokkie)
 
 ## Usage
 

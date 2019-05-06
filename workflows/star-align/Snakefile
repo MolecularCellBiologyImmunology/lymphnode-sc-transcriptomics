@@ -15,7 +15,7 @@ def get_fastq(wildcards):
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand("{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam", 
+        expand("{tmpstore}/star-align/{fileprefix}/Aligned.out.bam", 
                fileprefix=samples['fileprefix'], tmpstore=tmpstore, reference=config['reference'])
 
 # the alignment by STAR
@@ -23,7 +23,7 @@ rule align:
     input:
         fq = get_fastq
     output:
-        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam'
+        '{tmpstore}/star-align/{fileprefix}/Aligned.out.bam'
     params:
         index = indexdir,
         extra = ' '.join(config['params']['star'])

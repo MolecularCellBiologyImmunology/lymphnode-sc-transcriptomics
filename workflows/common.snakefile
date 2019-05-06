@@ -12,7 +12,7 @@ min_version("5.2.4")
 
 configfile: config_file
 
-##### Set Data Path #####
+##### Set Main Data Path #####
 
 data = pathlib.Path(config['data'])
 
@@ -61,8 +61,21 @@ minexpr = config['minexpr']
 minnumber = config['minnumber']
 maxexpr = config['maxexpr']
 dodownsample = config['dodownsample']
+sfn = config['sfn']
+hkn = config['hkn']
 dsn = config['dsn']
 rseed = config['rseed']
+CGenes = config['CGenes']
+FGenes = config['FGenes']
+ccor = config['ccor']
 
 ##### RaceID/StemID Settings #####
 
+# RaceID3
+maxclustnr = config['ccor']
+bootnr = config['ccor']
+
+# StemID2
+RunStemID = config['RunStemID']
+pdishuf= config['pdishuf']
+scthr = config['scthr']
