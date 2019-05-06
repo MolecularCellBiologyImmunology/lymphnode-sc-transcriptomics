@@ -6,10 +6,13 @@ library(readr)
 library(tidyr)
 library(dplyr)
 
-# Get file prefixes for main loop
+# Paths
 setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe")
 #setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data - douwe")
 #setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe")
+
+# Annotations
+annotations <- read.csv("annotations.tsv", sep = "\t")
 
 # Combine plates for each experiment time point
 for(filter in unique(annotations$time)) {

@@ -11,12 +11,13 @@ setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/se
 #setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe")
 
 # Annotations
-annotations <- read_tsv("annotations.tsv", sep = "\t", strip.white=TRUE)
+annotations <- read_tsv("annotations.tsv")
 
 # Script
 for(prefix in annotations$fileprefix) {
   print(paste("Gathering File ", prefix, sep= ""))  
   data <- read_tsv(paste("1 - rawcounts/", prefix ,'/counts.tsv', sep="")) 
+  data <- filter(data, !is.na(geneid))
   data <- spread(data, key = cellbc, value = reads, fill = "0") 
   data <- write_tsv(data, paste("2 - spreadcounts/", prefix, '.tsv', sep=""))
 }
