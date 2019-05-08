@@ -74,7 +74,11 @@ plotdiffgenes(d,gene=names(d$z)[1])
 #head(x$diffgenes$z)
 
 ## plotting the cells on the two branches as additional clusters in the t-SNE map
-#plottsne(x$scl)
+#plotmap(x$scl)
+# t-SNE map of the clusters with more than cthr cells including a minimum spanning tree for the cluster medoids
+
+# retrieve cells from branch in pseudo-temporal order as inferred by the projection coordinates
+#n <- cellsfromtree(ltr,c(3,2,11,4))
 
 ```
 

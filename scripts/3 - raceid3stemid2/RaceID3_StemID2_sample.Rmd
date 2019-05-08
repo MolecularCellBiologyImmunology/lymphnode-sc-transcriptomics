@@ -3,9 +3,9 @@ title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
 date: r! Sys.Date()
 params: # DO NOT CHANGE
-  scriptdirectory: x 
-  inputdata: x 
-  outputdirectory: x
+  scriptdirectory: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/3 - raceid3stemid2 
+  inputdata: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - heidelberg/3 - combinedcounts/LNS_W0_unfiltered_combined.csv
+  outputdirectory: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - heidelberg/4 - raceidstemid/W0
 
   mintotal: 3000
   minexpr: 5
@@ -31,12 +31,18 @@ params: # DO NOT CHANGE
 knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
 ## Load Packages and Sources
-if (!"devtools" %in% installed.packages()) install.packages("devtools")
-library(devtools)
-install_github("dgrun/RaceID3_StemID2_package")
-library(RaceID)
+
+#if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+#BiocManager::install("biomaRt")
 source("https://bioconductor.org/biocLite.R")
-biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
+#install.packages("dplyr", "xml2", dependencies = TRUE)
+#biocLite(pkgs=c("scran","DESeq2","biomaRt", "devtools"), suppressUpdates = TRUE)
+library(dplyr)
+library(xml2)
+library(devtools)
+library(biomaRt)
+#install_github("dgrun/RaceID3_StemID2_package")
+library(RaceID)
 
 ## input data
 print(params$inputdata)
@@ -53,19 +59,17 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```{r Filter, include=TRUE}
 
-## RaceID3
-# initialize SCseq object with transcript counts
+# Initialize SCseq Object with Transcript Counts
 sc <- SCseq(prdata)
 # filtering of expression data
 sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnumber = params$minnumber, LBatch = params$LBatch, knn = params$knn, params$CGenes, params$FGenes, params$ccor, bmode = "RaceID")
 
-# correct for cell cycle, proliferation, and expression of degradation markers by PCA
-# optional:
-# require(biomaRt)
-# mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
-# g   <- sub("__chr.+","",rownames(sc@fdata));
-# k   <- getBM(attributes = c("external_gene_name", "go_id","name_1006"),filters="external_gene_name",values=g,mart=mart)
-# gCC <- name2id( k$external_gene_name[k$name_1006 == "cell cycle"],rownames(sc@fdata)) 
+#correct for cell cycle, proliferation, and expression of degradation markers by PCA
+#  optional:
+mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
+#  g   <- sub("__chr.+","",rownames(sc@fdata));
+#  k   <- getBM(attributes = c("external_gene_name", "go_id","name_1006"),filters="external_gene_name",values=g,mart=mart)
+#  gCC <- name2id( k$external_gene_name[k$name_1006 == "cell cycle"],rownames(sc@fdata)) 
 # gCP <- name2id( k$external_gene_name[k$name_1006 == "cell proliferation"],rownames(sc@fdata))
 # vset <- list(gCC,gCP)
 # x <- CCcorrect(sc@fdata,vset=vset,CGenes=NULL,ccor=.4,nComp=NULL,pvalue=.05,quant=.01,mode="pca")
@@ -80,7 +84,7 @@ sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnu
 
 ```
 
-## RaceID algorithm
+## RaceID Algorithm
 
 ```{r RaceID, include=TRUE}
 
@@ -97,90 +101,86 @@ sc <- findoutliers(sc)
 
 ```
 
-## RaceID Results
+## RaceID Diagnostic Plots
 
 ```{r RaceIDPlots, include=TRUE}
 
 ## Print amount of cells and outliers
 print( paste(length(sc@out[[1]]), "Outliers Identified from", dim(getfdata(sc))[2], "Cells", sep=" " ))
 
-## diagnostic plots
+## Gap statistics: only if do.gap == TRUE
+#plotgap(sc)
 
-# gap statistics: only if do.gap == TRUE
-##plotgap(sc)
-
-# plot within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+## Plot within-cluster dispersion as a function of the cluster number: only if sat == TRUE
 plotsaturation(sc,disp=TRUE)
 
-# plot change of the within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+## Plot change of the within-cluster dispersion as a function of the cluster number: only if sat == TRUE
 plotsaturation(sc)
 
-# silhouette of k-medoids clusters          ### DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
+## Silhouette of k-medoids clusters ### DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
 #plotsilhouette(sc)  
 
-# Jaccard's similarity of k-medoids clusters
+## Jaccard's similarity of k-medoids clusters
 plotjaccard(sc)
 
-# barchart of outlier probabilities
+## Barchart of outlier probabilities
 plotoutlierprobs(sc)
 
-# regression of background model
+## Regression of background model
 plotbackground(sc)
 
-# dependence of outlier number on probability threshold (probthr)
+## Dependence of outlier number on probability threshold (probthr)
 plotsensitivity(sc)
 
-# heatmap of k-medoids cluster
+## Heatmap of k-medoids cluster
 clustheatmap(sc,final=FALSE,hmethod="single")
 
-# heatmap of final cluster
+## Heatmap of final cluster
 clustheatmap(sc,final=TRUE,hmethod="single")
 
-# highlight k-medoids clusters in t-SNE map
-types <- sub("(.*_.*\\.\\d+)$","Pilot",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata)))
+## Highlight k-medoids clusters in t-SNE map
 plotmap(sc, fr = TRUE)
 
-# highlight Fruchterman-Rheingold layout 
+# t-SNE with organised plate origins
+types <- sub("(.*_.*\\.\\d+)$","Pilot",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata)))
+subset <- types[grep("0|1|2|6",types)]
+plotsymbolsmap(sc,types,subset=subset,fr=TRUE)
+
+## Highlight Fruchterman-Rheingold layout 
 #plotmap(sc,fr=TRUE, types = sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata))))
 
-# highlight cell labels in t-SNE map  ### NOTE: BAD IDEA FOR THOUSANDS OF CELLS!
+## Highlight cell labels in t-SNE map  ### NOTE: BAD IDEA FOR THOUSANDS OF CELLS!
 #plotlabelstsne(sc,labels=sub("(\\_\\d+)","",names(sc@ndata)))
 
-# highlight groups of cells by symbols in t-SNE map
-
-
-# plot 3D tSNE
-# plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
+## Plot 3D tSNE
+#Plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
 
 ```
 
-## RaceID Output
+## RaceID Writing Results to Output Text Files
 
 ```{r RaceIDResults, include=TRUE}
 
-## identification of marker genes
-# differentially regulated genes in each cluster compared to the full ensemble
-cdiff <- clustdiffgenes(sc,4,pvalue=.01)
-
 setwd(outputdirectory)
 
-## write results to text files
-# final clusters 
+## Final Clusters
 x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
 write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
-    
-# differentially expressed genes in cluster
-for ( n in names(cdiff) ) write.table(data.frame(GENEID=rownames(cdiff[[n]]),cdiff[[n]]),paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
+## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
+for (cluster in 1:length(sc@medoids)){
+  cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
+  x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff)
+  y <- biomaRt::getBM(attributes = c("mgi_symbol", "description"), filters = "mgi_symbol", values = as.list(x['mgi_symbol']), mart = mart)
+  z <- left_join(x, y, by = "mgi_symbol")
+  write.table(z,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+}
 
-# Differentially expressed genes in cluster + Annotations for each Gene
-for ( n in names(cdiff) ) {
-  x <- data.frame('mgi_symbol'=rownames(cdiff[[n]]),cdiff[[n]]) %>% left_join(biomaRt::getBM(attributes = c("mgi_symbol", "description"), filters = "mgi_symbol", values = as.list(x['mgi_symbol']), mart = mart), by = "mgi_symbol")
-  write.table(x,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",n),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+# Stop if StemID is not needed
+if (!params$RunStemID) {
+  save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/")) 
+  knitr::knit_exit()
   }
-    
-if (!params$RunStemID) {save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))}
-if (!params$RunStemID) {knitr::knit_exit()}
 
 
 ```
@@ -210,59 +210,20 @@ ltr <- comppvalue(ltr,pthr=0.1)
 
 ```{r StemIDResults, include=TRUE}
 
-## diagnostic plots
-# histogram of ratio between cell-to-cell distances in the embedded and the input space
+plotgraph(ltr,scthr=0.2,showCells=FALSE,showTsne=TRUE)
+
 plotdistanceratio(ltr)
-# t-SNE map of the clusters with more than cthr cells including a minimum spanning tree for the cluster medoids
-plotmap(ltr)
-# visualization of the projections in t-SNE space overlayed with a minimum spanning tree connecting the cluster medoids
-plotmapprojections(ltr)
-# lineage tree showing the projections of all cells in t-SNE space
-plottree(ltr,showCells=TRUE,nmode=FALSE,params$scthr)
-# lineage tree without showing the projections of all cells
-plottree(ltr,showCells=FALSE,nmode=FALSE,params$scthr)
-# heatmap of the enrichment p-values for all inter-cluster links
-plotlinkpv(ltr)
-# heatmap of the link score for all inter-cluster links
+
+plotspantree(ltr)
+
+plotprojections(ltr)
+
 plotlinkscore(ltr)
-# heatmap showing the fold enrichment (or depletion) for significantly enriched or depleted links
+
 projenrichment(ltr)
 
 ## computing the StemID2 score
-x <- compscore(ltr,nn=1,scthr=0)
-
-#plotting the StemID2 score
-plotscore(ltr,nn=1,scthr=0)
-
-# retrieve cells from branch in pseudo-temporal order as inferred by the projection coordinates
-n <- cellsfromtree(ltr,c(3,2,11,4))
-
-# filter out lowly expressed genes
-fs  <- filterset(ltr@sc@ndata,n=n$f,minexpr=2,minnumber=1)
-# compute self organizing map (SOM) of co-expressed genes
-s1d <- getsom(fs,nb=1000,k=5,locreg=TRUE,alpha=.5)
-ps  <- procsom(s1d,corthr=.85,minsom=3)
-
-# # coloring scheme for clusters ( vector with colours)
-# fcol <- ltr@sc@fcol
-# y    <- ltr@sc@cpart[n$f]
-# # plot average z-score for all modules derived from the SOM
-# plotheatmap(ps$nodes.z,xpart=y,xcol=fcol,ypart=unique(ps$nodes),xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
-# # plot z-score profile of each gene
-# plotheatmap(ps$all.z,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
-# # plot normalized expression profile of each gene
-# plotheatmap(ps$all.e,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
-# # plot binarized expression profile of each gene (z-score < -1, -1 < z-score < 1, z-score > 1)
-# plotheatmap(ps$all.b,xpart=y,xcol=fcol,ypart=ps$nodes,xgrid=FALSE,ygrid=TRUE,xlab=FALSE)
-# 
-# # extract all genes from node 1 of the SOM
-# g <- names(ps$nodes)[ps$nodes == 1]
-# # plot average expression profile of these genes along the trajectory
-# plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=NULL)
-# # plot expression of a single gene
-# plotexpression(fs,y,"Clca4__chr3",n$f,k=25,col=fcol,cluster=FALSE,locreg=TRUE,alpha=.5,types=NULL)
-# # plot average expression profile of these genes along the trajectory, highlighting batch origin
-# plotexpression(fs,y,g,n$f,k=25,col=fcol,name="Node 1",cluster=FALSE,locreg=TRUE,alpha=.5,types=sub("\\_\\d+","",n$f))
+x <- compscore(ltr,scthr=0.2)
 
 save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))
 ```

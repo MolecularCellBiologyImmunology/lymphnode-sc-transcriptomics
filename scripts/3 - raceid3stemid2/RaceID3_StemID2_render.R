@@ -7,8 +7,8 @@ workingdirectory = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internsh
 #workingdirectory = "D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data")
 #workingdirectory = "D:/Userdata/jj.koning/MIKE/Seperate Scripts/"
 scriptdirectory = paste(workingdirectory, "scripts/3 - raceid3stemid2", sep="/")
-inputdata = paste(workingdirectory, 'data - douwe/3 - combinedcounts/LNS_W0_unfiltered_combined.csv', sep='/')
-outputdirectory = paste(workingdirectory, "data - douwe/4 - raceidstemid/W0", sep="/")
+inputdata = paste(workingdirectory, 'data - heidelberg/3 - combinedcounts/LNS_W0_unfiltered_combined.csv', sep='/')
+outputdirectory = paste(workingdirectory, "data - heidelberg/4 - raceidstemid/W0", sep="/")
 
 
 
