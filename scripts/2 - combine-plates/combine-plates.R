@@ -7,8 +7,8 @@ library(tidyr)
 library(dplyr)
 
 # Paths
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe")
-#setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe")
+#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe")
+setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe")
 
 # Annotations
 annotations <- read.csv("annotations.tsv", sep = "\t")

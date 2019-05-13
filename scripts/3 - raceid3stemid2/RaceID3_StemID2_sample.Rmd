@@ -3,9 +3,9 @@ title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
 date: r! Sys.Date()
 params: # DO NOT CHANGE
-  scriptdirectory: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/3 - raceid3stemid2 
-  inputdata: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - heidelberg/3 - combinedcounts/LNS_W0_unfiltered_combined.csv
-  outputdirectory: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - heidelberg/4 - raceidstemid/W0
+  scriptdirectory: x
+  inputdata: x
+  outputdirectory: x
 
   mintotal: 3000
   minexpr: 5
@@ -36,9 +36,9 @@ knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 #BiocManager::install("biomaRt")
 source("https://bioconductor.org/biocLite.R")
 #install.packages("dplyr", "xml2", dependencies = TRUE)
-#biocLite(pkgs=c("scran","DESeq2","biomaRt", "devtools"), suppressUpdates = TRUE)
 library(dplyr)
 library(xml2)
+#biocLite(pkgs=c("scran","DESeq2","biomaRt", "devtools"), suppressUpdates = TRUE)
 library(devtools)
 library(biomaRt)
 #install_github("dgrun/RaceID3_StemID2_package")
@@ -48,9 +48,9 @@ library(RaceID)
 print(params$inputdata)
 x <- read.csv(params$inputdata,sep=",",header=TRUE)
 
-rownames(x) <- x$GENEID
+rownames(x) <- x$geneid
 
-# prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
+## prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
 prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```
@@ -59,12 +59,12 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```{r Filter, include=TRUE}
 
-# Initialize SCseq Object with Transcript Counts
+## Initialize SCseq Object with Transcript Counts
 sc <- SCseq(prdata)
-# filtering of expression data
+## Filtering of expression data
 sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnumber = params$minnumber, LBatch = params$LBatch, knn = params$knn, params$CGenes, params$FGenes, params$ccor, bmode = "RaceID")
 
-#correct for cell cycle, proliferation, and expression of degradation markers by PCA
+## Correct for cell cycle, proliferation, and expression of degradation markers by PCA
 #  optional:
 mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
 #  g   <- sub("__chr.+","",rownames(sc@fdata));
@@ -141,10 +141,12 @@ clustheatmap(sc,final=TRUE,hmethod="single")
 ## Highlight k-medoids clusters in t-SNE map
 plotmap(sc, fr = TRUE)
 
-# t-SNE with organised plate origins
-types <- sub("(.*_.*\\.\\d+)$","Pilot",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata)))
-subset <- types[grep("0|1|2|6",types)]
-plotsymbolsmap(sc,types,subset=subset,fr=TRUE)
+```
+
+```{r DiffSamples, include=TRUE}
+## t-SNE with organised plate origins
+types <- sub("LNS.*_.*\\.*","Pilot",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
+plotsymbolsmap(sc,types,fr=TRUE)
 
 ## Highlight Fruchterman-Rheingold layout 
 #plotmap(sc,fr=TRUE, types = sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata))))
@@ -170,9 +172,9 @@ write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FAL
 ## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
 for (cluster in 1:length(sc@medoids)){
   cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
-  x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff)
-  y <- biomaRt::getBM(attributes = c("mgi_symbol", "description"), filters = "mgi_symbol", values = as.list(x['mgi_symbol']), mart = mart)
-  z <- left_join(x, y, by = "mgi_symbol")
+  x <- data.frame('ensembl_gene_id'=rownames(cdiff),cdiff)
+  y <- biomaRt::getBM(attributes = c("ensembl_gene_id", "mgi_symbol", "chromosome_name", "description"), filters = "mgi_symbol", values = as.list(x['ensembl_gene_id']), mart = mart)
+  z <- left_join(x, y, by = "ensembl_gene_id") # %>% select(-ensembl_gene_id)
   write.table(z,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 }
 
@@ -198,7 +200,7 @@ ltr <- compentropy(ltr)
 # computation of the projections for all cells
 ltr <- projcells(ltr,cthr=5,nmode=FALSE,fr=TRUE)
 # computation of the projections for all cells after randomization
-ltr <- projback(ltr,pdishuf=100)
+ltr <- projback(ltr,pdishuf=params$pdishuf)
 # assembly of the lineage tree
 ltr <- lineagegraph(ltr)
 # determination of significant differentiation trajectories

@@ -3,12 +3,12 @@ if (!"rmarkdown" %in% installed.packages()) install.packages("rmarkdown", repos 
 
 
 # Set working directory and intput/output locations
-workingdirectory = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics"
+#workingdirectory = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics"
 #workingdirectory = "D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data")
-#workingdirectory = "D:/Userdata/jj.koning/MIKE/Seperate Scripts/"
+workingdirectory = "D:/Userdata/jj.koning/MIKE/Seperate Scripts/"
 scriptdirectory = paste(workingdirectory, "scripts/3 - raceid3stemid2", sep="/")
-inputdata = paste(workingdirectory, 'data - heidelberg/3 - combinedcounts/LNS_W0_unfiltered_combined.csv', sep='/')
-outputdirectory = paste(workingdirectory, "data - heidelberg/4 - raceidstemid/W0", sep="/")
+inputdata = paste(workingdirectory, 'data - douwe/3 - combinedcounts/LNS_ALL.csv', sep='/')
+outputdirectory = paste(workingdirectory, "data - douwe/4 - raceid3stemid2/ALL", sep="/")
 
 
 
@@ -24,15 +24,15 @@ parameters = list(
   mintotal = 1500,
   minexpr = 5,
   minnumber = 1,
-    LBatch = NULL,
+  LBatch = NULL,
   knn = FALSE,
   CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos", "Ptprc"),
   FGenes = NULL,
   ccor = 0.4,
   
   # RaceID
-  maxclustnr = 30,
-  bootnr = 50,
+  maxclustnr = 50,
+  bootnr = 100,
   
   # StemID
   RunStemID = TRUE,
