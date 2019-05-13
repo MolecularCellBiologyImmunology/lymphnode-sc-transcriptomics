@@ -3,23 +3,16 @@ library(readr)
 library(dplyr)
 
 # Input Tissue Restricted Genes
-#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/scripts/4 - tissuerestrictedgenes")
 setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/misc")
-#setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/scripts/4 - tissuerestrictedgenes")
+
 y <- read_tsv("Sansom Supplemental_Table2.txt", skip=2)
-y = y[-1,]
 colnames(y)[colnames(y)=="Gene Symbol"] <- "mgi_symbol"
-interesting = which(y$`GNF GeneAtlas Specificity` == "not present")
-y = y[-interesting,]
-interesting = which(y$`GNF GeneAtlas Specificity` == "not detected")
-y = y[-interesting,]
-interesting = which(y$`GNF GeneAtlas Specificity` == "NRE")
-y = y[-interesting,]
-output = data.frame()
+y = filter(y[-1,], `GNF GeneAtlas Specificity` == "TRE" | `GNF GeneAtlas Specificity` == "TRE+NRE")
+
 
 # For Each cluster
-#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/4 - raceidstemid/AllPlates")
 setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe/4 - raceid3stemid2/ALL")
+output = data.frame()
 for (file in list.files(path = ".",pattern="cell_clust_diff_genes_")) {
 
   # Input RaceID StemID Output
@@ -37,7 +30,6 @@ for (file in list.files(path = ".",pattern="cell_clust_diff_genes_")) {
 }
 
 # Write Output
-#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data/5 - tissuerestrictedgenes/")
 setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe/5 - tissuerestrictedgenes/")
 output <- output[order(output["Cluster"], output["GNF GeneAtlas Specificity"], output["mgi_symbol"], decreasing = FALSE ),]
 row.names(output) <- NULL 
