@@ -47,28 +47,37 @@ filesuffix:
     - _R1.fastq.gz
 
 
-# Parameters for sample filtering   
+#### Parameters for sample filtering   
+
+# Cells with less transcripts than this total are removed from the analysis. This number depends on the dataset and the experiment performed, but should be at least 1000.
 mintotal: 1500
+
+# Genes should be expressed minexpr amount of times in at least minnumber of cells, should they be considered in the analysis.
 minexpr: 5
 minnumber: 1
-maxexpr: 500
-dodownsample: FALSE
-sfn: FALSE
-hkn: FALSE
-dsn: 1
-rseed: 17000  
+
+# Genes
+LBatch: NULL
+knn: FALSE
 CGenes: ["Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"]
 FGenes: NULL
 ccor: 0.4
 
 
-# Parameters for RaceID3 algorithm
+### Parameters for RaceID3 algorithm
+
+# Maximum number of clusters for the computation of the gap statistic or derivation of the cluster number by the saturation criterion. Default is 30. Higher numbers cost more computational time, but if more major cell types are expected, a higher number should be chosen.
 maxclustnr: 30
+
+# Amount of booststrapping runs for clusterboot, the function performing bootstrapping of k-medoids clustering and quantifying the robustness of all clusters by Jaccard’s similarity. Higher numbers cost more computational time but give more robust results. Default is 50.
 bootnr: 50
 
+### Parameters for StemID2 algorithm ###
 
-# Parameters for StemID2 algorithm
+# Enable StemID analysis to get Stem Cell likelihood scores per Cluster. If disabled will save about the same amount of time as RaceID takes.
 RunStemID: TRUE
+
+
 pdishuf: 2000
 scthr: 0.3
 

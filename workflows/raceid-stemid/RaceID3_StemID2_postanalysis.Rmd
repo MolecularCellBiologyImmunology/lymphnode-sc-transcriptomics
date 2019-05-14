@@ -6,16 +6,10 @@ author: "Jasper Koning & Michael de Kok"
 ```{r Setup, include=FALSE}
 
 ## Load Sources and install required Packages, but only if needed
-source("RaceID3_StemID2_class.R")
-
-list.of.packages <- c("tsne","pheatmap","MASS","cluster","mclust","flexmix","lattice","fpc","RColorBrewer","Rtsne","scran","DESeq2","amap","locfit","vegan","rmarkdown", "permute", "randomForest", "rgl", "kohonen", "som")
-new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages, repos = "http://cran.us.r-project.org")
-
-source("https://bioconductor.org/biocLite.R")
-biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
-
-
+if (!"devtools" %in% installed.packages()) install.packages("devtools")
+library(devtools)
+install_github("dgrun/RaceID3_StemID2_package")
+library(RaceID)
 
 ```
 
@@ -34,9 +28,9 @@ biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
 ## Analysis of Differentially expressed genes between two sets of clusters
 
 ```{r DiffClusters, include=TRUE}
-
-#d <- diffgenes(sc,cl1=3,cl2=c(2,11),mincount=1)
-#plotdiffgenes(d,gene=names(d$z)[1])
+cdiff <- clustdiffgenes(sc,4,pvalue=.01)
+d <- diffgenes(sc,cl1=3,cl2=c(2,11),mincount=1)
+plotdiffgenes(d,gene=names(d$z)[1])
 
 ```
 
@@ -45,10 +39,10 @@ biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
 
 ```{r DiffCells, include=TRUE}
 
-#A <- names(sc@cpart)[sc@cpart == 3]
-#B <- names(sc@cpart)[sc@cpart %in% c(2,11)]
-#x <- diffexpnb(sc@ndata, A=A, B=B, method="pooled",norm=FALSE, DESeq=FALSE, vfit=sc@background$vfit, locreg=FALSE)
-#plotdiffgenesnb(x,pthr=.05,lthr=1,mthr=1,Aname="Cl.3",Bname="Cl.2,11",show_names=TRUE,padj=TRUE)
+# A <- names(sc@cpart)[sc@cpart %in% c(2,4)]
+# B <- names(sc@cpart)[sc@cpart %in% c(3)]
+# x <- diffexpnb(getfdata(sc,n=c(A,B)), A=A, B=B )
+# plotdiffgenesnb(x,pthr=.05,lthr=.5,mthr=-1,Aname="Cl.2",Bname="Cl.3,5",show_names=TRUE,padj=TRUE)
 
 ```
 
@@ -80,7 +74,11 @@ biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
 #head(x$diffgenes$z)
 
 ## plotting the cells on the two branches as additional clusters in the t-SNE map
-#plottsne(x$scl)
+#plotmap(x$scl)
+# t-SNE map of the clusters with more than cthr cells including a minimum spanning tree for the cluster medoids
+
+# retrieve cells from branch in pseudo-temporal order as inferred by the projection coordinates
+#n <- cellsfromtree(ltr,c(3,2,11,4))
 
 ```
 
