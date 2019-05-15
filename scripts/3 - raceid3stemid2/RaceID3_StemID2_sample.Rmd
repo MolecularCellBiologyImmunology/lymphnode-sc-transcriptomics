@@ -34,7 +34,7 @@ knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
 #if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 #BiocManager::install("biomaRt")
-source("https://bioconductor.org/biocLite.R")
+#source("https://bioconductor.org/biocLite.R")
 #install.packages("dplyr", "xml2", dependencies = TRUE)
 library(dplyr)
 library(xml2)
@@ -144,6 +144,7 @@ plotmap(sc, fr = TRUE)
 ```
 
 ```{r DiffSamples, include=TRUE}
+
 ## t-SNE with organised plate origins
 types <- sub("LNS.*_.*\\.*","Pilot",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
 plotsymbolsmap(sc,types,fr=TRUE)
@@ -172,9 +173,9 @@ write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FAL
 ## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
 for (cluster in 1:length(sc@medoids)){
   cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
-  x <- data.frame('ensembl_gene_id'=rownames(cdiff),cdiff)
-  y <- biomaRt::getBM(attributes = c("ensembl_gene_id", "mgi_symbol", "chromosome_name", "description"), filters = "mgi_symbol", values = as.list(x['ensembl_gene_id']), mart = mart)
-  z <- left_join(x, y, by = "ensembl_gene_id") # %>% select(-ensembl_gene_id)
+  x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff)
+  y <- biomaRt::getBM(attributes = c("ensembl_gene_id", "mgi_symbol", "chromosome_name", "description"), filters = "mgi_symbol", values = as.list(x['mgi_symbol']), mart = mart)
+  z <- left_join(x, y, by = "mgi_symbol") # %>% select(-ensembl_gene_id)
   write.table(z,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 }
 

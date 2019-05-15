@@ -1,14 +1,17 @@
 # Automatically Determine Packages to download and install
 if (!"rmarkdown" %in% installed.packages()) install.packages("rmarkdown", repos = "http://cran.us.r-project.org")
 
+# Set Sample
+sample = "W2"
 
 # Set working directory and intput/output locations
 #workingdirectory = "C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics"
 #workingdirectory = "D:/Userdata/jj.koning/MIKE/Seperate Scripts/"
 workingdirectory = "D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/"
-scriptdirectory = paste(workingdirectory, "scripts/3 - raceid3stemid2", sep="/")
-inputdata = paste(workingdirectory, 'data - douwe final/2 - combinedcounts/LNS_ALL.csv', sep='/')
-outputdirectory = paste(workingdirectory, "data - douwe final/3 - raceid3stemid2/ALL", sep="/")
+
+scriptdirectory = paste(workingdirectory, "/scripts/3 - raceid3stemid2", sep="")
+inputdata = paste(workingdirectory, "/data - douwe final/2 - combinedcounts/LNS_", sample, ".csv", sep="")
+outputdirectory = paste(workingdirectory, "/data - douwe final/3 - raceid3stemid2/", sample, sep="")
 
 
 
@@ -23,7 +26,7 @@ parameters = list(
   #Filtering
   mintotal = 1500,
   minexpr = 1,
-  minnumber = 3,
+  minnumber = 1,
   LBatch = NULL,
   knn = FALSE,
   CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos", "Ptprc"),
@@ -31,8 +34,8 @@ parameters = list(
   ccor = 0.4,
   
   # RaceID
-  maxclustnr = 30,
-  bootnr = 50,
+  maxclustnr = 50,
+  bootnr = 100,
   
   # StemID
   RunStemID = TRUE,
