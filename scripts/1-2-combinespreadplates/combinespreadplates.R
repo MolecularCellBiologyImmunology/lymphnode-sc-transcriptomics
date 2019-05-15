@@ -5,7 +5,8 @@ library(tidyr)
 library(dplyr)
 
 # Paths
-setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe final")
+#setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe final")
+setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data - douwe final")
 #setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe final")
 
 # Create Mart Table
@@ -52,7 +53,7 @@ print("*** Writing Count Table For all Plates Combined")
 alltables <- dplyr::select(alltables, -"cellbc", -"Plate")
 alltables <- group_by(alltables, geneid, CellID)
 alltables <- summarise(alltables, reads = sum(reads))
-spread(alltables, key = CellID, value = reads, fill = 0)
+alltables <- spread(alltables, key = CellID, value = reads, fill = 0)
 write.csv(alltables, file = '2 - combinedcounts/LNS_ALL.csv', row.names = FALSE)
 
 print("Finished.")
