@@ -1,0 +1,230 @@
+---
+title: "RaceId3/StemID2 Initial Analysis"
+author: "Jasper Koning & Michael de Kok"
+date: r! Sys.Date()
+params: ### DEFAULT VALUES, DO NOT CHANGE !
+  scriptdirectory: x
+  inputdata: x
+  conversiontable: x
+  outputdirectory: x
+
+  mintotal: 3000
+  minexpr: 5
+  minnumber: 5
+  LBatch: NULL
+  knn: FALSE
+  CGenes: c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
+  FGenes: NULL
+  ccor: 0.4
+  
+  maxclustnr: 30
+  bootnr: 50
+  
+  RunStemID: TRUE
+  pdishuf: 2000
+  scthr: 0.3
+---
+
+## Setup
+
+```{r Setup, include=TRUE}
+
+knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
+
+### Load Packages and Sources
+
+#source("https://bioconductor.org/biocLite.R")
+#biocLite(pkgs=c("dplyr", "xml2","scran","DESeq2", "devtools", "readr"), suppressUpdates = TRUE, dependencies = TRUE)
+library(dplyr)
+library(readr)
+library(xml2)
+library(devtools)
+#install_github("dgrun/RaceID3_StemID2_package")
+library(RaceID)
+
+## input data
+print(params$inputdata)
+x <- read.csv(params$inputdata,sep=",",header=TRUE)
+
+rownames(x) <- x$geneid
+
+## prdata: data.frame with transcript counts for all genes (rows) in all cells (columns); with rownames == gene ids; remove ERCC spike-ins 
+prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
+
+```
+
+## Filters
+
+```{r Filter, include=TRUE}
+
+## Initialize SCseq Object with Transcript Counts
+sc <- SCseq(prdata)
+## Filtering of expression data
+sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnumber = params$minnumber, LBatch = params$LBatch, knn = params$knn, params$CGenes, params$FGenes, params$ccor, bmode = "RaceID")
+
+#if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+#BiocManager::install("biomaRt")
+#library(biomaRt)
+## Correct for cell cycle, proliferation, and expression of degradation markers by PCA
+#  optional:
+#mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
+#  g   <- sub("__chr.+","",rownames(sc@fdata));
+#  k   <- getBM(attributes = c("external_gene_name", "go_id","name_1006"),filters="external_gene_name",values=g,mart=mart)
+#  gCC <- name2id( k$external_gene_name[k$name_1006 == "cell cycle"],rownames(sc@fdata)) 
+# gCP <- name2id( k$external_gene_name[k$name_1006 == "cell proliferation"],rownames(sc@fdata))
+# vset <- list(gCC,gCP)
+# x <- CCcorrect(sc@fdata,vset=vset,CGenes=NULL,ccor=.4,nComp=NULL,pvalue=.05,quant=.01,mode="pca")
+# # number of principal components that have been removed
+# x$n
+# # loadings of the first principal component that has been removed
+# y <- x$pca$rotation[,x$n[1]]
+# # genes from vset are either enriched in the head or the tail of this list
+# tail(y[order(y,decreasing=TRUE)],10)
+# # reassign the corrected expression matrix to sc@fdata
+# sc@fdata <- x$xcor
+
+```
+
+## RaceID Algorithm
+
+```{r RaceID, include=TRUE}
+
+sc <- compdist(sc,metric="pearson")
+
+# k-medoids clustering
+sc <- clustexp(sc, sat = TRUE, samp = NULL, cln = NULL, clustnr = params$maxclustnr, bootnr = params$bootnr, rseed=17000, FUNcluster="kmedoids")
+# compute t-SNE map
+sc <- comptsne(sc)
+# compute k-nearest neighbour map
+sc <- compfr(sc, knn=10)
+# detect outliers and redefine clusters
+sc <- findoutliers(sc)
+
+```
+
+## RaceID Diagnostic Plots
+
+```{r RaceIDPlots, include=TRUE}
+
+## Print amount of cells and outliers
+print( paste(length(sc@out[[1]]), "Outliers Identified from", dim(getfdata(sc))[2], "Cells", sep=" " ))
+
+## Gap statistics: only if do.gap == TRUE
+#plotgap(sc)
+
+## Plot within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+plotsaturation(sc,disp=TRUE)
+
+## Plot change of the within-cluster dispersion as a function of the cluster number: only if sat == TRUE
+plotsaturation(sc)
+
+## Silhouette of k-medoids clusters ### DOES NOT WORK IN RSTUDIO: https://github.com/hemberg-lab/SC3/issues/45
+#plotsilhouette(sc)  
+
+## Jaccard's similarity of k-medoids clusters
+plotjaccard(sc)
+
+## Barchart of outlier probabilities
+plotoutlierprobs(sc)
+
+## Regression of background model
+plotbackground(sc)
+
+## Dependence of outlier number on probability threshold (probthr)
+plotsensitivity(sc)
+
+## Heatmap of k-medoids cluster
+clustheatmap(sc,final=FALSE,hmethod="single")
+
+## Heatmap of final cluster
+clustheatmap(sc,final=TRUE,hmethod="single")
+
+## Highlight k-medoids clusters in t-SNE map
+plotmap(sc, fr = TRUE)
+
+```
+
+```{r DiffSamples, include=TRUE}
+
+## t-SNE with organised plate origins
+types <- sub("LNS.*_.*\\.*","Pilot",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
+plotsymbolsmap(sc,types,fr=TRUE)
+
+## Highlight Fruchterman-Rheingold layout 
+#plotmap(sc,fr=TRUE, types = sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata))))
+
+## Highlight cell labels in t-SNE map  ### NOTE: BAD IDEA FOR THOUSANDS OF CELLS!
+#plotlabelstsne(sc,labels=sub("(\\_\\d+)","",names(sc@ndata)))
+
+## Plot 3D tSNE
+#Plot3dtsne(sc,perplexity=30,fast=TRUE,x=NULL,g=NULL,logsc=FALSE,final=TRUE,ret=FALSE,tp=1)
+
+```
+
+## RaceID Writing Results to Output Text Files
+
+```{r RaceIDResults, include=TRUE}
+
+setwd(outputdirectory)
+
+## Final Clusters
+x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
+write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+
+## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
+marttable <- read_tsv(params$conversiontable)
+for (cluster in 1:length(sc@medoids)){
+  cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
+  x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff) %>% left_join(marttable, by = "mgi_symbol") # %>% select(-ensembl_gene_id)
+  write.table(x,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)}
+
+# Stop if StemID is not needed
+if (!params$RunStemID) {
+  save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/")) 
+  knitr::knit_exit()}
+
+```
+
+## StemID Algorithm 
+
+```{r StemID, include=TRUE}
+
+## StemID
+
+# initialization
+ltr <- Ltree(sc)
+# computation of the entropy
+ltr <- compentropy(ltr)
+# computation of the projections for all cells
+ltr <- projcells(ltr,cthr=5,nmode=FALSE,fr=TRUE)
+# computation of the projections for all cells after randomization
+ltr <- projback(ltr,pdishuf=params$pdishuf)
+# assembly of the lineage tree
+ltr <- lineagegraph(ltr)
+# determination of significant differentiation trajectories
+ltr <- comppvalue(ltr,pthr=0.1)
+
+```
+
+## StemID Results
+
+```{r StemIDResults, include=TRUE}
+
+plotgraph(ltr,scthr=0.2,showCells=FALSE,showTsne=TRUE)
+
+plotdistanceratio(ltr)
+
+plotspantree(ltr)
+
+plotprojections(ltr)
+
+plotlinkscore(ltr)
+
+projenrichment(ltr)
+
+## computing the StemID2 score
+x <- compscore(ltr,scthr=0.2)
+
+save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))
+```
+
