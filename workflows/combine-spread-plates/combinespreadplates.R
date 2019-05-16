@@ -1,25 +1,21 @@
-# Load / install required packages
+  ### Load / install required packages
 #install.packages("readr", "dplyr", "tidyr", repos = "http://cran.us.r-project.org")
 library(readr)
 library(tidyr)
 library(dplyr)
 
-# Paths
+### Set Main Working Directory
 setwd("C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Scripts/seperate-scripts/lymphnode-sc-transcriptomics/data - douwe final")
+#setwd("D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Seperate Scripts/lymphnode-sc-transcriptomics/data - douwe final")
 #setwd("D:/Userdata/jj.koning/MIKE/Seperate Scripts/data - douwe final")
 
-# Create Mart Table
-source("https://bioconductor.org/biocLite.R")
-biocLite(pkgs=c("scran","DESeq2","biomaRt"), suppressUpdates = TRUE)
-library(biomaRt)
-mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
-marttable <- biomaRt::getBM(attributes = c("ensembl_gene_id", "mgi_symbol", "chromosome_name", "description"), mart = mart)
-write_tsv(marttable, "genelist.tsv")
+### Load Gene Annotation / Conversation Table
+marttable <- read_tsv("genelist.tsv")
 
-# Annotations
+### Load Sample Annotation Table
 annotations <- read_tsv("annotations.tsv")
 
-# Script
+### Combine & Spread Plates (Per Week and All), Spread, Write Outputs
 alltables <- data.frame()
 for(samplenumber in unique(annotations$time)) {
   print(paste("*** Combining Plates for Week", samplenumber, sep=" "))
@@ -34,15 +30,13 @@ for(samplenumber in unique(annotations$time)) {
     data <- mutate(data, "Plate" = prefix)
     data <- mutate(data, "CellID" = paste(prefix, cellbc, sep = "."))
     sampleplates <- rbind(sampleplates, data)
-    alltables <- rbind(alltables, data)
-  }
+    alltables <- rbind(alltables, data)}
   print(paste("*** Writing Combined Plates for Week", samplenumber,sep=" "))
   sampleplates <- dplyr::select(sampleplates, -"cellbc", -"Plate")
   sampleplates <- group_by(sampleplates, geneid, CellID)
   sampleplates <- summarise(sampleplates, reads = sum(reads))
   sampleplates <- spread(sampleplates, key = CellID, value = reads, fill = 0)
-  write.csv(sampleplates, file = paste('2 - combinedcounts/LNS_W', samplenumber, ".csv", sep=""), row.names = FALSE)
-}
+  write.csv(sampleplates, file = paste('2 - combinedcounts/LNS_W', samplenumber, ".csv", sep=""), row.names = FALSE)}
 
 print("*** Writing CellID/Plate Lookup Table for All Cells")
 allcells <- distinct(dplyr::select(alltables, "Plate", "CellID"))
@@ -52,7 +46,7 @@ print("*** Writing Count Table For all Plates Combined")
 alltables <- dplyr::select(alltables, -"cellbc", -"Plate")
 alltables <- group_by(alltables, geneid, CellID)
 alltables <- summarise(alltables, reads = sum(reads))
-spread(alltables, key = CellID, value = reads, fill = 0)
+alltables <- spread(alltables, key = CellID, value = reads, fill = 0)
 write.csv(alltables, file = '2 - combinedcounts/LNS_ALL.csv', row.names = FALSE)
 
 print("Finished.")

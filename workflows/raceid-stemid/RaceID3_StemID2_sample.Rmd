@@ -2,9 +2,10 @@
 title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
 date: r! Sys.Date()
-params: # DO NOT CHANGE
+params: ### DEFAULT VALUES, DO NOT CHANGE !
   scriptdirectory: x
   inputdata: x
+  conversiontable: x
   outputdirectory: x
 
   mintotal: 3000
@@ -30,17 +31,14 @@ params: # DO NOT CHANGE
 
 knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
-## Load Packages and Sources
+### Load Packages and Sources
 
-#if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-#BiocManager::install("biomaRt")
-source("https://bioconductor.org/biocLite.R")
-#install.packages("dplyr", "xml2", dependencies = TRUE)
+#source("https://bioconductor.org/biocLite.R")
+#biocLite(pkgs=c("dplyr", "xml2","scran","DESeq2", "devtools", "readr"), suppressUpdates = TRUE, dependencies = TRUE)
 library(dplyr)
+library(readr)
 library(xml2)
-#biocLite(pkgs=c("scran","DESeq2","biomaRt", "devtools"), suppressUpdates = TRUE)
 library(devtools)
-library(biomaRt)
 #install_github("dgrun/RaceID3_StemID2_package")
 library(RaceID)
 
@@ -64,9 +62,12 @@ sc <- SCseq(prdata)
 ## Filtering of expression data
 sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnumber = params$minnumber, LBatch = params$LBatch, knn = params$knn, params$CGenes, params$FGenes, params$ccor, bmode = "RaceID")
 
+#if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+#BiocManager::install("biomaRt")
+#library(biomaRt)
 ## Correct for cell cycle, proliferation, and expression of degradation markers by PCA
 #  optional:
-mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
+#mart <- useMart(biomart = "ensembl", dataset = "mmusculus_gene_ensembl")
 #  g   <- sub("__chr.+","",rownames(sc@fdata));
 #  k   <- getBM(attributes = c("external_gene_name", "go_id","name_1006"),filters="external_gene_name",values=g,mart=mart)
 #  gCC <- name2id( k$external_gene_name[k$name_1006 == "cell cycle"],rownames(sc@fdata)) 
@@ -144,9 +145,10 @@ plotmap(sc, fr = TRUE)
 ```
 
 ```{r DiffSamples, include=TRUE}
+
 ## t-SNE with organised plate origins
-types <- sub("LNS.*_.*\\.*","Pilot",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
-plotsymbolsmap(sc,types,fr=TRUE)
+types <- sub("LNS.*_.*\\.*","Week 2",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
+plotsymbolsmap(sc,types,fr=TRUE, cex = 1, samples_col = rainbow(length(types)))
 
 ## Highlight Fruchterman-Rheingold layout 
 #plotmap(sc,fr=TRUE, types = sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata))))
@@ -170,20 +172,16 @@ x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
 write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
 ## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
+marttable <- read_tsv(params$conversiontable)
 for (cluster in 1:length(sc@medoids)){
   cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
-  x <- data.frame('ensembl_gene_id'=rownames(cdiff),cdiff)
-  y <- biomaRt::getBM(attributes = c("ensembl_gene_id", "mgi_symbol", "chromosome_name", "description"), filters = "mgi_symbol", values = as.list(x['ensembl_gene_id']), mart = mart)
-  z <- left_join(x, y, by = "ensembl_gene_id") # %>% select(-ensembl_gene_id)
-  write.table(z,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
-}
+  x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff) %>% left_join(marttable, by = "mgi_symbol") # %>% select(-ensembl_gene_id)
+  write.table(x,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)}
 
 # Stop if StemID is not needed
 if (!params$RunStemID) {
   save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/")) 
-  knitr::knit_exit()
-  }
-
+  knitr::knit_exit()}
 
 ```
 

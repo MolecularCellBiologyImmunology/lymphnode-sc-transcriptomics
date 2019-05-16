@@ -1,15 +1,14 @@
 # This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
 
-# The location of the main data directory. NOTE: Use / for folders.
+# The location of the main data directory.
 data: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data
+# NOTE: All subsequent paths should be given relative to this path.
 
-# NOTE: All subsequent paths should be given relative to the 'data' path.
 # Directory with reference genomes
 refdir: reference-sequences/genomes
 # the STAR index main directory
 index: reference-sequences/indexed-genomes
-
-# The local data repository relevant for the analyzed experiment. If you followed the advice at the start of this file, this would be the path to the directory where this config file resides.
+# The local data repository relevant for the analyzed experiment. If following the advice at the head of this file, this would be the path to the directory where this config file resides.
 repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
 # Directory name where large temporary files will be stored
 tmpstore: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files
@@ -26,7 +25,6 @@ celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common
 
 # The reference genome, see the 'references' file for valid entries
 reference: mouse-grcm38
-# reference: mouse-c57bl6nj
 
 # The kind of annotation format that is used (refers to entries in params:starindex)
 annotationformat: gff
@@ -52,7 +50,7 @@ filesuffix:
 # Cells with less transcripts than this total are removed from the analysis. This number depends on the dataset and the experiment performed, but should be at least 1000.
 mintotal: 1500
 
-# Genes should be expressed minexpr amount of times in at least minnumber of cells, should they be considered in the analysis.
+# Genes should be expressed minexpr amount of times in at least minnumber of cells, else they will not be considered in the analysis.
 minexpr: 5
 minnumber: 1
 
@@ -74,11 +72,13 @@ bootnr: 50
 
 ### Parameters for StemID2 algorithm ###
 
-# Enable StemID analysis to get Stem Cell likelihood scores per Cluster. If disabled will save about the same amount of time as RaceID takes.
+# Enable StemID analysis to get Stem Cell likelihood scores per Cluster.
 RunStemID: TRUE
 
-
+# Number of randomizations to be performed. As a rule of thumb this should be at least one order of magnitude larger than the desired p-value on the significance of the number of cells on a connection.
 pdishuf: 2000
+
+# Only links are drawn with link score greater than this. The link score corresponds to 1 –fraction of link not covered by a cell, so a positive number between 0 and 1. Link score close to zero correspond to a situation where most cells on a link reside close to the connected cluster center, while a score close to one arises  in  a  situation  where  the  link  is  covered  uniformly  with  cells.  At  higher values  of scthr only  links  are  shown  that  represent higher  confidencepredictions for actual differentiation trajectories.
 scthr: 0.3
 
 
