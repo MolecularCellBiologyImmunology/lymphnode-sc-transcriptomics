@@ -31,7 +31,7 @@ parameters = list(
   minnumber = 1,
   LBatch = NULL,
   knn = FALSE,
-  CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos", "Ptprc"),
+  CGenes = c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos", "Ptprc", "Hbb-bs", "Hba-a2"),
   FGenes = NULL,
   ccor = 0.4,
   

@@ -93,12 +93,12 @@ sc <- compdist(sc,metric="pearson")
 
 # k-medoids clustering
 sc <- clustexp(sc, sat = TRUE, samp = NULL, cln = NULL, clustnr = params$maxclustnr, bootnr = params$bootnr, rseed=17000, FUNcluster="kmedoids")
-# compute t-SNE map
-sc <- comptsne(sc)
 # compute k-nearest neighbour map
 sc <- compfr(sc, knn=10)
 # detect outliers and redefine clusters
 sc <- findoutliers(sc)
+# compute t-SNE map
+sc <- comptsne(sc,perplexity = 25)
 
 ```
 
@@ -134,10 +134,10 @@ plotbackground(sc)
 plotsensitivity(sc)
 
 ## Heatmap of k-medoids cluster
-clustheatmap(sc,final=FALSE,hmethod="single")
+#clustheatmap(sc,final=FALSE,hmethod="single")
 
 ## Heatmap of final cluster
-clustheatmap(sc,final=TRUE,hmethod="single")
+#clustheatmap(sc,final=TRUE,hmethod="single")
 
 ## Highlight k-medoids clusters in t-SNE map
 plotmap(sc, fr = TRUE)
@@ -147,8 +147,8 @@ plotmap(sc, fr = TRUE)
 ```{r DiffSamples, include=TRUE}
 
 ## t-SNE with organised plate origins
-types <- sub("LNS.*_.*\\.*","Week 2",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
-plotsymbolsmap(sc,types,fr=TRUE, cex = 1, samples_col = rainbow(length(types)))
+types <- sub("LNS.*_.*\\.*","Pilot",sub("LNS_W", "Week ", sub("_P.*_.*\\.*","", colnames(sc@ndata))))
+plotsymbolsmap(sc,types,fr=TRUE)
 
 ## Highlight Fruchterman-Rheingold layout 
 #plotmap(sc,fr=TRUE, types = sub("(.*_.*\\.\\d+)$","Pilot (W2)",sub("(_P.*_.*\\.\\d+)$","", colnames(sc@ndata))))
