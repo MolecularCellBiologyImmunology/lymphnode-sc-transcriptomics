@@ -3,27 +3,18 @@
 # Include common settings
 include: "../common.snakefile"
 
-##### Functions Producing Input #####
-# construct path to a fastq sequence file
-def get_fastq(wildcards):
-    seqbase = os.path.join(config['data'], config['sequences'], '')
-    path = seqbase + "{fileprefix}{filesuffix}".format( 
-                filesuffix=config['filesuffix']['align'][0], **wildcards)
-    return path
-
 ##### target rules #####
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=samples['fileprefix'])
+        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = samples['fileprefix'])
 
 # the alignment by STAR
 rule align:
     input:
-        fq = get_fastq
-        #fq = os.path.join(config['data'], config['sequences'], '') + "{fileprefix}{filesuffix}".format(fileprefix = expand('{fileprefix}', fileprefix = fileprefixes), filesuffix=config['filesuffix']['align'][0])
+        fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(fileprefix = expand('{fileprefix}', fileprefix = fileprefixes), filesuffix=config['filesuffix']['align'][0])), fileprefix=samples['fileprefix']) 
     output:
-        expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=samples['fileprefix'])
+        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:
         index = indexdir,
         extra = ' '.join(config['params']['star'])

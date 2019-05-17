@@ -1,7 +1,7 @@
 ---
 title: "RaceId3/StemID2 Initial Analysis"
 author: "Jasper Koning & Michael de Kok"
-date: r! Sys.Date()
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 params: ### DEFAULT VALUES, DO NOT CHANGE !
   scriptdirectory: x
   inputdata: x
@@ -11,10 +11,10 @@ params: ### DEFAULT VALUES, DO NOT CHANGE !
   mintotal: 3000
   minexpr: 5
   minnumber: 5
-  LBatch: NULL
+  LBatch: x
   knn: FALSE
-  CGenes: c("Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos")
-  FGenes: NULL
+  CGenes: x
+  FGenes: x
   ccor: 0.4
   
   maxclustnr: 30

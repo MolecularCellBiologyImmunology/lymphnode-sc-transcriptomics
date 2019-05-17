@@ -3,10 +3,15 @@ import pandas as pd
 from snakemake.utils import min_version
 from snakemake.shell import shell
 import pathlib
+import datetime
 
 ##### Set minimum Snakemake Version #####
 
 min_version("5.2.4")
+
+##### Set Date and Time #####
+x = datetime.datetime.now()
+date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + "-" + str(x.hour) + "-" + str(x.minute)
 
 ##### Load Config and Sample Sheets #####
 
@@ -32,7 +37,7 @@ references = pd.read_table(referencefile).set_index('reference', drop=False)
 reference = config['reference']
 
 # Conversion file
-conversionfolder = data / config['conversiontables'] / config['reference']
+conversionfolder = data / config['conversiontables'] / config['reference'] / ""
 
 # File with Cell Barcodes
 cellbcfile = data / config['celbc']
@@ -44,6 +49,7 @@ tmpstore = str(data / config['tmpstore'])
 
 # Directory where output files will be stored
 output = str(data / config['output'])
+raceidoutputsbydate = str(data / config['output'] / 'raceid3stemid2') + date_time
 
 # Directory Where the STAR Index Files for a Reference Genome are stored 
 indexdir = str(data / config['index'] / config['reference'])

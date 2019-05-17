@@ -31,17 +31,17 @@ for(samplenumber in unique(annotations$time)) {
   sampleplates <- group_by(sampleplates, geneid, CellID)
   sampleplates <- summarise(sampleplates, reads = sum(reads))
   sampleplates <- spread(sampleplates, key = CellID, value = reads, fill = 0)
-  write.csv(sampleplates, file = paste(snakemake@input[[outputfolder]], "/counttables_combined_sample_", samplenumber, ".csv", sep=""), row.names = FALSE)}
+  write.csv(sampleplates, file = paste(snakemake@params[[outputfolder]], "/counttables_combined_sample_", samplenumber, ".csv", sep=""), row.names = FALSE)}
 
 print("*** Writing CellID/Plate Lookup Table for All Cells")
 allcells <- distinct(dplyr::select(alltables, "Plate", "CellID"))
-write.csv(allcells, file = paste(snakemake@input[[outputfolder]],"cell_ids_plates_lookup_table.csv",sep="/"), row.names = FALSE)
+write.csv(allcells, file = paste(snakemake@params[[outputfolder]],"cell_ids_plates_lookup_table.csv",sep="/"), row.names = FALSE)
 
 print("*** Writing Count Table For all Plates Combined")
 alltables <- dplyr::select(alltables, -"cellbc", -"Plate")
 alltables <- group_by(alltables, geneid, CellID)
 alltables <- summarise(alltables, reads = sum(reads))
 alltables <- spread(alltables, key = CellID, value = reads, fill = 0)
-write.csv(alltables, file = paste(snakemake@input[[outputfolder]],"counttables_combined_ALL.csv",sep="/"), row.names = FALSE)
+write.csv(alltables, file = paste(snakemake@params[[outputfolder]],"counttables_combined_ALL.csv",sep="/"), row.names = FALSE)
 
 print("Finished.")

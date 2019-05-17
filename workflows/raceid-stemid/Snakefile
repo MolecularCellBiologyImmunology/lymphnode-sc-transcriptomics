@@ -5,31 +5,31 @@ include: "../common.snakefile"
 
 rule all:
     input:
-        stemraceidreport    = '{output}/RaceID3_StemID2_sample.html'
-        clustercells        = '{output}/cell_clust.xlx'
-        clustergenes        = '{output}/cell_clust_diff_genes_cl_*'
+        stemraceidreport    = '{raceidoutputsbydate}/raceid3stemid2/RaceID3_StemID2_sample.html',
+        clustercells        = '{raceidoutputsbydate}/raceid3stemid2/cell_clust.xlx',
+        clustergenes        = '{raceidoutputsbydate}/raceid3stemid2/cell_clust_diff_genes_cl_*'
 
-rule raceid-stemid:
+rule raceid_stemid:
     input:
-        countscombined      = '{output}/combine_plates/{fileprefix}/counttables_combined_ALL.tsv'
+        countscombined      = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output),
         conversiontable     = conversionfolder
     output:
-        stemraceidreport    = '{output}/RaceID3_StemID2_sample.html'
-        clustercells        = '{output}/cell_clust.xlx'
-        clustergenes        = '{output}/cell_clust_diff_genes_cl_*'
+        stemraceidreport    = '{raceidoutputsbydate}/RaceID3_StemID2_sample.html',
+        clustercells        = '{raceidoutputsbydate}/cell_clust.xlx',
+        clustergenes        = '{raceidoutputsbydate}/cell_clust_diff_genes_cl_*'
     params:
-        outputdirectory     = '{output}'
-        mintotal            = mintotal
-        minexpr             = minexpr
-        minnumber           = minnumber
-        LBatch              = LBatch
-        CGenes              = CGenes
-        FGenes              = FGenes
-        ccor                = ccor
-        maxclustnr          = maxclustnr
-        bootnr              = bootnr
-        RunStemID           = RunStemID
-        pdishuf             = pdishuf
+        outputdirectory     = '{raceidoutputsbydate}/raceid3stemid2',
+        mintotal            = mintotal,
+        minexpr             = minexpr,
+        minnumber           = minnumber,
+        LBatch              = LBatch,
+        CGenes              = CGenes,
+        FGenes              = FGenes,
+        ccor                = ccor,
+        maxclustnr          = maxclustnr,
+        bootnr              = bootnr,
+        RunStemID           = RunStemID,
+        pdishuf             = pdishuf,
         scthr               = scthr
     script:
         'RaceID2_StemID_render.R'

@@ -1,8 +1,8 @@
 # This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
 
 # The location of the main data directory.
-#data: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data
-data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
+data: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data
+#data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
 # NOTE: All subsequent paths should be given relative to this path.
 
 # Directory with reference genomes
@@ -32,6 +32,8 @@ annotationformat: gff
 
 # Folder with conversion ID's between ENSEMBL and MGI. See Example for MMusculus. Should one be made for any other model, see '/scripts/annotation-conversion-lookup-table-generator.R'.
 conversiontables: reference-sequences/gene-conversion-tables
+
+#geneid: mgi_symbol
 
 # Whether this is a test run. This limits the amounts of samples used to speed up testing.
 istest: true

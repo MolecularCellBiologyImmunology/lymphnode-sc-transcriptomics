@@ -10,8 +10,7 @@ extrafc = ' '.join(config['params']['featureCounts'])
 ##### functions producing input #####
 def get_fastq(wildcards):
     seqbase = str(data / config['sequences'])
-    path = seqbase + "{fileprefix}{filesuffix}".format( 
-                filesuffix=config['filesuffix']['codecount'][0], **wildcards)
+    path = seqbase + "{fileprefix}{filesuffix}".format(filesuffix=config['filesuffix']['codecount'][0], **wildcards)
     return path
 
 ##### target rules #####
@@ -26,41 +25,42 @@ rule all:
         expand(['{tmpstore}/mapping/{fileprefix}/counts.tsv',
                 '{tmpstore}/mapping/{fileprefix}/report.html',
                 '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam',
-                '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam'],
+                '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'], reference = reference,
                fileprefix=samples['fileprefix'], tmpstore=tmpstore)
 
 # convert bam files to sam format using samtools
 rule bamtosam:
     input:
-        tmpstore + '/star-align/' + '{fileprefix}/Aligned.out.bam'
+        tmpstore + '/star-align/' + '{reference}/{fileprefix}/Aligned.out.bam'
     output:
-        temporary('{tmpstore}/star-align/{fileprefix}/Aligned.out.sam')
+        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam')
     shell:
         'samtools view -h {input} -o {output}'
 
 # add cell and umi barcodes in the samfile
 rule addbc:
     input:
-        samfile = '{tmpstore}/star-align/{fileprefix}/Aligned.out.sam',
+        samfile = '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam',
         fastqfile = get_fastq
     output:
-        temporary('{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.sam')
+        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam')
     script:
         'scripts/add_barcodes.py'
 
 # convert sam files with barcodes to bam format again
 rule barcoded_samtobam:
     input:
-        '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.sam'
+        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
     output:
-        '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam'
+        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam'
     shell:
         'samtools view -b -o {output} {input}'
 
 # run featureCounts (from the Subread package)
 rule map_barcoded:
     input:
-        bamfile = '{tmpstore}/star-align/{fileprefix}/Aligned.barcoded.bam',
+        bamfile = expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.bam',reference = reference,
+               fileprefix=samples['fileprefix'], tmpstore=tmpstore),
         gtffile = gtffile
     output:
         temporary('{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'),
