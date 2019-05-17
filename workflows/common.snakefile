@@ -31,6 +31,9 @@ referencefile = data / config['references']
 references = pd.read_table(referencefile).set_index('reference', drop=False)
 reference = config['reference']
 
+# Conversion file
+conversionfolder = data / config['conversiontables'] / config['reference']
+
 # File with Cell Barcodes
 cellbcfile = data / config['celbc']
 

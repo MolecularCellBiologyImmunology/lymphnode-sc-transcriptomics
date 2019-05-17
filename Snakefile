@@ -28,7 +28,7 @@ subworkflow map_barcodes:
         snakefile:
             "./workflows/map-barcodes/Snakefile"
 
-subworkflow combine-spread-plates:
+subworkflow combine_spread_plates:
         workdir:
             "./workflows/combine-spread-plates"
         snakefile:
@@ -44,11 +44,10 @@ subworkflow raceid_stemid:
 # Main workflow rule, determining output
 rule all:
     input:
-        index = star_index(expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)),
-        alignment = star_align(expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=fileprefixes)),
-        countsfile = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/counts.tsv',  tmpstore=tmpstore, fileprefix=fileprefixes)),
-        countsreport = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/report.html', tmpstore=tmpstore, fileprefix=fileprefixes)),
-        counts = combine-spread-plates(expand('{output}/counts_combined.tsv', output=output)),
-        stemidreport = raceid_stemid(expand('{output}/RaceID2_StemID_results.html', output=output)),
-        clustercells = raceid_stemid(expand('{output}/cell_clust.xlx', output=output)),
-        clustergenes = raceid_stemid(expand('{output}/cell_clust_diff_genes_cl_*', output=output))
+        index           = star_index(                 expand("{indexdir}/{indexfile}",                                    indexdir=indexdir, indexfile=indexfiles)),
+        alignment       = star_align(                 expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam',        tmpstore=tmpstore, fileprefix=fileprefixes)),
+        counts          = map_barcodes(               expand('{tmpstore}/mapping/{fileprefix}/counts.tsv',                tmpstore=tmpstore, fileprefix=fileprefixes)),
+        countscombined  = combine_spread_plates(      expand('{output}/combined_count_tables/counts_combined_ALL.tsv',    output=output)),
+        stemidreport    = raceid_stemid(              expand('{output}/RaceID2_StemID_results.html',                      output=output)),
+        clustercells    = raceid_stemid(              expand('{output}/cell_clust.xlx',                                   output=output)),
+        clustergenes    = raceid_stemid(              expand('{output}/cell_clust_diff_genes_cl_*',                       output=output))

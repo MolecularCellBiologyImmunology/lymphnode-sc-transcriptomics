@@ -3,10 +3,17 @@
 # Include common settings
 include: "../common.snakefile"
 
+rule all:
+    input:
+        output = expand('{output}/counttables_combined_ALL.tsv', output = output)
 rule combine-plates:
     input:
-        plates = '{tmpstore}/quality_filters/{fileprefix}/counts_filtered_*.tsv'
+        plates              = expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=samples['fileprefix'])
+        inputfolder         = expand('{tmpstore}/mapping/', tmpstore=tmpstore)
+        annotations         = annotationfile
+        conversiontable     = conversionfolder
+        outputfolder        = '{output}'
     output:
-        combinedplates = '{output}/counttables_combined.tsv'
+        combinedplates = '{output}/counttables_combined_ALL.tsv'
     script:
-        'combine-plates.R'
+        'combinespreadplates.R'

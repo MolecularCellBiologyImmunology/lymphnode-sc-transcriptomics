@@ -15,15 +15,15 @@ def get_fastq(wildcards):
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand("{tmpstore}/star-align/{fileprefix}/Aligned.out.bam", 
-               fileprefix=samples['fileprefix'], tmpstore=tmpstore, reference=config['reference'])
+        expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=samples['fileprefix'])
 
 # the alignment by STAR
 rule align:
     input:
         fq = get_fastq
+        #fq = os.path.join(config['data'], config['sequences'], '') + "{fileprefix}{filesuffix}".format(fileprefix = expand('{fileprefix}', fileprefix = fileprefixes), filesuffix=config['filesuffix']['align'][0])
     output:
-        '{tmpstore}/star-align/{fileprefix}/Aligned.out.bam'
+        expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, fileprefix=samples['fileprefix'])
     params:
         index = indexdir,
         extra = ' '.join(config['params']['star'])

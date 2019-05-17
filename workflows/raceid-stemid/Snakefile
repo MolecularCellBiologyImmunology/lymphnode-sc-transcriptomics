@@ -3,31 +3,33 @@
 # Include common settings
 include: "../common.snakefile"
 
+rule all:
+    input:
+        stemraceidreport    = '{output}/RaceID3_StemID2_sample.html'
+        clustercells        = '{output}/cell_clust.xlx'
+        clustergenes        = '{output}/cell_clust_diff_genes_cl_*'
+
 rule raceid-stemid:
     input:
-        countscombined = '{output}/combine_plates/{fileprefix}/counttables_combined.tsv'
+        countscombined      = '{output}/combine_plates/{fileprefix}/counttables_combined_ALL.tsv'
+        conversiontable     = conversionfolder
     output:
-        stemraceidreport = '{output}/RaceID2_StemID_results.html'
-        clustercells = '{output}/cell_clust.xlx'
-        clustergenes = '{output}/cell_clust_diff_genes_cl_*'
+        stemraceidreport    = '{output}/RaceID3_StemID2_sample.html'
+        clustercells        = '{output}/cell_clust.xlx'
+        clustergenes        = '{output}/cell_clust_diff_genes_cl_*'
     params:
-        mintotal = mintotal
-        minexpr = minexpr
-        minnumber = minnumber
-        maxexpr = maxexpr
-        downsample = downsample
-        sfn = sfn
-        hkn = hkn
-        dsn = dsn
-        rseed = rseed
-        CGenes = CGenes
-        FGenes = FGenes
-        ccor = ccor
-        maxclustnr = maxclustnr
-        bootnr = bootnr
-        RunStemID = RunStemID
-        pdishuf = pdishuf
-        scthr = scthr
-        outputdir = '{output}'
+        outputdirectory     = '{output}'
+        mintotal            = mintotal
+        minexpr             = minexpr
+        minnumber           = minnumber
+        LBatch              = LBatch
+        CGenes              = CGenes
+        FGenes              = FGenes
+        ccor                = ccor
+        maxclustnr          = maxclustnr
+        bootnr              = bootnr
+        RunStemID           = RunStemID
+        pdishuf             = pdishuf
+        scthr               = scthr
     script:
-        'RaceID2_StemID_sample.R'
+        'RaceID2_StemID_render.R'
