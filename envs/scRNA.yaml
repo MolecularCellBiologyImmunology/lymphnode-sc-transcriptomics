@@ -25,6 +25,7 @@ dependencies:
   - cryptography=2.2.1
   - cryptography-vectors=2.4.2
   - curl=7.63.0
+  - datetime = 4.3
   - decorator=4.3.0
   - docutils=0.14
   - dropbox=9.2.0

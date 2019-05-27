@@ -2,6 +2,8 @@
 
 # Include common settings
 include: "../common.snakefile"
+configfilelines = open(configfile).readlines()
+configfilelines = open('{raceidoutputsbydate}/snakemake_config_used.yml',"w")
 
 rule all:
     input:
