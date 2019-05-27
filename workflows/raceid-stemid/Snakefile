@@ -2,8 +2,6 @@
 
 # Include common settings
 include: "../common.snakefile"
-configfilelines = open(configfile).readlines()
-configfilelines = open('{raceidoutputsbydate}/snakemake_config_used.yml',"w")
 
 rule all:
     input:
@@ -35,3 +33,13 @@ rule raceid_stemid:
         scthr               = scthr
     script:
         'RaceID2_StemID_render.R'
+
+rule outputconfig:
+    shell:
+        'cat > {raceidoutputsbydate}/snakemake_config_used.yml'
+
+# Copy config used to output folder
+configfilelines = open(config_file).read()
+os.mkdir(raceidoutputsbydate)
+configused = open(raceidoutputsbydate +'/snakemake_config_used.yml',"w+")
+configused.write(configfilelines)

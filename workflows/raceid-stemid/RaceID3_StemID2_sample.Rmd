@@ -172,7 +172,7 @@ x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
 write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
 ## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
-marttable <- read_tsv(params$conversiontable)
+marttable <- read_tsv(paste(snakemake@input[[conversionfolder]], "/genelist.tsv", sep = ""))
 for (cluster in 1:length(sc@medoids)){
   cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
   x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff) %>% left_join(marttable, by = "mgi_symbol") # %>% select(-ensembl_gene_id)

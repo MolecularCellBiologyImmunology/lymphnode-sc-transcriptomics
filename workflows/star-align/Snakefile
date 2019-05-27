@@ -7,12 +7,12 @@ include: "../common.snakefile"
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = samples['fileprefix'])
+        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
 
 # the alignment by STAR
 rule align:
     input:
-        fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(fileprefix = expand('{fileprefix}', fileprefix = fileprefixes), filesuffix=config['filesuffix']['align'][0])), fileprefix=samples['fileprefix']) 
+        fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
     output:
         expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:

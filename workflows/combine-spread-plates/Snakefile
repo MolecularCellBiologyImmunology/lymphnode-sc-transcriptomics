@@ -9,8 +9,8 @@ rule all:
 
 rule combine_plates:
     input:
-        plates = expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=samples['fileprefix']),
-        inputfolder = expand('{tmpstore}/mapping', tmpstore=tmpstore),
+        plates = expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=fileprefixes),
+        inputfolder = expand('{tmpstore}/mapping/{fileprefix}', tmpstore=tmpstore, fileprefix=fileprefixes),
         annotations = annotationfile,
         conversiontable = conversionfolder,
     output:

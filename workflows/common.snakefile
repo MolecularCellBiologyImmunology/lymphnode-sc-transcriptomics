@@ -11,7 +11,7 @@ min_version("5.2.4")
 
 ##### Set Date and Time #####
 x = datetime.datetime.now()
-date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + "-" + str(x.hour) + "-" + str(x.minute)
+date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + "_" + str(x.hour) + "-" + str(x.minute) + "-" + str(x.second)
 
 ##### Load Config and Sample Sheets #####
 
@@ -37,7 +37,7 @@ references = pd.read_table(referencefile).set_index('reference', drop=False)
 reference = config['reference']
 
 # Conversion file
-conversionfolder = data / config['conversiontables'] / config['reference'] / ""
+conversionfolder = data / config['conversiontables'] / config['reference'] 
 
 # File with Cell Barcodes
 cellbcfile = data / config['celbc']
