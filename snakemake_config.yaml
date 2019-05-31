@@ -24,6 +24,9 @@ references: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2
 # file with known cell barcodes
 celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
+# Folder(s) with R packages
+rpackagesfolders: ["C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"]
+
 # The reference genome, see the 'references' file for valid entries
 reference: mouse-grcm38
 

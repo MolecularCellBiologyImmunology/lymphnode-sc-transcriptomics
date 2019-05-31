@@ -1,5 +1,5 @@
   ### Load / install required packages
-.libPaths(c("C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"))
+.libPaths(snakemake@params$rpackagesfolders)
 #install.packages("readr", "dplyr", "tidyr", repos = "http://cran.us.r-project.org")
 library(readr)
 library(tidyr)

@@ -19,6 +19,7 @@ rule raceid_stemid:
         clustercells        = '{raceidoutputsbydate}/cell_clust.xls'
     params:
         outputdirectory     = '{raceidoutputsbydate}',
+        rpackagesfolders    = rpackagesfolders
         mintotal            = mintotal,
         minexpr             = minexpr,
         minnumber           = minnumber,

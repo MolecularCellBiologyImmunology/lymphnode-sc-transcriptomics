@@ -1,4 +1,4 @@
-.libPaths(c("C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"))
+.libPaths(snakemake@params$rpackagesfolders)
 library(rmarkdown)  
 
 # Set Sample

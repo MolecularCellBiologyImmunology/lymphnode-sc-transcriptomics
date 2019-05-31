@@ -17,6 +17,7 @@ rule combine_plates:
         combinedplates = '{output}/combined_count_tables/counttables_combined_ALL.csv'
     params:
         outputfolder = '{output}/combined_count_tables',
+        rpackagesfolders  = rpackagesfolders
         samples = fileprefixes
     script:
         'scripts/combinespreadplates.R'

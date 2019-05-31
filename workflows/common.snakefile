@@ -63,6 +63,10 @@ gtffile = str(data / config['refdir'] / config['reference'] / references.loc[con
 # The Location of the Fasta file of a Reference Genome
 fastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
 
+# Location of R packages
+rpackagesfolders = config['rpackagesfolders']
+
+
 ##### Filter Settings #####
 
 mintotal = config['mintotal']
