@@ -41,13 +41,11 @@ subworkflow raceid_stemid:
         "./workflows/raceid-stemid/Snakefile"
 
 
-# Main workflow rule, determining output
+# Main workflow rule, determining output of workflow
 rule all:
     input:
         index = star_index(expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)),
         alignment = star_align(expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=fileprefixes)),
         counts = map_barcodes(expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=fileprefixes)),
         countscombined = combine_spread_plates(expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output=output)),
-        stemidreport = raceid_stemid(expand('{raceidoutputsbydate}//RaceID3_StemID2_sample.html', raceidoutputsbydate=raceidoutputsbydate)),
-        clustercells = raceid_stemid(expand('{raceidoutputsbydate}/raceid3stemid2/cell_clust.xlx', raceidoutputsbydate=raceidoutputsbydate)),
-        clustergenes = raceid_stemid(expand('{raceidoutputsbydate}/raceid3stemid2/cell_clust_diff_genes_cl_*', raceidoutputsbydate=raceidoutputsbydate))
+        stemidreport = raceid_stemid(expand('{raceidoutputsbydate}/RaceID3_StemID2_sample.html', raceidoutputsbydate=raceidoutputsbydate)),

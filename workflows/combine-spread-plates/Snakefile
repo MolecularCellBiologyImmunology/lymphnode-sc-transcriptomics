@@ -5,17 +5,18 @@ include: "../common.snakefile"
 
 rule all:
     input:
-        output = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output)
+        combinedplates = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output)
 
 rule combine_plates:
     input:
         plates = expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=fileprefixes),
-        inputfolder = expand('{tmpstore}/mapping/{fileprefix}', tmpstore=tmpstore, fileprefix=fileprefixes),
+        inputfolder = expand('{tmpstore}/mapping/', tmpstore=tmpstore),
         annotations = annotationfile,
-        conversiontable = conversionfolder,
+        conversiontable = conversionfolder
     output:
         combinedplates = '{output}/combined_count_tables/counttables_combined_ALL.csv'
     params:
-        outputfolder = '{output}/combined_count_tables'
+        outputfolder = '{output}/combined_count_tables',
+        samples = fileprefixes
     script:
-        'combinespreadplates.R'
+        'scripts/combinespreadplates.R'

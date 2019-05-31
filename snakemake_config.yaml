@@ -1,7 +1,7 @@
 # This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
 
 # The location of the main data directory.
-data: C:/Users/Mike/Documents/WORK/Bioinformatics Project Internship/Data
+data: E:/
 #data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
 # NOTE: All subsequent paths should be given relative to this path.
 

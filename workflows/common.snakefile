@@ -77,8 +77,8 @@ ccor = config['ccor']
 ##### RaceID/StemID Settings #####
 
 # RaceID3
-maxclustnr = config['ccor']
-bootnr = config['ccor']
+maxclustnr = config['maxclustnr']
+bootnr = config['bootnr']
 
 # StemID2
 RunStemID = config['RunStemID']

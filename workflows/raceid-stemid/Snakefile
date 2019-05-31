@@ -1,24 +1,24 @@
 # Snakemake Workflow for Module 6: Running RaceID / StemID on normalized combined count tables
 
+
 # Include common settings
 include: "../common.snakefile"
 
 rule all:
     input:
-        stemraceidreport    = '{raceidoutputsbydate}/raceid3stemid2/RaceID3_StemID2_sample.html',
-        clustercells        = '{raceidoutputsbydate}/raceid3stemid2/cell_clust.xlx',
-        clustergenes        = '{raceidoutputsbydate}/raceid3stemid2/cell_clust_diff_genes_cl_*'
+        stemraceidreport    = '{raceidoutputsbydate}/RaceID3_StemID2_sample.html',
+        clustercells        = '{raceidoutputsbydate}/cell_clust.xls',
+        clustergenes        = '{raceidoutputsbydate}/cell_clust_diff_genes_cl_*'
 
 rule raceid_stemid:
     input:
         countscombined      = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output),
-        conversiontable     = conversionfolder
+        conversionfolder     = conversionfolder
     output:
         stemraceidreport    = '{raceidoutputsbydate}/RaceID3_StemID2_sample.html',
-        clustercells        = '{raceidoutputsbydate}/cell_clust.xlx',
-        clustergenes        = '{raceidoutputsbydate}/cell_clust_diff_genes_cl_*'
+        clustercells        = '{raceidoutputsbydate}/cell_clust.xls'
     params:
-        outputdirectory     = '{raceidoutputsbydate}/raceid3stemid2',
+        outputdirectory     = '{raceidoutputsbydate}',
         mintotal            = mintotal,
         minexpr             = minexpr,
         minnumber           = minnumber,
@@ -32,7 +32,7 @@ rule raceid_stemid:
         pdishuf             = pdishuf,
         scthr               = scthr
     script:
-        'RaceID2_StemID_render.R'
+        'scripts/RaceID3_StemID2_render.R'
 
 rule outputconfig:
     shell:

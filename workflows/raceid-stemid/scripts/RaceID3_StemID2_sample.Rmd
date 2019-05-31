@@ -33,13 +33,9 @@ knitr::opts_chunk$set(echo = TRUE, message = TRUE, error = FALSE)
 
 ### Load Packages and Sources
 
-#source("https://bioconductor.org/biocLite.R")
-#biocLite(pkgs=c("dplyr", "xml2","scran","DESeq2", "devtools", "readr"), suppressUpdates = TRUE, dependencies = TRUE)
 library(dplyr)
 library(readr)
 library(xml2)
-library(devtools)
-#install_github("dgrun/RaceID3_StemID2_package")
 library(RaceID)
 
 ## input data
@@ -107,7 +103,7 @@ sc <- findoutliers(sc)
 ```{r RaceIDPlots, include=TRUE}
 
 ## Print amount of cells and outliers
-print( paste(length(sc@out[[1]]), "Outliers Identified from", dim(getfdata(sc))[2], "Cells", sep=" " ))
+print(paste(length(sc@out[[1]]), "Outliers Identified from", dim(getfdata(sc))[2], "Cells", sep=" " ))
 
 ## Gap statistics: only if do.gap == TRUE
 #plotgap(sc)
@@ -165,22 +161,20 @@ plotsymbolsmap(sc,types,fr=TRUE, cex = 1, samples_col = rainbow(length(types)))
 
 ```{r RaceIDResults, include=TRUE}
 
-setwd(outputdirectory)
-
 ## Final Clusters
 x <- data.frame(CELLID=names(sc@cpart),cluster=sc@cpart)
-write.table(x[order(x$cluster,decreasing=FALSE),],"cell_clust.xls",row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
+write.table(x[order(x$cluster,decreasing=FALSE),],file.path(params$outputdirectory,"cell_clust.xls"),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)
 
 ## Identification of marker & differentially regulated genes in each cluster compared to the full ensemble
-marttable <- read_tsv(paste(snakemake@input[[conversionfolder]], "/genelist.tsv", sep = ""))
+marttable <- read_tsv(params$conversiontable)
 for (cluster in 1:length(sc@medoids)){
   cdiff <- clustdiffgenes(sc,cluster,pvalue=.01)
   x <- data.frame('mgi_symbol'=rownames(cdiff),cdiff) %>% left_join(marttable, by = "mgi_symbol") # %>% select(-ensembl_gene_id)
-  write.table(x,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep=""),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)}
+  write.table(x,file.path(params$outputdirectory,paste(paste("cell_clust_diff_genes",sub("\\.","\\_",cluster),sep="_"),".xls",sep="")),row.names=FALSE,col.names=TRUE,sep="\t",quote=FALSE)}
 
 # Stop if StemID is not needed
 if (!params$RunStemID) {
-  save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/")) 
+  save.image(file.path(params$outputdirectory,"R Workspace.RData"))
   knitr::knit_exit()}
 
 ```
@@ -225,6 +219,6 @@ projenrichment(ltr)
 ## computing the StemID2 score
 x <- compscore(ltr,scthr=0.2)
 
-save.image(paste(params$outputdirectory,"R Workspace.RData", sep = "/"))
+save.image(file.path(params$outputdirectory,"R Workspace.RData"))
 ```
 
