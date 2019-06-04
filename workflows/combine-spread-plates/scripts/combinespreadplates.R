@@ -1,6 +1,5 @@
   ### Load / install required packages
 .libPaths(snakemake@params$rpackagesfolders)
-#install.packages("readr", "dplyr", "tidyr", repos = "http://cran.us.r-project.org")
 library(readr)
 library(tidyr)
 library(dplyr)

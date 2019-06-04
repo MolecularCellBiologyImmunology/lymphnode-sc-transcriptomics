@@ -61,11 +61,10 @@ indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 gtffile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile'])
 
 # The Location of the Fasta file of a Reference Genome
-fastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
+compressedfastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
 
 # Location of R packages
 rpackagesfolders = config['rpackagesfolders']
-
 
 ##### Filter Settings #####
 

@@ -12,12 +12,20 @@ extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 rule all:
     input: expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
 
+# Unpacking the compressed fasta file
+rule decompress:
+    input: 
+         compressedfastafile
+    output: 
+         fastafile = str(data / config['refdir'] / config['reference'] / (references.loc[config['reference'], 'genomefile'])).replace(".gz","")
+    shell: 
+         'unpigz -k {compressedfastafile}' 
+
 # Rule for Module 2: The alignment by STAR
 rule index:
     input:
-        fastafile = fastafile,
+        rules.decompress.output,
         gtffile = gtffile
-        #outputdir = str(indexdir / reference)
     output:
         expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
     shell:
