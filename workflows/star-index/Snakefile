@@ -24,7 +24,7 @@ rule decompress:
 # Rule for Module 2: The alignment by STAR
 rule index:
     input:
-        rules.decompress.output,
+        fastafile = rules.decompress.output,
         gtffile = gtffile
     output:
         expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
