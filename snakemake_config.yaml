@@ -1,7 +1,7 @@
 # This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
 
 # The location of the main data directory.
-data: E:/
+data: C:/Users/Mike/Documents/WORK/Project/Data
 #data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
 # NOTE: All subsequent paths should be given relative to this path.
 
@@ -28,7 +28,8 @@ celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common
 rpackagesfolders: ["C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"]
 
 # The reference genome, see the 'references' file for valid entries
-reference: mouse-grcm38
+#reference: mouse-grcm38
+reference: ecoli-mg1655
 
 # The kind of annotation format that is used (refers to entries in params:starindex)
 annotationformat: gff
@@ -105,6 +106,8 @@ params:
     gtf:
       # for GTF files (eukaryotes)
       - "--sjdbOverhang 100" # the default value
+      - "--genomeChrBinNbits 10"
+      - "--genomeSuffixLengthMax 1000"
     gff:
       # for bacterial genomes having GFF-3 format genome annotation file 
       # Check whether CDS and exon are features in the GFF file
