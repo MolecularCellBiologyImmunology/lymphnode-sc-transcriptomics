@@ -53,6 +53,11 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```{r Filter, include=TRUE}
 
+## Remove Specific Cells from the Analysis (Object CellsToRemove has to be made during past-analysis, else this will be skipped)
+if (exists("CellsToRemove")) {
+  prdata <- lapply(CellsToRemove, function(x) {dplyr::select(prdata, -x)})
+}
+
 ## Initialize SCseq Object with Transcript Counts
 sc <- SCseq(prdata)
 ## Filtering of expression data

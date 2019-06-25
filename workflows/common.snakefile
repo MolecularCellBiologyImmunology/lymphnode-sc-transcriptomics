@@ -42,28 +42,36 @@ conversionfolder = data / config['conversiontables'] / config['reference']
 # File with Cell Barcodes
 cellbcfile = data / config['celbc']
 
+# Column defining samples
+if config['samplescolumn'] != FALSE:
+    samplescolumn = pd.read_table(annotationfile).set_index(config['samplescolumn'], drop=False)
+    samplescolumn.drop(columns=config['samplescolumn'])
+    samplescolumn = samplescolumn[config['samplescolumn']]
+else:
+    samplescolumn = FALSE
+
 ##### Other Paths #####
 
 # Directory for Temporary Files, Intermediate Results
-tmpstore = str(data / config['tmpstore'])
+tmpstore = pathlib.Path(str(data / config['tmpstore']))
 
 # Directory where output files will be stored
-output = str(data / config['output'])
-raceidoutputsbydate = str(data / config['output'] / 'raceid3stemid2') + date_time
+output = pathlib.Path(str(data / config['output']))
+raceidoutputsbydate = pathlib.Path(str(data / config['output'] / 'raceid3stemid2') + date_time)
 
 # Directory Where the STAR Index Files for a Reference Genome are stored 
-indexdir = str(data / config['index'] / config['reference'])
+indexdir = pathlib.Path(str(data / config['index'] / config['reference']))
 
 # Expected index files
 indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 
 # The Location of the GTF File of a Reference Genome
-gtffile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile'])
+gtffile = pathlib.Path(str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile']))
 
 # The Location of the Fasta file of a Reference Genome
-compressedfastafile = str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile'])
+compressedfastafile = pathlib.Path(str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile']))
 
-# Location of R packages
+# Locations of R packages
 rpackagesfolders = config['rpackagesfolders']
 
 ##### Filter Settings #####

@@ -18,8 +18,8 @@ library(RaceID)
 
 ```{r Genes, include=TRUE}
 
-#g <- c("Apoa1__chr9", "Apoa1bp__chr3", "Apoa2__chr1", "Apoa4__chr9", "Apoa5__chr9")
-#plotexptsne(sc,g,n="Apoa genes",logsc=TRUE)
+g <- c("Apoa1__chr9", "Apoa1bp__chr3", "Apoa2__chr1", "Apoa4__chr9", "Apoa5__chr9")
+plotexptsne(sc,g,n="Apoa genes",logsc=TRUE)
 
 ```
 
@@ -39,10 +39,10 @@ plotdiffgenes(d,gene=names(d$z)[1])
 
 ```{r DiffCells, include=TRUE}
 
-# A <- names(sc@cpart)[sc@cpart %in% c(2,4)]
-# B <- names(sc@cpart)[sc@cpart %in% c(3)]
-# x <- diffexpnb(getfdata(sc,n=c(A,B)), A=A, B=B )
-# plotdiffgenesnb(x,pthr=.05,lthr=.5,mthr=-1,Aname="Cl.2",Bname="Cl.3,5",show_names=TRUE,padj=TRUE)
+A <- names(sc@cpart)[sc@cpart %in% c(2,4)]
+B <- names(sc@cpart)[sc@cpart %in% c(3)]
+x <- diffexpnb(getfdata(sc,n=c(A,B)), A=A, B=B )
+plotdiffgenesnb(x,pthr=.05,lthr=.5,mthr=-1,Aname="Cl.2",Bname="Cl.3,5",show_names=TRUE,padj=TRUE)
 
 ```
 
@@ -51,13 +51,13 @@ plotdiffgenes(d,gene=names(d$z)[1])
 ```{r ClusterAnalysis, include=TRUE}
 
 ## extract projections onto all links for all cells in a given cluster i
-#x <- getproj(ltr,i=3)
+x <- getproj(ltr,i=3)
 
 ## heatmap of all projections for cluster i
-#pheatmap(x$pr)
+pheatmap(x$pr)
 
 ## heatmap of z-score for all projections for cluster i
-#pheatmap(x$prz)
+pheatmap(x$prz)
 
 ```
 
@@ -68,17 +68,36 @@ plotdiffgenes(d,gene=names(d$z)[1])
 ```{r BranchCells, include=TRUE}
 
 ## extracting all cells on two branches sharing the same cluster and computing differentially expressed genes between these two branches
-#x <- branchcells(ltr,list("3.7","2.3"))
+x <- branchcells(ltr,list("3.7","2.3"))
 
 ## z-scores for differentially expressed genes
-#head(x$diffgenes$z)
+head(x$diffgenes$z)
 
 ## plotting the cells on the two branches as additional clusters in the t-SNE map
-#plotmap(x$scl)
+plotmap(x$scl)
 # t-SNE map of the clusters with more than cthr cells including a minimum spanning tree for the cluster medoids
 
 # retrieve cells from branch in pseudo-temporal order as inferred by the projection coordinates
-#n <- cellsfromtree(ltr,c(3,2,11,4))
+n <- cellsfromtree(ltr,c(3,2,11,4))
 
 ```
 
+
+
+## Identiyfing Cells for Removal
+
+```{r CellsToRemove}
+
+# Set up List for Cells to Remove
+CellsToRemove <- list()
+
+#  Manually Add Cell Names to Remove:
+NewCellsToRemove <- c("CELLID1", "CELLID2")
+CellsToRemove <- c(CellsToRemove, NewCellsToRemove)
+
+# Remove cells currently belonging to a specific cluster: 
+Cluster <- 1
+NewCellsToRemove <- names(sc@cpart[sc@cpart == Cluster])
+CellsToRemove <- c(CellsToRemove, NewCellsToRemove)
+
+```

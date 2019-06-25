@@ -1,4 +1,4 @@
-.libPaths(snakemake@params$rpackagesfolders)
+#.libPaths(snakemake@params$rpackagesfolders)
 library(rmarkdown)  
 
 # Set Sample
