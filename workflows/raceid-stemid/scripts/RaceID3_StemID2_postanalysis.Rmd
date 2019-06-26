@@ -100,4 +100,12 @@ Cluster <- 1
 NewCellsToRemove <- names(sc@cpart[sc@cpart == Cluster])
 CellsToRemove <- c(CellsToRemove, NewCellsToRemove)
 
+
+# Set up List for Genes to Remove
+GenesToRemove <- list()
+
+#  Manually Add Cell Names to Remove:
+NewGenesToRemove <- c("0610005C13Rik", "test")
+GenesToRemove <- c(GenesToRemove, NewGenesToRemove)
+
 ```
