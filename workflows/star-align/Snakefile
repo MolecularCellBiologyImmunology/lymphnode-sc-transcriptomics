@@ -1,26 +1,20 @@
-include: "../common.snakefile"
+# Snakemake Workflow for Module 2: Aligning sequences with STAR Index Files
 
-##### functions producing input #####
-# construct path to a fastq sequence file
-def get_fastq(wildcards):
-    seqbase = os.path.join(config['data'], config['sequences'], '')
-    path = seqbase + "{fileprefix}{filesuffix}".format( 
-                filesuffix=config['filesuffix']['align'][0], **wildcards)
-    return path
+# Include common settings
+include: "../common.snakefile"
 
 ##### target rules #####
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand("{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam", 
-               fileprefix=samples['fileprefix'], tmpstore=tmpstore, reference=config['reference'])
+        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
 
 # the alignment by STAR
 rule align:
     input:
-        fq = get_fastq
+        fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
     output:
-        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam'
+        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:
         index = indexdir,
         extra = ' '.join(config['params']['star'])

@@ -1,31 +1,34 @@
-# snakemake workflow for generating STAR index files of a reference sequence
+# Snakemake Workflow for Module 1: Generating STAR Index Files of a reference sequence
 
+# Include common settings
 include: "../common.snakefile"
 
 # STAR extra options
 extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 
-# Expected index files
-indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
+##### Target Rules #####
 
-##### target rules #####
-# pseudorule consuming all the final output
+# Pseudorule consuming all the final output
 rule all:
-    input: expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
+    input: expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
 
-# unpacking the compressed fasta file
-# rule decompress:
-#     input: compressedfastafile
-#     output: fastafile
-#     shell: 
-#         'unpigz -k {compressedfastafile}' 
+# Unpacking the compressed fasta file
+rule decompress:
+    input: 
+        compressedfastafile
+    output: 
+        fastafile = str(data / config['refdir'] / config['reference'] / (references.loc[config['reference'], 'genomefile'])).replace(".gz","")
+    shell: 
+        'unpigz -k {compressedfastafile}'
 
-# the alignment by STAR
+# Rule for Module 2: The alignment by STAR
 rule index:
     input:
-        fastafile = fastafile,
+        fastafile = rules.decompress.output,
         gtffile = gtffile
     output:
-        expand("{indexdir}/{indexfile}", indexdir=indexdir, indexfile=indexfiles)
+        expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
+    threads:
+        24
     shell:
         'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {indexdir} --genomeFastaFiles {input[fastafile]} --sjdbGTFfile {input[gtffile]} {extra}'
