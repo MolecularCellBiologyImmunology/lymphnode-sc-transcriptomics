@@ -32,7 +32,7 @@ rpackagesfolders: ["C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program File
 reference: ecoli-mg1655
 
 # The kind of annotation format that is used (refers to entries in params:starindex)
-annotationformat: gff
+annotationformat: gtf
 
 # Folder with conversion ID's between ENSEMBL and MGI. See Example for MMusculus. Should one be made for any other model, see '/scripts/annotation-conversion-lookup-table-generator.R'.
 conversiontables: reference-sequences/gene-conversion-tables

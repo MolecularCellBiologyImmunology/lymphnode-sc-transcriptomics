@@ -5,11 +5,11 @@ include: "../common.snakefile"
 
 ##### target rules #####
 # pseudorule consuming all the final output
-rule all:
+rule all:S
     input:
         expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
 
-# the alignment by STAR
+# STAR Alignment
 rule align:
     input:
         fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
