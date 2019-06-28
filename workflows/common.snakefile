@@ -53,11 +53,11 @@ else:
 ##### Other Paths #####
 
 # Directory for Temporary Files, Intermediate Results
-tmpstore = pathlib.Path(str(data / config['tmpstore']))
+tmpstore = str(data / config['tmpstore'])
 
 # Directory where output files will be stored
 output = pathlib.Path(str(data / config['output']))
-raceidoutputsbydate = pathlib.Path(str(data / config['output'] / 'raceid3stemid2') + date_time)
+raceidoutputsbydate = str(data / config['output'] / 'raceid3stemid2') + date_time
 
 # Directory Where the STAR Index Files for a Reference Genome are stored 
 indexdir = pathlib.Path(str(data / config['index'] / config['reference']))
