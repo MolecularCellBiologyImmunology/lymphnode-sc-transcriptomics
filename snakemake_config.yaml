@@ -1,53 +1,56 @@
-# This file should contain everything to configure the workflow on a global scale. NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
+# This file should contain everything to configure the workflow on a global scale. 
 
-# The location of the main data directory.
+# NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
+
+
+
+### Data Directories, File Paths & Experimental Settings
+
+# The Location of the Main Data Directory.
+# NOTE: All subsequent paths should be given relative to this path.
 data: C:/Users/Mike/Documents/WORK/Project/Data
 #data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
-# NOTE: All subsequent paths should be given relative to this path.
 
 # Directory with reference genomes
 refdir: reference-sequences/genomes
-# the STAR index main directory
+
+# The STAR Index Main Directory
 index: reference-sequences/indexed-genomes
-# The local data repository relevant for the analyzed experiment. If following the advice at the head of this file, this would be the path to the directory where this config file resides.
+
+# The Local Data Repository Relevant for the Analyzed Experiment. If following the Advice at the Head of this File, this would be the Path to the Directory where this Config File resides.
 repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
-# Directory name where large temporary files will be stored
+# Directory Name where Large Temporary Files will be stored
 tmpstore: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files
-# Directory where output files will be stored
+# Directory where Output Files will be stored
 output: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_output
-# directory with sequence files
+# Directory with sequence files
 sequences: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
-# file with sample annotations
+
+# File with Experimental Sample Annotations
 samples: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
-# file with reference genome annotations
+# File with Experimental Reference Genome Annotations
 references: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
-# file with known cell barcodes
+# File with known Cell Barcodes
 celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
 # Folder(s) with R packages
 rpackagesfolders: ["C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"]
 
-# The reference genome, see the 'references' file for valid entries
-#reference: mouse-grcm38
-reference: ecoli-mg1655
+# The Reference Genome, see the 'references' file for valid entries
+reference: mouse-grcm38
 
-# The kind of annotation format that is used (refers to entries in params:starindex)
+# What column of the Experimental "samples" Annotations file defines the different samples. These will have their counttables kept seperate on top of all being combined. If no split is necessary, input FALSE.
+samplescolumn: time
+
+# The Kind of Annotation format that is used (gtf for Eukaryotes, gff for Bacterial Genomes having GFF-3 Format Genome Annotation File, refers to Entries in params:starindex)
 annotationformat: gtf
 
-# Folder with conversion ID's between ENSEMBL and MGI. See Example for MMusculus. Should one be made for any other model, see '/scripts/annotation-conversion-lookup-table-generator.R'.
+# Folder with conversion ID's between ENSEMBL and other custom formats that will be added in the output. 
+# NOTE: See Example for MMusculus. Should a new table be made for any other model, edit and use the following script: '/scripts/annotation-conversion-lookup-table-generator.R'
 conversiontables: reference-sequences/gene-conversion-tables
 
-#geneid: mgi_symbol
-
-# Whether this is a test run. This limits the amounts of samples used to speed up testing.
-istest: true
-# Samples for test runs. The names must be taken from the 'fileprefix' column in the 'samples' file 
-testset:
-  - LNS2_1 
-  - LNS_W0_P2_7
-
-# The file suffix indicates which files contain sequences  and codecounts.
-# The complete filename is reconstructed as {fileprefix}{filesuffix}
+# The File Suffix indicates which Files contain Sequences and Codecounts.
+# The Complete Filename is Reconstructed as {fileprefix}{filesuffix}
 filesuffix:
   align:
     - _R2.fastq.gz
@@ -55,29 +58,82 @@ filesuffix:
     - _R1.fastq.gz
 
 
-#### Parameters for sample filtering   
 
-# Cells with less transcripts than this total are removed from the analysis. This number depends on the dataset and the experiment performed, but should be at least 1000.
+
+#### Test Run Limiting
+
+# Whether this is a test run. This limits the amounts of samples used to speed up testing.
+istest: true
+# Samples for Test Runs. The Names must be taken from the 'fileprefix' Column in the 'samples' File 
+testset:
+  - LNS2_1 
+  - LNS_W0_P2_7
+
+
+
+### Extra Shell Parameters for Modules 1-3
+
+params:
+  # Module 1 - STAR Index
+  starindex:
+    gtf:
+      # For GTF files (Eukaryotes)
+      - "--sjdbOverhang 100" # the Default Value
+      - "--genomeChrBinNbits 10"
+      - "--genomeSuffixLengthMax 1000"
+    gff:
+      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check whether CDS and Exon are features in the GFF File.
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
+
+  # Module 2 - STAR Align
+  star:
+    # Keep the STAR Index in Memory for the next Aligment Run. This saves Time because loading an Index takes approximatley 5 Minutes
+    - "--genomeLoad LoadAndKeep"
+      
+  # Module 3 - Mapping Barcodes
+  # Extra Parameters for the featureCounts Package
+  featureCounts:
+    - '-F GTF'
+    - '-g gene_id'
+    - '-t exon'
+    - '--primary'
+
+
+
+#### Parameters for Sample Filtering (Module 5)  
+
+# Cells with less Total Transcripts than this number are removed from the Analysis. This number depends on the Dataset and the Experiment Performed, but should be at least 1000.
 mintotal: 1500
 
-# Genes should be expressed minexpr amount of times in at least minnumber of cells, else they will not be considered in the analysis.
+# Genes should be expressed "minexpr" amount of times in at least "minnumber" of cells, else they will not be considered in the clustering analysis.
 minexpr: 5
 minnumber: 1
 
-# Genes
+# If you suspect your samples are affected by a batch effect, LBatch can used. Default is NULL.
+# In order to apply batch effect removal, a list with a vector of cell ids for each batch needs to be defined. See https://cran.r-project.org/web/packages/RaceID/vignettes/RaceID.html.
+# knn is an additional input parameter that controls the number of nearest neighbours during batch effect removal. Default is FALSE.
 LBatch: NULL
 knn: FALSE
-CGenes: ["Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"]
+
+# List of gene names to be filtered out completely for cell type inference. Default is NULL. 
 FGenes: NULL
+
+# CGenes, like FGenes, is a list of gene names, with the default being NULL. 
+# Instead of being ignored completely, genes that are tested for enrichment are only removed if they have a Pearson’s correlation of >ccor to a gene in CGenes. 
+CGenes: ["Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"]
 ccor: 0.4
 
 
-### Parameters for RaceID3 algorithm
 
-# Maximum number of clusters for the computation of the gap statistic or derivation of the cluster number by the saturation criterion. Default is 30. Higher numbers cost more computational time, but if more major cell types are expected, a higher number should be chosen.
+### Parameters for RaceID3StemID2 Algorithm (Module 5)
+
+# Maximum number of clusters for the computation of the gap statistic or derivation of the cluster number by the saturation criterion. 
+# Default is 30. Higher numbers cost more computational time, but if more major cell types are expected, a higher number should be chosen.
 maxclustnr: 30
 
-# Amount of booststrapping runs for clusterboot, the function performing bootstrapping of k-medoids clustering and quantifying the robustness of all clusters by Jaccard’s similarity. Higher numbers cost more computational time but give more robust results. Default is 50.
+# Amount of booststrapping runs for clusterboot, the function performing bootstrapping of k-medoids clustering and quantifying the robustness of all clusters by Jaccard’s similarity. 
+# Higher numbers cost more computational time but give more robust results. Default is 50.
 bootnr: 50
 
 ### Parameters for StemID2 algorithm ###
@@ -85,39 +141,11 @@ bootnr: 50
 # Enable StemID analysis to get Stem Cell likelihood scores per Cluster.
 RunStemID: TRUE
 
-# Number of randomizations to be performed. As a rule of thumb this should be at least one order of magnitude larger than the desired p-value on the significance of the number of cells on a connection.
+# Number of randomizations to be performed. Default is 2000.
+# As a rule of thumb, this should be at least one order of magnitude larger than the desired p-value on the significance of the number of cells on a connection.
 pdishuf: 2000
 
-# Only links are drawn with link score greater than this. The link score corresponds to 1 –fraction of link not covered by a cell, so a positive number between 0 and 1. Link score close to zero correspond to a situation where most cells on a link reside close to the connected cluster center, while a score close to one arises  in  a  situation  where  the  link  is  covered  uniformly  with  cells.  At  higher values  of scthr only  links  are  shown  that  represent higher  confidencepredictions for actual differentiation trajectories.
+# Only links are drawn with link score greater than this. The link score corresponds to 1 –fraction of link not covered by a cell, so a positive number between 0 and 1. 
+# Link score close to zero correspond to a situation where most cells on a link reside close to the connected cluster center, while a score close to one arises  in  a  situation  where  the  link  is  covered  uniformly  with  cells.  
+# At higher values only links are shown that represent higher confidencepredictions for actual differentiation trajectories. Default is 0.3.
 scthr: 0.3
-
-
-# Shell Parameters for running STAR
-params:
-  
-  # Extra parameters when running STAR in align mode 
-  star:
-    # keep the STAR index in memory for the next aligment run
-    # saves time because loading an index takes approximatley 5 min 
-    - "--genomeLoad LoadAndKeep"
-  
-  # Extra parameters when running STAR in genomeGenerate (index generating) mode 
-  starindex:
-    gtf:
-      # for GTF files (eukaryotes)
-      - "--sjdbOverhang 100" # the default value
-      - "--genomeChrBinNbits 10"
-      - "--genomeSuffixLengthMax 1000"
-    gff:
-      # for bacterial genomes having GFF-3 format genome annotation file 
-      # Check whether CDS and exon are features in the GFF file
-      - "--sjdbGTFfeatureExon CDS" 
-      - "--sjdbGTFtagExonParentTranscript gene"
-  
-  # Extra parameters for featureCounts
-  featureCounts:
-    - '-F GTF'
-    - '-g gene_id'
-    - '-t exon'
-    - '--primary'
-    # Quality Filter Settings (Filtering Per Plate)

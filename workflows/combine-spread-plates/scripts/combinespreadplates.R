@@ -11,13 +11,15 @@ marttable <- read_tsv(paste(snakemake@input$conversiontable, "/genelist.tsv", se
 annotations <- read_tsv(snakemake@input$annotations)
 if (snakemake@config['istest'] == TRUE) {annotations <- filter(annotations, annotations$fileprefix %in% snakemake@params$samples)}
 
-### Combine & Spread Plates (Per Week and All), Spread, Write Outputs
+if (snakemake@params$samplescolumn != FALSE) {
+### Combine & Spread Plates (Per Sample and All), Spread, Write Outputs
 alltables <- data.frame()
-for(samplenumber in unique(annotations$time)) {
-  print(paste("*** Combining Plates for Week", samplenumber, sep=" "))
-  annotationspertime <- filter(annotations, time == samplenumber)
+variable = colnames(snakemake@params$samplescolumn)[1]
+for(samplenumber in unique(snakemake@params$samplescolumn)) {
+  print(paste("*** Combining Plates for Sample", samplenumber, sep=" "))
+  annotationspersample <- filter(annotations, variable == samplenumber)
   sampleplates <- data.frame()
-  for(prefix in annotationspertime$fileprefix) {
+  for(prefix in annotationspersample$fileprefix) {
     print(paste("Converting File ", prefix, sep= ""))  
     data <- read_tsv(file.path(snakemake@input$inputfolder, prefix ,'counts.tsv'))
     data$geneid <- marttable[match(data$geneid, marttable$ensembl_gene_id),]$mgi_symbol
@@ -27,12 +29,23 @@ for(samplenumber in unique(annotations$time)) {
     data <- mutate(data, "CellID" = paste(prefix, cellbc, sep = "."))
     sampleplates <- rbind(sampleplates, data)
     alltables <- rbind(alltables, data)}
-  print(paste("*** Writing Combined Plates for Week", samplenumber,sep=" "))
+  print(paste("*** Writing Combined Plates for Sample", samplenumber,sep=" "))
   sampleplates <- dplyr::select(sampleplates, -"cellbc", -"Plate")
   sampleplates <- group_by(sampleplates, geneid, CellID)
   sampleplates <- summarise(sampleplates, reads = sum(reads))
   sampleplates <- spread(sampleplates, key = CellID, value = reads, fill = 0)
   write.csv(sampleplates, file = paste(snakemake@params$outputfolder, "/counttables_combined_sample_", samplenumber, ".csv", sep=""), row.names = FALSE)}
+} else {
+  for(prefix in annotationspersample$fileprefix) {
+    print(paste("Converting File ", prefix, sep= ""))  
+    data <- read_tsv(file.path(snakemake@input$inputfolder, prefix ,'counts.tsv'))
+    data$geneid <- marttable[match(data$geneid, marttable$ensembl_gene_id),]$mgi_symbol
+    data <- filter(data, !is.na(geneid))
+    data <- filter(data, geneid != "")
+    data <- mutate(data, "Plate" = prefix)
+    data <- mutate(data, "CellID" = paste(prefix, cellbc, sep = "."))
+    alltables <- rbind(alltables, data)}
+}
 
 print("*** Writing CellID/Plate Lookup Table for All Cells")
 allcells <- distinct(dplyr::select(alltables, "Plate", "CellID"))

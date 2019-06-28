@@ -1,5 +1,4 @@
-# Snakemake Workflow for Module 6: Running RaceID / StemID on normalized combined count tables
-
+# Snakemake Workflow for Module 5: Running RaceID / StemID on combined count tables
 
 # Include common settings
 include: "../common.snakefile"
@@ -13,7 +12,7 @@ rule all:
 rule raceid_stemid:
     input:
         countscombined      = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output),
-        conversionfolder     = conversionfolder
+        conversionfolder    = conversionfolder
     output:
         stemraceidreport    = '{raceidoutputsbydate}/RaceID3_StemID2_sample.html',
         clustercells        = '{raceidoutputsbydate}/cell_clust.xls'
