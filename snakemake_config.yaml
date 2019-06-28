@@ -8,8 +8,7 @@
 
 # The Location of the Main Data Directory.
 # NOTE: All subsequent paths should be given relative to this path.
-data: C:/Users/Mike/Documents/WORK/Project/Data
-#data: D:/Documents/SCHOOL/VU/2017-2018 Master Year 2/Project/Data
+data: D:/
 
 # Directory with reference genomes
 refdir: reference-sequences/genomes
@@ -34,7 +33,7 @@ references: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2
 celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
 
 # Folder(s) with R packages
-rpackagesfolders: ["C:/Users/Mike/Documents/R/win-library/3.6", "C:/Program Files/R/R-3.6.0/library"]
+rpackagesfolders: ["/home/snakemake/R/x86_64-pc-linux-gnu-library/3.6","/usr/local/lib/R/site-library","/usr/lib/R/site-library", "/usr/lib/R/library"]
 
 # The Reference Genome, see the 'references' file for valid entries
 reference: mouse-grcm38
