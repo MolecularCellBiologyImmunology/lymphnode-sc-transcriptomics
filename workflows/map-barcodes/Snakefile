@@ -33,7 +33,7 @@ rule bamtosam:
     input:
         tmpstore + '/star-align/' + '{reference}/{fileprefix}/Aligned.out.bam'
     output:
-        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam')
+        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam'
     shell:
         'samtools view -h {input} -o {output}'
 
@@ -43,7 +43,7 @@ rule addbc:
         samfile = '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.sam',
         fastqfile = get_fastq
     output:
-        temporary('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam')
+        '{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
     script:
         'scripts/add_barcodes.py'
 
@@ -63,7 +63,7 @@ rule map_barcoded:
                fileprefix=samples['fileprefix'], tmpstore=tmpstore),
         gtffile = gtffile
     output:
-        temporary('{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'),
+        '{tmpstore}/mapping/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam',
         '{tmpstore}/mapping/{fileprefix}/{fileprefix}.txt',
         '{tmpstore}/mapping/{fileprefix}/{fileprefix}.txt.summary'
     shell: 

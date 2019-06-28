@@ -53,8 +53,17 @@ prdata <- x[grep("ERCC",rownames(x),invert=TRUE),-1]
 
 ```{r Filter, include=TRUE}
 
+## Remove Specific Cells and Genes from the Analysis. Objects CellsToRemove and GenesToRemove have to be made during past-analysis, else this step will be skipped.
+if (exists("CellsToRemove")) {
+  prdata <- prdata[,!(colnames(prdata) %in% CellsToRemove)]
+}
+if (exists("GenesToRemove")) {
+  prdata <- prdata[!(rownames(prdata) %in% GenesToRemove),]
+}
+
 ## Initialize SCseq Object with Transcript Counts
 sc <- SCseq(prdata)
+
 ## Filtering of expression data
 sc <- filterdata(sc, mintotal = params$mintotal, minexpr = params$minexpr, minnumber = params$minnumber, LBatch = params$LBatch, knn = params$knn, params$CGenes, params$FGenes, params$ccor, bmode = "RaceID")
 
