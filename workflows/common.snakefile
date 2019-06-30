@@ -14,6 +14,16 @@ x = datetime.datetime.now()
 date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + "_" + str(x.hour) + "-" + str(x.minute) + "-" + str(x.second)
 
 ##### Load Config and Sample Sheets #####
+# We test whether it is defined, i.e. whether this is called from the 
+# main workflow (then it's defined) or from a subworkflow (then it's 
+# not defined) 
+try:
+    config_file
+except NameError:
+    config_file = None
+
+if config_file is None:
+    config_file = '../../snakemake_config.yaml'
 
 configfile: config_file
 
@@ -43,12 +53,12 @@ conversionfolder = data / config['conversiontables'] / config['reference']
 cellbcfile = data / config['celbc']
 
 # Column defining samples
-if config['samplescolumn'] != FALSE:
+if config['samplescolumn'] != '':
     samplescolumn = pd.read_table(annotationfile).set_index(config['samplescolumn'], drop=False)
     samplescolumn.drop(columns=config['samplescolumn'])
     samplescolumn = samplescolumn[config['samplescolumn']]
 else:
-    samplescolumn = FALSE
+    samplescolumn = ''
 
 ##### Other Paths #####
 
@@ -59,17 +69,20 @@ tmpstore = pathlib.Path(str(data / config['tmpstore']))
 output = pathlib.Path(str(data / config['output']))
 raceidoutputsbydate = pathlib.Path(str(data / config['output'] / 'raceid3stemid2') + date_time)
 
-# Directory Where the STAR Index Files for a Reference Genome are stored 
-indexdir = pathlib.Path(str(data / config['index'] / config['reference']))
+# Directory where the reference genome and gtf files are located
+genomedir = data / config['refdir'] / config['reference']
+
+# Directory where the STAR index files for a reference genome are located
+config['indexdir'] = str(data / config['index'] / config['reference'])
+
+# Paths of the reference files
+# Fasta file
+config['fastafile'] = str(genomedir /  references.loc[config['reference'], 'genome'])
+# GTF file
+config['gtffile'] = str(genomedir / references.loc[config['reference'], 'gtf'])
 
 # Expected index files
-indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
-
-# The Location of the GTF File of a Reference Genome
-gtffile = pathlib.Path(str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'gtffile']))
-
-# The Location of the Fasta file of a Reference Genome
-compressedfastafile = pathlib.Path(str(data / config['refdir'] / config['reference'] / references.loc[config['reference'], 'genomefile']))
+# indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 
 # Locations of R packages
 rpackagesfolders = config['rpackagesfolders']

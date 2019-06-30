@@ -12,3 +12,5 @@ _STARtmp/
 *.bam
 reports/
 results/
+container/
+.Rproj.user
