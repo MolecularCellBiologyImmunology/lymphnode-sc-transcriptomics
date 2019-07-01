@@ -1,6 +1,6 @@
 # Common Import Settings in the Workflows
 import pandas as pd
-from snakemake.utils import min_version
+from snakemake.utils import validate, min_version
 from snakemake.shell import shell
 import pathlib
 import datetime
@@ -26,6 +26,7 @@ if config_file is None:
     config_file = '../../snakemake_config.yaml'
 
 configfile: config_file
+validate(config, schema="schemas/config.schema.yaml")
 
 ##### Set Main Data Path #####
 
@@ -36,6 +37,7 @@ data = pathlib.Path(config['data'])
 # File with Sample Annotations
 annotationfile = data / config['samples']
 samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
+validate(samples, schema="schemas/annotations.schema.yaml")
 if config['istest']:
    samples = samples.loc[config['testset']]
 samples.drop(columns='fileprefix')

@@ -1,0 +1,144 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: snakemake configuration file
+
+properties:
+  data:
+    type: string
+  refdir:
+    type: string
+  index: 
+    type: string
+  repo: 
+    type: string
+  tmpstore:
+    type: string
+  output: 
+    type: string
+  sequences:
+    type: string
+  samples:
+    type: string
+  references:
+    type: string
+  celbc:
+    type: string
+  rpackagesfolders:
+    type: array
+    items:
+      type: string
+  reference:
+    type: string
+  samplescolumn:
+    type: string
+  annotationformat:
+    type: string
+    enum: ['gtf','gff']
+  conversiontables:
+    type: string
+  filesuffix:
+    type: object
+    properties:
+      align:
+        type: array
+        items:
+          type: string
+      codecount:
+        type: array
+        items:
+          type: string
+    required:
+      - align
+      - codecount
+  istest:
+    type: boolean
+  testset:
+    type: array
+    items:
+      type: string
+  params:
+    type: object
+    properties:
+      starindex:
+        type: object
+        properties:
+          gtf:
+            type: array
+            items:
+              type: string
+          gff:
+            type: array
+            items:
+              type: string
+        required:
+          - gtf
+          - gff
+      star:
+        type: array
+        items:
+          type: string
+      featureCounts:
+        type: array
+        items:
+          type: string
+    required:
+      - starindex
+      - star
+      - featureCounts
+  mintotal:
+    type: integer
+  minexpr:
+    type: integer
+  minnumber:
+    type: integer
+  # LBatch:
+  #   type: NULL
+  knn:
+    type: boolean
+  CGenes:
+    type: array
+    items:
+      type: string
+  ccor:
+    type: number
+  maxclustnr:
+    type: integer
+  bootnr:
+    type: integer
+  RunStemID:
+    type: boolean
+  pdishuf:
+    type: integer
+  scthr:
+    type: number
+required:
+  - data
+  - refdir
+  - index
+  - repo
+  - tmpstore
+  - output
+  - sequences
+  - samples
+  - references
+  - celbc
+  - rpackagesfolders
+  - reference
+  - samplescolumn
+  - annotationformat
+  - conversiontables
+  - filesuffix
+  - istest
+  - params
+  - mintotal
+  - minexpr
+  - minnumber
+  - knn
+  - CGenes
+  - ccor
+  - maxclustnr
+  - bootnr
+  - RunStemID
+  - pdishuf
+  - scthr
+

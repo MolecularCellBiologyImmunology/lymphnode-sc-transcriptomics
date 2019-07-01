@@ -1,0 +1,14 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sample annotation sheet
+properties:
+  fileprefix:
+    type: string
+    description: sample identifier which also occurs in the file name
+  experiment:
+    type: string
+    description: the experiment to which the sample belongs
+
+required:
+  - fileprefix
+  - experiment
