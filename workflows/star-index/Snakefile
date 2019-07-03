@@ -7,41 +7,39 @@ include: "../common.snakefile"
 # STAR extra options
 extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 
-# # Expected index files from STAR
+# Expected index files from STAR
 indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 
 # ##### Target Rules #####
 # Consuming all the final output and cleaning up decompressed file
 rule all:
     input:
-        expand("{indexdir}/{indexfile}", 
-            indexdir = config['indexdir'], 
-            indexfile = indexfiles
+        expand('{indexdir}/{reference}/{indexfiles}',
+            indexdir = config['indexdir'],
+            reference = config['reference'],
+            fastafile = config['fastafile'],
+            indexfiles = indexfiles
         )
 
-# Unpacking the compressed reference file
+# Unpacking the compressed reference fasta file
 rule decompress:
-    input:
-        expand("{fastafile}.gz", fastafile = config['fastafile'])
-    output:
-        fastafile = temp(config['fastafile'])
-    shell:
-        # -k flag: keep original
-        'unpigz -k {input}'
+    input: "{genomedir}/{reference}/{fastafile}.gz"
+    output: temporary("{genomedir}/{reference}/{fastafile}")
+    shell: "unpigz -k -c {input} > {output}"
 
-# Rule for Module 2: The alignment by STAR
+# Rule for Module 1: The genome indexation by STAR
 rule index:
-    input:
-        fastapath = config['fastafile'],
-        gtffile = config['gtffile']
-    params:
-        indexdir = config['indexdir']
+    input: 
+        fasta = expand("{genomedir}/{{reference}}/{fastafile}", 
+            fastafile = config['fastafile'],
+            genomedir = config['genomedir']),
+        gtf = expand("{genomedir}/{{reference}}/{gtffile}",
+            gtffile = config['gtffile'],
+            genomedir = config['genomedir'])
     output:
-        expand("{indexdir}/{indexfile}",
-            indexdir = config['indexdir'], 
-            indexfile = indexfiles
+        expand("{{indexdir}}/{{reference}}/{indexfiles}",
+            indexfiles = indexfiles
         )
-    threads:
-        8
-    shell:
-        'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {params.indexdir} --genomeFastaFiles {input.fastapath} --sjdbGTFfile {input.gtffile} {extra}'
+    params: targetindex = "{indexdir}/{reference}"
+    threads: 8
+    shell: 'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {params.targetindex} --genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf} {extra}'

@@ -3,11 +3,11 @@ $schema: "http://json-schema.org/draft-06/schema#"
 description: snakemake configuration file
 
 properties:
-  data:
+  datadir:
     type: string
   refdir:
     type: string
-  index: 
+  indexdir: 
     type: string
   repo: 
     type: string
@@ -112,9 +112,9 @@ properties:
   scthr:
     type: number
 required:
-  - data
+  - datadir
   - refdir
-  - index
+  - indexdir
   - repo
   - tmpstore
   - output

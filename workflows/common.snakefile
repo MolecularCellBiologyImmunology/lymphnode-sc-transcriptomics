@@ -30,29 +30,32 @@ validate(config, schema="schemas/config.schema.yaml")
 
 ##### Set Main Data Path #####
 
-data = pathlib.Path(config['data'])
+datadir = pathlib.Path(config['datadir'])
 
 ##### Annotations #####
 
 # File with Sample Annotations
-annotationfile = data / config['samples']
+annotationfile = datadir / config['repo'] / config['samples']
 samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
 validate(samples, schema="schemas/annotations.schema.yaml")
 if config['istest']:
    samples = samples.loc[config['testset']]
 samples.drop(columns='fileprefix')
-fileprefixes = samples['fileprefix']
+config['fileprefixes'] = samples['fileprefix']
 
 # File with Reference Genome Annotations
-referencefile = data / config['references']
+referencefile = datadir / config['repo'] / config['references']
 references = pd.read_table(referencefile).set_index('reference', drop=False)
-reference = config['reference']
+# TODO: validation of this file
 
 # Conversion file
-conversionfolder = data / config['conversiontables'] / config['reference'] 
+conversionfolder = datadir / config['conversiontables'] / config['reference'] 
 
 # File with Cell Barcodes
-cellbcfile = data / config['celbc']
+config['cellbcfile'] = datadir / config['repo'] / config['celbc']
+
+# Constructing directory with sequences
+config['seqdir'] = datadir / config['repo'] / config['sequences'] 
 
 # Column defining samples
 if config['samplescolumn'] != '':
@@ -65,23 +68,24 @@ else:
 ##### Other Paths #####
 
 # Directory for Temporary Files, Intermediate Results
-tmpstore = pathlib.Path(str(data / config['tmpstore']))
+config['tmppath'] = datadir / config['repo'] / config['tmpstore']
 
 # Directory where output files will be stored
-output = pathlib.Path(str(data / config['output']))
-raceidoutputsbydate = pathlib.Path(str(data / config['output'] / 'raceid3stemid2') + date_time)
+output = pathlib.Path(str(datadir / config['output']))
+raceidoutputsbydate = pathlib.Path(str(datadir / config['output'] / 'raceid3stemid2') + date_time)
 
-# Directory where the reference genome and gtf files are located
-genomedir = data / config['refdir'] / config['reference']
+# Constructing main directory where the reference genomes and gtf files are
+# located
+config['genomedir'] = datadir / config['refdir']
 
-# Directory where the STAR index files for a reference genome are located
-config['indexdir'] = str(data / config['index'] / config['reference'])
+# Constructing main directory where the STAR index files are located
+config['indexdir'] = datadir / config['indexdir']
 
-# Paths of the reference files
+# Names of the reference files
 # Fasta file
-config['fastafile'] = str(genomedir /  references.loc[config['reference'], 'genome'])
+config['fastafile'] = references.loc[config['reference'], 'genome']
 # GTF file
-config['gtffile'] = str(genomedir / references.loc[config['reference'], 'gtf'])
+config['gtffile'] = references.loc[config['reference'], 'gtf']
 
 # Expected index files
 # indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
