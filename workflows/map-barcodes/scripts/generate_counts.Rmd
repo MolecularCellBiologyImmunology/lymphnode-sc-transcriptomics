@@ -5,8 +5,8 @@ params:
   cellbcfile: /data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
   countsfile: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/counts.tsv
   samplename: LNS_W0_P4_3
-  umimultiplicity: 256
-  multiplicitycorrection: TRUE
+  UMIcardinality: 256
+  UMIcorrection: TRUE
 ---
 
 ---
@@ -27,15 +27,15 @@ library(ggplot2)
 mapfile <- params[['featuretable']]
 cellbcfile <- params[['cellbcfile']]
 countsfile <- params[['countsfile']]
-umimultiplicity <- as.integer(params[['umimultiplicity']])
-multiplicitycorrection <- as.logical(params[['multiplicitycorrection']])
+UMIcardinality <- as.integer(params[['UMIcardinality']])
+UMIcorrection <- as.logical(params[['UMIcorrection']])
 
 # Settings for testing this script directly:
 # mapfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
 # cellbcfile <- '/data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt'
 # countsfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/counts.tsv'
-# umimultiplicity <- as.integer('256')
-# multiplicitycorrection <- as.logical('TRUE')
+# UMIcardinality <- as.integer('256')
+# UMIcorrection <- as.logical('TRUE')
 
 d <- read_tsv(mapfile, comment='@', na='NA')
 bc <- read_tsv(cellbcfile, col_names = c('barcodenr','cellbc'))
@@ -51,12 +51,12 @@ counts_per_cell_and_gene <- bc %>%
 # Apply correction for possibility that the same UMI is attached to different
 # RNA's of the same gene. See eq. 3 in Grun et al (2014), Nature 
 # Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
-if (multiplicitycorrection) {
-    if (umimultiplicity < 4) {
-        # TODO: error message, multiplicity too low
+if (UMIcorrection) {
+    if (UMIcardinality < 4) {
+        # TODO: error message, UMI cardinality rediculously low, do nothing
     } else {
         counts_per_cell_and_gene <- counts_per_cell_and_gene %>%
-            mutate(cor.reads = -umimultiplicity * log(1 - (reads/umimultiplicity)))
+            mutate(reads = -UMIcardinality * log(1 - (reads/UMIcardinality)))
     }
 }
 
