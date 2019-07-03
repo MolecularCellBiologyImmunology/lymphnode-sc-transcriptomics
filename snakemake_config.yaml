@@ -153,7 +153,17 @@ params:
     - '-t exon'
     - '--primary'
 
+#### Parameters for correction of UMI counts
+# Apply correction for possibility that the same UMI is attached to different
+# RNA's of the same gene. See eq. 3 in Grun et al (2014), Nature 
+# Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
 
+# Do you want to apply this correction?
+UMIcorrection: true
+
+# The theoretical number of UMIs, usually 4^n where n is the length of the UMI 
+# barcode ('K' in eq. 3)
+UMIcardinality: 256
 
 #### Parameters for Sample Filtering (Module 5)  
 

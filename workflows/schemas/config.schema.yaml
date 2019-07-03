@@ -85,6 +85,10 @@ properties:
       - starindex
       - star
       - featureCounts
+  UMIcorrection:
+    type: boolean
+  UMIcardinality:
+    type: integer
   mintotal:
     type: integer
   minexpr:
@@ -130,6 +134,7 @@ required:
   - filesuffix
   - istest
   - params
+  - UMIcorrection
   - mintotal
   - minexpr
   - minnumber
