@@ -49,7 +49,7 @@ counts_per_cell_and_gene <- bc %>%
   summarise(reads = n())
 
 # Apply correction for possibility that the same UMI is attached to different
-# RNA's of the same gene. See eq. 3 in Grun et al (2014), Nature 
+# RNA molecules of the same gene. See eq. 3 in Grun et al (2014), Nature 
 # Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
 if (UMIcorrection) {
     if (UMIcardinality < 4) {
