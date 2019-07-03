@@ -5,6 +5,8 @@ params:
   cellbcfile: /data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
   countsfile: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/counts.tsv
   samplename: LNS_W0_P4_3
+  umimultiplicity: 256
+  multiplicitycorrection: TRUE
 ---
 
 ---
@@ -20,14 +22,20 @@ library(ggplot2)
 ```
 
 ```{r parameters}
-# note that these are overriden in the rendering R-script, not in the Snakefile
+# Note that these parameter settings are overriden in the rendering R-script 
+# (render_reports.R), not in the Snakefile
 mapfile <- params[['featuretable']]
 cellbcfile <- params[['cellbcfile']]
 countsfile <- params[['countsfile']]
+umimultiplicity <- as.integer(params[['umimultiplicity']])
+multiplicitycorrection <- as.logical(params[['multiplicitycorrection']])
 
+# Settings for testing this script directly:
 # mapfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
 # cellbcfile <- '/data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt'
 # countsfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/counts.tsv'
+# umimultiplicity <- as.integer('256')
+# multiplicitycorrection <- as.logical('TRUE')
 
 d <- read_tsv(mapfile, comment='@', na='NA')
 bc <- read_tsv(cellbcfile, col_names = c('barcodenr','cellbc'))
@@ -40,8 +48,21 @@ counts_per_cell_and_gene <- bc %>%
   group_by(cellbc, geneid) %>%
   summarise(reads = n())
 
+# Apply correction for possibility that the same UMI is attached to different
+# RNA's of the same gene. See eq. 3 in Grun et al (2014), Nature 
+# Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
+if (multiplicitycorrection) {
+    if (umimultiplicity < 4) {
+        # TODO: error message, multiplicity too low
+    } else {
+        counts_per_cell_and_gene <- counts_per_cell_and_gene %>%
+            mutate(cor.reads = -umimultiplicity * log(1 - (reads/umimultiplicity)))
+    }
+}
+
 # write_tsv(counts_per_cell_and_gene %>% filter(!is.na(geneid)), path=countsfile)
 write_tsv(counts_per_cell_and_gene, path=countsfile)
+
 ```
 
 ```{r readdist}

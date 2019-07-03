@@ -7,5 +7,7 @@ rmarkdown::render(
         cellbcfile = snakemake@input[['cellbcfile']],
         countsfile = snakemake@output[['countsfile']],
         samplename = snakemake@wildcards[['fileprefix']]
+        multiplicitycorrection = snakemake@params[['multiplicitycorrection']]
+        umimultiplicity = snakemake@params[['umimultiplicity']]
     )
 )

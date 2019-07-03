@@ -114,6 +114,9 @@ rule simplecounts:
         report='{tmppath}/mapping/{reference}/{fileprefix}/report.html'
     params:
         outputdir='{tmppath}/mapping/{reference}/{fileprefix}',
-        outputfile='report.html'
+        outputfile='report.html',
+        # TODO: make the following two configurable in configiguration file
+        umimultiplicity='256',
+        multiplicitycorrection='TRUE',
     script:
         'scripts/render_reports.R'
