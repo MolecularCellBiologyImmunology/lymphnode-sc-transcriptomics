@@ -87,7 +87,10 @@ rule filterhq:
     shell:
         'samtools view -q 255 {input} -o {output}'
 
-# generate a tsv table of high-quality mapping reads using a custom python script
+# generate a tsv table of high-quality mapping reads using a custom python 
+# script.
+# TODO: should quality filter be adaptible from the configuration file by 
+# setting the quality parameter there?
 rule tablehq:
     input:
         '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.hqfiltered.sam'
@@ -99,11 +102,6 @@ rule tablehq:
 # generate a tsv table of unique umi's per gene and true cell barcode using a 
 # custom R script
 # TODO: This sometimes fails when running parallel jobs:
-    # RuleException:
-    # CalledProcessError in line 104 of /home/douwe/single-cell-fastqc/workflows/map-barcodes/Snakefile:
-    # Command ' set -euo pipefail;  Rscript /home/douwe/single-cell-fastqc/workflows/map-barcodes/.snakemake/scripts/tmpk4ti7o3z.render_reports.R ' returned non-zero exit status 1.
-    #   File "/home/douwe/single-cell-fastqc/workflows/map-barcodes/Snakefile", line 104, in __rule_simplecounts
-    #   File "/home/douwe/anaconda3/envs/scRNA/lib/python3.6/concurrent/futures/thread.py", line 56, in run
 
 rule simplecounts:
     input:
