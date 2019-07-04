@@ -1,9 +1,9 @@
 ---
 output: html_document
 params:
-  featuretable: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/HqFeatureCounts.tsv
+  featuretable: /data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv
   cellbcfile: /data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
-  countsfile: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/counts.tsv
+  countsfile: /data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/counts.tsv
   samplename: LNS_W0_P4_3
   UMIcardinality: 256
   UMIcorrection: TRUE
@@ -31,9 +31,9 @@ UMIcardinality <- as.integer(params[['UMIcardinality']])
 UMIcorrection <- as.logical(params[['UMIcorrection']])
 
 # Settings for testing this script directly:
-# mapfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
+# mapfile <- '/data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
 # cellbcfile <- '/data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt'
-# countsfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/counts.tsv'
+# countsfile <- '/data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/counts.tsv'
 # UMIcardinality <- as.integer('256')
 # UMIcorrection <- as.logical('TRUE')
 
