@@ -12,8 +12,8 @@ extrafc = ' '.join(config['params']['featureCounts'])
 rule all:
     input:
         expand(['{tmppath}/mapping/{reference}/{fileprefix}/counts.tsv',
-                '{tmppath}/mapping/{reference}/{fileprefix}/report.html',
-                '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
+                '{tmppath}/mapping/{reference}/{fileprefix}/report.html'
+                # '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
                 ],
                 reference = config['reference'],
                 fileprefix = samples['fileprefix'],

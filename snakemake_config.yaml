@@ -165,7 +165,7 @@ UMIcorrection: true
 
 # The theoretical number of UMIs, usually 4^n where n is the length of the UMI 
 # barcode (UMIcardinality is the same as 'K' in eq. 3)
-UMIcardinality: 256
+UMIcardinality: 4096
 
 #### Parameters for Sample Filtering (Module 5)  
 
