@@ -11,7 +11,8 @@ min_version("5.2.4")
 
 ##### Set Date and Time #####
 x = datetime.datetime.now()
-date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + "_" + str(x.hour) + "-" + str(x.minute) + "-" + str(x.second)
+date_time = "-" + str(x.year) + "-" + str(x.month) + "-" + str(x.day) + \
+    "_" + str(x.hour) + "-" + str(x.minute) + "-" + str(x.second)
 
 ##### Load Config and Sample Sheets #####
 # We test whether it is defined, i.e. whether this is called from the 
@@ -35,7 +36,7 @@ datadir = pathlib.Path(config['datadir'])
 ##### Annotations #####
 
 # File with Sample Annotations
-annotationfile = datadir / config['repo'] / config['samples']
+annotationfile = str(datadir / config['repo'] / config['samples'])
 samples = pd.read_table(annotationfile).set_index('fileprefix', drop=False)
 validate(samples, schema="schemas/annotations.schema.yaml")
 if config['istest']:
@@ -44,7 +45,7 @@ samples.drop(columns='fileprefix')
 config['fileprefixes'] = samples['fileprefix']
 
 # File with Reference Genome Annotations
-referencefile = datadir / config['repo'] / config['references']
+referencefile = str(datadir / config['repo'] / config['references'])
 references = pd.read_table(referencefile).set_index('reference', drop=False)
 # TODO: validation of this file
 
@@ -52,10 +53,10 @@ references = pd.read_table(referencefile).set_index('reference', drop=False)
 conversionfolder = datadir / config['conversiontables'] / config['reference'] 
 
 # File with Cell Barcodes
-config['cellbcfile'] = datadir / config['repo'] / config['celbc']
+config['cellbcfile'] = str(datadir / config['repo'] / config['celbc'])
 
 # Constructing directory with sequences
-config['seqdir'] = datadir / config['repo'] / config['sequences'] 
+config['seqdir'] = str(datadir / config['repo'] / config['sequences']) 
 
 # Column defining samples
 if config['samplescolumn'] != '':
@@ -68,7 +69,7 @@ else:
 ##### Other Paths #####
 
 # Directory for Temporary Files, Intermediate Results
-config['tmppath'] = datadir / config['repo'] / config['tmpstore']
+config['tmppath'] = str(datadir / config['repo'] / config['tmpstore'])
 
 # Directory where output files will be stored
 output = pathlib.Path(str(datadir / config['output']))
@@ -76,10 +77,10 @@ raceidoutputsbydate = pathlib.Path(str(datadir / config['output'] / 'raceid3stem
 
 # Constructing main directory where the reference genomes and gtf files are
 # located
-config['genomedir'] = datadir / config['refdir']
+config['genomedir'] = str(datadir / config['refdir'])
 
 # Constructing main directory where the STAR index files are located
-config['indexdir'] = datadir / config['indexdir']
+config['indexdir'] = str(datadir / config['indexdir'])
 
 # Names of the reference files
 # Fasta file
