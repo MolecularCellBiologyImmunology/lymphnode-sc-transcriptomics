@@ -100,11 +100,11 @@ filesuffix:
 # Whether this is a test run. This limits the amounts of samples used to speed 
 # up testing.
 istest: true
-# Samples for Test Runs. The Names must be taken from the 'fileprefix' Column in
-# the 'samples' File 
+# Samples for test runs. The names must be taken from the 'fileprefix' column in
+# the 'samples' file 
 testset:
   - LNS2_1 
-  - LNS_W0_P2_7
+  # - LNS_W0_P2_7
 
 
 ### Extra shell parameters for modules 1-3
