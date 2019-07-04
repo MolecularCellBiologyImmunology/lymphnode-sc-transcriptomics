@@ -104,7 +104,7 @@ istest: true
 # the 'samples' file 
 testset:
   - LNS2_1 
-  # - LNS_W0_P2_7
+  - LNS_W0_P2_7
 
 
 ### Extra shell parameters for modules 1-3
