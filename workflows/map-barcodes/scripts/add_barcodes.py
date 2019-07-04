@@ -47,17 +47,3 @@ for line in fi:
         fo.write('\t'.join(elements) + '\n')
 fi.close()
 fo.close()
-
-# for chunkoflines in chunks(fi, 10000):
-#     for line in chunkoflines:
-#         outlines = ''
-#         line = line[:-1] # removing '\n' at end of line
-#         elements = line.split('\t')
-#         cur.execute('SELECT celbc, umi FROM barcodes WHERE seqid=:seqid', {'seqid': elements[0]})
-#         bcs = cur.fetchone()
-#         elements.append('bc:Z:' + bcs[0])
-#         elements.append('um:Z:' + bcs[1])
-#         outlines += '\t'.join(elements) + '\n'
-#     fo.write(outlines)
-# fi.close()
-# fo.close()
