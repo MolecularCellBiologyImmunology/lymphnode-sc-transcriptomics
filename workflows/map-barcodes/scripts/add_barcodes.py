@@ -18,6 +18,8 @@ print("")
 cur.execute('CREATE TABLE barcodes (seqid TEXT, celbc TEXT, umi TEXT)')
 # reading from file and writing to database in chunks to save memory
 fastq_parser = Bank(snakemake.input.fastqfile[0])
+# TODO: can this be normalized to snakemake.input.fastqfile since the path was 
+# changed from a pathlib object to a string object??
 for chunk in chunks(fastq_parser, 10000):
     r = []
     for seq in chunk:
@@ -32,7 +34,11 @@ print("Creating index on read indentifiers")
 cur.execute('CREATE UNIQUE INDEX seqidx ON barcodes (seqid)')
 
 print("Writing output file: {}".format(snakemake.output[0]))
+# TODO: can this be normalized to snakemake.output since the path was 
+# changed from a pathlib object to a string object??
 fi = open(snakemake.input.samfile, 'r') 
+# TODO: can this be normalized to snakemake.output since the path was 
+# changed from a pathlib object to a string object??
 fo = open(snakemake.output[0], 'w', buffering=32768)
 for line in fi:
     if line.startswith('@'):
