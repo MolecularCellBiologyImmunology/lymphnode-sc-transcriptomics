@@ -7,19 +7,14 @@ include: "../common.snakefile"
 # extra options
 extrafc = ' '.join(config['params']['featureCounts'])
 
-##### functions producing input #####
-def get_fastq(wildcards):
-    seqbase = str(datadir / config['sequences'])
-    path = seqbase + "{fileprefix}{filesuffix}".format(filesuffix=config['filesuffix']['codecount'][0], **wildcards)
-    return path
-
 ##### target rules #####
 # pseudorule consuming ALL the final output
 rule all:
     input:
         expand(['{tmppath}/mapping/{reference}/{fileprefix}/counts.tsv',
-                '{tmppath}/mapping/{reference}/{fileprefix}/report.html',
-                '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'],
+                '{tmppath}/mapping/{reference}/{fileprefix}/report.html'
+                # '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
+                ],
                 reference = config['reference'],
                 fileprefix = samples['fileprefix'],
                 tmppath = config['tmppath'])
@@ -113,8 +108,7 @@ rule simplecounts:
     params:
         outputdir='{tmppath}/mapping/{reference}/{fileprefix}',
         outputfile='report.html',
-        # TODO: make the following two configurable in configiguration file
-        umimultiplicity='256',
-        multiplicitycorrection='TRUE',
+        UMIcardinality=config['UMIcardinality'],
+        UMIcorrection=config['UMIcorrection']
     script:
         'scripts/render_reports.R'
