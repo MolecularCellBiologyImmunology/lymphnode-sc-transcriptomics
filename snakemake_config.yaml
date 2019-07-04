@@ -154,9 +154,11 @@ params:
     - '--primary'
 
 #### Parameters for correction of UMI counts
-# Apply correction for possibility that the same UMI is attached to different
-# RNA molecules of the same gene. See eq. 3 in Grun et al (2014), Nature 
-# Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
+# To infer the number of transcripts of a gene, a correction on the number of 
+# observed UMI's per gene can be made that accounts for the possibility that the
+# same UMI is attached to different RNA molecules of the same gene. See eq. 3 in
+# Grun et al. (2014), Nature Methods 11:637--640 
+# http://dx.doi.org/10.1038/nmeth.2930
 
 # Do you want to apply this correction?
 UMIcorrection: true

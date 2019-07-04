@@ -48,15 +48,17 @@ counts_per_cell_and_gene <- bc %>%
   group_by(cellbc, geneid) %>%
   summarise(reads = n())
 
-# Apply correction for possibility that the same UMI is attached to different
-# RNA molecules of the same gene. See eq. 3 in Grun et al (2014), Nature 
-# Methods 11:637--640 http://dx.doi.org/10.1038/nmeth.2930
+# To infer the number of transcripts of a gene, a correction on the number of 
+# observed UMI's per gene can be made that accounts for the possibility that the
+# same UMI is attached to different RNA molecules of the same gene. See eq. 3 in
+# Grun et al. (2014), Nature Methods 11:637--640 
+# http://dx.doi.org/10.1038/nmeth.2930
 if (UMIcorrection) {
     if (UMIcardinality < 4) {
         # TODO: error message, UMI cardinality rediculously low, do nothing
     } else {
         counts_per_cell_and_gene <- counts_per_cell_and_gene %>%
-            mutate(reads = -UMIcardinality * log(1 - (reads/UMIcardinality)))
+            mutate(transcripts = -UMIcardinality * log(1 - (reads/UMIcardinality)))
     }
 }
 
