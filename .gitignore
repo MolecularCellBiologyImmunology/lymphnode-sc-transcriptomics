@@ -16,3 +16,4 @@ container/
 .Rproj.user
 .mypy_cache/
 /.project
+*.pyc
