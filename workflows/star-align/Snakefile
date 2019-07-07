@@ -13,10 +13,10 @@ rule all:
 rule align:
     input:
         fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
+        index = indexdir,
     output:
         expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:
-        index = indexdir,
         extra = ' '.join(config['params']['star'])
     threads: 24
     script: 'scripts/STAR_align.py'
