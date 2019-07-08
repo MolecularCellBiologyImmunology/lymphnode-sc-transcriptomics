@@ -47,7 +47,7 @@ config['fileprefixes'] = samples['fileprefix']
 # File with Reference Genome Annotations
 referencefile = str(datadir / config['repo'] / config['references'])
 references = pd.read_table(referencefile).set_index('reference', drop=False)
-validate(references, schema='schemas/refernces.schema.yaml')
+validate(references, schema='schemas/references.schema.yaml')
 
 # Conversion file
 conversionfolder = datadir / config['conversiontables'] / config['reference'] 
