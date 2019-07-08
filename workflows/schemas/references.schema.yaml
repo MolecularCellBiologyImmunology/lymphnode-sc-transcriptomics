@@ -1,0 +1,22 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+description: an entry in the sheet with reference genomes
+properties:
+  reference:
+    type: string
+    description: name (identifier) of the reference genomw  
+  source:
+    type: string
+    description: url under which the reference files can be obtained
+  genome:
+    type: string
+    description: name of the fasta file with complete genome sequence. If the file has been compressed, the '.gz' should be removed from the name
+  gtf:
+    type: string
+    description: file with annotations of the correponding fasta sequence file. 
+
+required:
+  - reference
+  - source
+  - genome
+  - gtf
