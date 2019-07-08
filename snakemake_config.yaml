@@ -26,7 +26,7 @@ datadir: /data
 refdir: reference-sequences/genomes
 
 # The STAR index main directory (<datadir>/<indexdir>)
-# Index files will be stored in subdirectories with name <reference>, see above. 
+# Index files will be stored in subdirectories with name <reference>, see below. 
 indexdir: reference-sequences/indexed-genomes
 
 # The reference genome, see the <references> file for valid entries. A 
@@ -99,7 +99,7 @@ filesuffix:
 
 # Whether this is a test run. This limits the amounts of samples used to speed 
 # up testing.
-istest: true
+istest: false
 # Samples for test runs. The names must be taken from the 'fileprefix' column in
 # the 'samples' file 
 testset:
