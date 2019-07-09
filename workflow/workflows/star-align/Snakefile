@@ -7,7 +7,7 @@ include: "../common.snakefile"
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
+        expand('{tmpstore}/star-align//{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
 
 # STAR Alignment
 rule align:
@@ -15,7 +15,7 @@ rule align:
         fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
         index = indexdir,
     output:
-        expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
+        expand('{tmpstore}/star-align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:
         extra = ' '.join(config['params']['star'])
     threads: 24
