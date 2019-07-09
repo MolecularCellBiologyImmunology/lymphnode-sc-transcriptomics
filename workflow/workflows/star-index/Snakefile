@@ -8,7 +8,7 @@ extra = ' '.join(config['params']['starindex'][config['annotationformat']])
 
 ##### Target Rules #####
 
-# Pseudorule consuming all the final output
+# Pseudorule consuming all the Final Output
 rule all:
     input: expand("{indexdir}/{indexfile}", indexdir = indexdir, indexfile = indexfiles)
 
