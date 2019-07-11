@@ -12,8 +12,8 @@ extrafc = ' '.join(config['params']['featureCounts'])
 rule all:
     input:
         expand(['{tmppath}/mapping/{reference}/{fileprefix}/counts.tsv',
-                '{tmppath}/mapping/{reference}/{fileprefix}/report.html'
-                # '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
+                '{tmppath}/mapping/{reference}/{fileprefix}/report.html',
+                '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.bam'
                 ],
                 reference = config['reference'],
                 fileprefix = samples['fileprefix'],
@@ -97,7 +97,7 @@ rule tablehq:
 
 # generate a tsv table of unique umi's per gene and true cell barcode using a 
 # custom R script
-# TODO: This sometimes fails when running parallel jobs:
+# FIXME: This sometimes fails when running parallel jobs:
 
 rule simplecounts:
     input:
