@@ -42,15 +42,18 @@ reference: mouse-grcm38
 # the advice at the head of this file, this would be the path to the directory 
 # where this config file resides (<datadir><repo>).
 repo: mouse-lymph-node-stromal-cell-time-series
-#
-# The following directories are subdirectories of the <datadir><repo> directory.
-#
+
+# NOTE: All following directories are subdirectories of the <datadir><repo>
+# directory.
+
 # Directory name where large temporary files will be stored 
-# (<datadir>/<repo>/<tmpstore>).
+# (Full path: <datadir>/<repo>/<tmpstore>).
 tmpstore: snakemake_temporary_files
-# Directory where output files will be stored (<datadir>/<repo>/<output>)
+# Directory where output files will be stored
+# (Full path: <datadir>/<repo>/<output>)
 output: snakemake_output
-# Directory with sequence files (<datadir>/<repo>/<sequences>)
+# Directory with sequence files
+# (Full path: <datadir>/<repo>/<sequences>)
 sequences: sequences_2018_Aug
 #
 # The following files are expected to be located in subdirectories of the
@@ -59,15 +62,106 @@ sequences: sequences_2018_Aug
 # File with experimental sample annotations (<datadir>/<repo>/<samples>)
 samples: annotations_2018_Aug/annotations.tsv
 # File with experimental reference genome annotations
-# (<datadir>/<repo>/<references>)
+# (Ful path: <datadir>/<repo>/<references>)
 references: annotations_2018_Aug/reference.tsv
-# File with known cell barcodes (<datadir>/<repo>/<celbc>)
+# File with known cell barcodes
+# (Full path: <datadir>/<repo>/<celbc>)
 celbc: annotations_common/celseq_barcodes.192.txt
+
+#####   FILE SUFFIX ENCODING   #####
+
+# The file suffix encodes which files contain sequences and code counts.
+# The complete file name is reconstructed as {fileprefix}{filesuffix}
+filesuffix:
+  align:
+    - _R2.fastq.gz
+  codecount:
+    - _R1.fastq.gz
+
+
+#####   TEST RUN SAMPLES   #####
+
+# Whether this is a test run. This limits the amounts of samples used to speed 
+# up testing.
+istest: false
+# Samples for test runs. The names must be taken from the 'fileprefix' column in
+# the 'samples' file 
+testset:
+  - LNS2_1 
+  - LNS_W0_P2_7
+
+
+#####   PACKAGES   #####
+# TODO: move location/installation of packages to R-scripts that use them
 
 # Folder(s) with R packages
 rpackagesfolders: 
   - C:/Users/Mike/Documents/R/win-library/3.6
   - C:/Program Files/R/R-3.6.0/library
+
+
+################################################################################
+#                                                                              #
+#                            Parameter settings                                #
+#                                                                              #
+################################################################################
+
+
+#####   SHELL PARAMETERS FOR MODULES 1-3   #####
+
+params:
+  # Module 1 - STAR Index
+  starindex:
+    # Indexing requires a large amount of memory. Indexing a mouse genome 
+    # requires ~31 G memory. Additional threads don't seem to consume much more
+    # memory but do speed up the process a lot. The 'extra' parameter settings
+    # reported below affect memory consumption and speed.
+    #
+    # NOTE: We tested indexing of mouse gemome on a machine with 8 cores and
+    # 39.2 G memory. Using STAR 2.6.0a and 8 threads (snakemake -j 8)
+    # computation time was ~ 0.5 hr. We used the following parameters (default
+    # values):
+    #   - sjdbOverhang 100
+    #   - genomeChrBinNbits 18
+    #   - genomeSuffixLengthMax -1
+    gtf:
+      # For GTF files (Eukaryotes)
+      - "--sjdbOverhang 100" # the default value
+      - "--genomeChrBinNbits 18" # the default value 
+      - "--genomeSuffixLengthMax -1" # the default value 
+    gff:
+      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check
+      # whether CDS and Exon are features in the GFF File.
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
+      # You should also adapt these, please see the STAR manual for best values
+        # - "--genomeSAindexNbases 14"
+        # - "--genomeChrBinNbits 14"
+
+  # Module 2 - STAR Align
+  star:
+    # Keep the STAR index in memory for the next aligment run. This saves time
+    # because loading a mouse genome index takes approximately 5 minutes.
+    - "--genomeLoad LoadAndKeep"
+      
+  # Module 3 - Mapping Barcodes
+  # Extra Parameters for the featureCounts Package
+  featureCounts:
+    - '-F GTF'
+    - '-g gene_id'
+    - '-t exon'
+    - '--primary'
+
+
+#####   QUALITY CONTROL   #####
+
+# The variable by which data should be grouped when performing quality control.
+# Quality checks will be performed per group. This variable must be the name of
+# a column in the <samples> file. If no grouping is needed then the value of
+# this parameter should be set to null. 
+QCgrouping: experiment
+
+#####   DATA ANALYSIS   #####
 
 # What column of the experimental "samples" annotations file defines the 
 # different samples. These will have their count tables kept seperate on top of 
@@ -86,72 +180,6 @@ annotationformat: gtf
 # '/scripts/annotation-conversion-lookup-table-generator.R'
 conversiontables: reference-sequences/gene-conversion-tables
 
-# The file suffix indicates which files contain sequences and code counts.
-# The complete file name is reconstructed as {fileprefix}{filesuffix}
-filesuffix:
-  align:
-    - _R2.fastq.gz
-  codecount:
-    - _R1.fastq.gz
-
-
-#### Test run
-
-# Whether this is a test run. This limits the amounts of samples used to speed 
-# up testing.
-istest: false
-# Samples for test runs. The names must be taken from the 'fileprefix' column in
-# the 'samples' file 
-testset:
-  - LNS2_1 
-  - LNS_W0_P2_7
-
-
-### Extra shell parameters for modules 1-3
-
-params:
-  # Module 1 - STAR Index
-  starindex:
-    # Indexing requires a large amount of memory. Indexing a mouse genome 
-    # requires ~31 G memory. Additional threads don't seem to consume much more
-    # memory but do speed up the process a lot. The 'extra' parameter settings
-    # reported below affect memory consumption and speed.
-    #
-    # Testing indexing of mouse gemome on a 39.2 G machine with 8 cores, using 
-    # STAR 2.6.0a
-    #   STAR extra parameters (using default values):
-    #     - sjdbOverhang 100
-    #     - genomeChrBinNbits 18
-    #     - genomeSuffixLengthMax -1 
-    #  - 8 threads: computation time ~ 0.5 hr
-    #
-    gtf:
-      # For GTF files (Eukaryotes)
-      - "--sjdbOverhang 100" # the default value
-      - "--genomeChrBinNbits 18" # the default value 
-      - "--genomeSuffixLengthMax -1" # the default value 
-    gff:
-      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check
-      # whether CDS and Exon are features in the GFF File.
-      - "--sjdbGTFfeatureExon CDS" 
-      - "--sjdbGTFtagExonParentTranscript gene"
-      # You should also adapt these, please see the STAR manual for best values
-        # - "--genomeSAindexNbases 14"
-        # - "--genomeChrBinNbits 14"
-
-  # Module 2 - STAR Align
-  star:
-    # Keep the STAR Index in Memory for the next Aligment Run. This saves time
-    # because loading an index takes approximately 5 minutes
-    - "--genomeLoad LoadAndKeep"
-      
-  # Module 3 - Mapping Barcodes
-  # Extra Parameters for the featureCounts Package
-  featureCounts:
-    - '-F GTF'
-    - '-g gene_id'
-    - '-t exon'
-    - '--primary'
 
 #### Parameters for correction of UMI counts
 # To infer the number of transcripts of a gene, a correction on the number of 
@@ -196,7 +224,10 @@ FGenes: NULL
 # CGenes, like FGenes, is a list of gene names, with the default being NULL. 
 # Instead of being ignored completely, genes that are tested for enrichment are
 # only removed if they have a Pearson’s correlation of >ccor to a gene in
-# CGenes. 
+# CGenes.
+# TODO: move list of mitochondrial genes to a file in the folder for common 
+# annotations. NOTE that mitochondrial genes can also be recognized by the
+# fact that the "reference" column in the HQFeatureCounts file has value "MT".
 CGenes: 
   - Pcna
   - Mki67
@@ -204,11 +235,9 @@ CGenes:
   - Hspa1a
   - Jun
   - Fos
-ccor: 0.4
+ccor: 0.4 # TODO: what is this parameter?
 
-
-
-### Parameters for RaceID3StemID2 Algorithm (Module 5)
+##### PARAMETERS FOR RaceID3/StemID2 (MODULE 5)
 
 # Maximum number of clusters for the computation of the gap statistic or
 # derivation of the cluster number by the saturation criterion. 
@@ -222,15 +251,14 @@ maxclustnr: 30
 # but give more robust results. Default is 50.
 bootnr: 50
 
-### Parameters for StemID2 algorithm ###
+##### PARAMETERS FOR StemID2
 
 # Enable StemID analysis to get stem cell likelihood scores per cluster.
 RunStemID: TRUE
 
-# Number of randomizations to be performed. Default is 2000.
-# As a rule of thumb, this should be at least one order of magnitude larger than
-# the desired p-value on the significance of the number of cells on a
-# connection.
+# Number of randomizations to be performed. Default is 2000. As a rule of thumb,
+# this should be at least one order of magnitude larger than the desired p-value
+# on the significance of the number of cells on a connection.
 pdishuf: 2000
 
 # Only links are drawn with link score greater than this. The link score
