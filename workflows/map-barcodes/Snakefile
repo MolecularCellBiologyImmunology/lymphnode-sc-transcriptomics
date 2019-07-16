@@ -34,8 +34,7 @@ rule addbc:
         samfile = '{tmppath}/star-align/{reference}/{fileprefix}/Aligned.out.sam',
         fastqfile = expand('{seqdir}/{{fileprefix}}{filesuffix}', 
             seqdir = config['seqdir'], 
-            filesuffix = config['filesuffix']['codecount'][0]
-            # TODO: can this be normalized to config['filesuffix']['codecount']?
+            filesuffix = config['filesuffix']['codecount']
         )
     output:
         '{tmppath}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
