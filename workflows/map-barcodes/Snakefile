@@ -24,7 +24,7 @@ rule bamtosam:
     input:
         '{tmppath}/star-align/{reference}/{fileprefix}/Aligned.out.bam'
     output:
-        '{tmppath}/star-align/{reference}/{fileprefix}/Aligned.out.sam'
+        temp('{tmppath}/star-align/{reference}/{fileprefix}/Aligned.out.sam')
     shell:
         'samtools view -h {input} -o {output}'
 
@@ -37,7 +37,7 @@ rule addbc:
             filesuffix = config['filesuffix']['codecount']
         )
     output:
-        '{tmppath}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam'
+        temp('{tmppath}/star-align/{reference}/{fileprefix}/Aligned.barcoded.sam')
     script:
         'scripts/add_barcodes.py'
 
