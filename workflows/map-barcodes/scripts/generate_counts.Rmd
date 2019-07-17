@@ -44,8 +44,8 @@ bc <- read_tsv(cellbcfile, col_names = c('barcodenr','cellbc'))
 ```{r counts}
 counts_per_cell_and_gene <- bc %>%
   left_join(d) %>%
-  distinct(cellbc, geneid, umi) %>%
-  group_by(cellbc, geneid) %>%
+  distinct(cellbc, geneid, reference, umi) %>%
+  group_by(cellbc, geneid, reference) %>%
   summarise(reads = n())
 
 # To infer the number of transcripts of a gene, a correction on the number of 
@@ -55,7 +55,8 @@ counts_per_cell_and_gene <- bc %>%
 # http://dx.doi.org/10.1038/nmeth.2930
 if (UMIcorrection) {
     if (UMIcardinality < 4) {
-        # TODO: error message, UMI cardinality rediculously low, do nothing
+        # TODO: generate error message, UMI cardinality too low, do 
+        # nothing
     } else {
         counts_per_cell_and_gene <- counts_per_cell_and_gene %>%
             mutate(transcripts = -UMIcardinality * log(1 - (reads/UMIcardinality)))
