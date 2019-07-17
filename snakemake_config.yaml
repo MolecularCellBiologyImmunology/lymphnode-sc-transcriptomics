@@ -87,7 +87,7 @@ istest: false
 # Samples for test runs. The names must be taken from the 'fileprefix' column in
 # the 'samples' file 
 testset:
-  - LNS2_1 
+  - LNS2_1
   - LNS_W0_P2_7
 
 
@@ -158,7 +158,9 @@ params:
 # The variable by which data should be grouped when performing quality control.
 # Quality checks will be performed per group. This variable must be the name of
 # a column in the <samples> file. If no grouping is needed then the value of
-# this parameter should be set to null. 
+# this parameter should be set to "null" or "~", i.e. the line should read
+# QCgrouping: null OR QCgrouping: ~
+# TODO: test null value of QCgrouping
 QCgrouping: experiment
 
 #####   DATA ANALYSIS   #####
