@@ -168,6 +168,7 @@ QCgrouping: experiment
 # What column of the experimental "samples" annotations file defines the 
 # different samples. These will have their count tables kept seperate on top of 
 # all being combined. If no split is necessary, input FALSE.
+# TODO: Change 'FALSE' input to canonical "null" or "~", see above.
 samplescolumn: time
 
 # The Kind of Annotation format that is used (gtf for Eukaryotes, gff for 
@@ -216,11 +217,15 @@ minnumber: 1
 # https://cran.r-project.org/web/packages/RaceID/vignettes/RaceID.html.
 # knn is an additional input parameter that controls the number of nearest
 # neighbours during batch effect removal. Default is FALSE.
+# TODO: Let LBatch be a column in the sampe annotation table
+# TODO: default LBatch must be canonical "null" or "~"
 LBatch: NULL
+# TODO: default knn to canonical "null" or "~"
 knn: FALSE
 
 # List of gene names to be filtered out completely for cell type inference.
-# Default is NULL. 
+# Default is NULL.
+# TODO: default FGenes to canonical "null" or "~"
 FGenes: NULL
 
 # CGenes, like FGenes, is a list of gene names, with the default being NULL. 
