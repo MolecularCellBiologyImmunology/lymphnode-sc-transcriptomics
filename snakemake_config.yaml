@@ -211,22 +211,19 @@ minexpr: 5
 minnumber: 1
 
 # If you suspect your samples are affected by a batch effect, LBatch can used.
-# Default is NULL.
+# Default is "null" or "~".
 # In order to apply batch effect removal, a list with a vector of cell ids for
 # each batch needs to be defined. See
 # https://cran.r-project.org/web/packages/RaceID/vignettes/RaceID.html.
 # knn is an additional input parameter that controls the number of nearest
-# neighbours during batch effect removal. Default is FALSE.
+# neighbours during batch effect removal. Default is "null" or "~".
 # TODO: Let LBatch be a column in the sampe annotation table
-# TODO: default LBatch must be canonical "null" or "~"
-LBatch: NULL
-# TODO: default knn to canonical "null" or "~"
-knn: FALSE
+LBatch: null
+knn: null
 
 # List of gene names to be filtered out completely for cell type inference.
-# Default is NULL.
-# TODO: default FGenes to canonical "null" or "~"
-FGenes: NULL
+# Default is "null" or "~".
+FGenes: null
 
 # CGenes, like FGenes, is a list of gene names, with the default being NULL. 
 # Instead of being ignored completely, genes that are tested for enrichment are
