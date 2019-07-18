@@ -96,7 +96,11 @@ rule tablehq:
 
 # generate a tsv table of unique umi's per gene and true cell barcode using a 
 # custom R script
-# FIXME: This sometimes fails when running parallel jobs:
+# FIXME: This sometimes fails when running parallel jobs. I presume the reason 
+# is R does not handle the parallel jobs properly. Proposed solution: Since we
+# have to create new R-scripts that handle the quality control per batch of
+# samples anyway, we can create a separate (python?) script that makes the count
+# tables using a temporary, in memory SQL database.
 
 rule simplecounts:
     input:
