@@ -58,7 +58,7 @@ rule map_barcoded:
             gtffile = config['gtffile'],
             genomedir = config['genomedir'])
     output:
-        '{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam',
+        temp('{tmppath}/mapping/{reference}/{fileprefix}/Aligned.barcoded.bam.featureCounts.sam'),
         '{tmppath}/mapping/{reference}/{fileprefix}/{fileprefix}.txt',
         '{tmppath}/mapping/{reference}/{fileprefix}/{fileprefix}.txt.summary'
     shell: 
