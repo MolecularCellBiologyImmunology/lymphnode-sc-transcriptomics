@@ -8,7 +8,7 @@
 
 # The Location of the Main Data Directory.
 # NOTE: All subsequent paths should be given relative to this path.
-data: D:/
+data: /media/sf_Data
 
 # Directory with reference genomes
 refdir: reference-sequences/genomes
@@ -119,7 +119,7 @@ knn: FALSE
 FGenes: NULL
 
 # CGenes, like FGenes, is a list of gene names, with the default being NULL. 
-# Instead of being ignored completely, genes that are tested for enrichment are only removed if they have a Pearson’s correlation of >ccor to a gene in CGenes. 
+# Instead of being ignored completely, genes that are tested for enrichment are only removed if they have a Pearsons correlation of >ccor to a gene in CGenes. 
 CGenes: ["Pcna","Mki67","Malat1","Hspa1a","Jun", "Fos"]
 ccor: 0.4
 
@@ -131,7 +131,7 @@ ccor: 0.4
 # Default is 30. Higher numbers cost more computational time, but if more major cell types are expected, a higher number should be chosen.
 maxclustnr: 30
 
-# Amount of booststrapping runs for clusterboot, the function performing bootstrapping of k-medoids clustering and quantifying the robustness of all clusters by Jaccard’s similarity. 
+# Amount of booststrapping runs for clusterboot, the function performing bootstrapping of k-medoids clustering and quantifying the robustness of all clusters by Jaccards similarity. 
 # Higher numbers cost more computational time but give more robust results. Default is 50.
 bootnr: 50
 
@@ -144,7 +144,7 @@ RunStemID: TRUE
 # As a rule of thumb, this should be at least one order of magnitude larger than the desired p-value on the significance of the number of cells on a connection.
 pdishuf: 2000
 
-# Only links are drawn with link score greater than this. The link score corresponds to 1 –fraction of link not covered by a cell, so a positive number between 0 and 1. 
+# Only links are drawn with link score greater than this. The link score corresponds to 1-fraction of link not covered by a cell, so a positive number between 0 and 1. 
 # Link score close to zero correspond to a situation where most cells on a link reside close to the connected cluster center, while a score close to one arises  in  a  situation  where  the  link  is  covered  uniformly  with  cells.  
 # At higher values only links are shown that represent higher confidencepredictions for actual differentiation trajectories. Default is 0.3.
 scthr: 0.3

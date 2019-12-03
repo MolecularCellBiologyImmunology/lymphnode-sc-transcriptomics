@@ -5,7 +5,7 @@ include: "../common.snakefile"
 
 ##### target rules #####
 # pseudorule consuming all the final output
-rule all:S
+rule all:
     input:
         expand('{tmpstore}/star-align/{reference}/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
 
