@@ -1,8 +1,5 @@
 # This file should contain everything to configure the workflow on a global scale. 
-
 # NOTE: It is advisable that you copy, move and configure this file to and for each experimental data repository.
-
-
 
 ### Data Directories, File Paths & Experimental Settings
 
