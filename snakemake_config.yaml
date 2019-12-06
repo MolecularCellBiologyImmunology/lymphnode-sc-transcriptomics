@@ -1,0 +1,98 @@
+# NOTES:
+# This file should contain everything to configure the workflow on a global scale. 
+# It is advisable that you configure this file seperately for each experiment and copy it in its data repository.
+
+
+
+### Data Directories, File Paths & Experimental Settings
+
+# The Location of the Main Data Directory.
+# NOTE: All subsequent paths should be given relative to this path.
+data: /media/sf_Data
+
+# Directory with Reference Genomes
+refdir: reference-sequences/genomes
+# The STAR Indexed Genomes Directory
+index: reference-sequences/indexed-genomes
+# The Local Data Repository Relevant for the Analyzed Experiment. If following the Advice at the Head of this File, this would be the Path to the Directory where this Config File resides.
+repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
+# Directory with sequence files
+sequences: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+# Directory with sequence files, split by cDNA and barcodes
+sequences_split: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+# Directory where Large Temporary Files will be stored
+tmpstore: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files
+# Directory where Output Files will be stored
+output: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_output
+
+# File with Experimental Sample Annotations
+samples: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/annotations.tsv
+# File with Experimental Reference Genome Annotations
+references: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_2018_Aug/reference.tsv
+# File with known Cell Barcodes
+celbc: research-sbi-mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
+
+# Folder(s) with R packages
+rpackagesfolders: ["/home/snakemake/R/x86_64-pc-linux-gnu-library/3.6","/usr/local/lib/R/site-library","/usr/lib/R/site-library", "/usr/lib/R/library"]
+
+# The Reference Genome, see the 'references' file for valid entries
+reference: mouse-grcm38
+
+# The Kind of Annotation format that is used (gtf for Eukaryotes, gff for Bacterial Genomes having GFF-3 Format Genome Annotation File, refers to Entries in params:starindex)
+annotationformat: gtf
+
+# What column of the Experimental "samples" Annotations file defines the different samples. These will have their counttables kept seperate on top of all being combined. If no split is necessary, input FALSE.
+samplescolumn: time
+
+# Folder with conversion ID's between ENSEMBL and other custom formats that will be added in the output. 
+# NOTE: See Example for Mus Musculus. Should a new table be made for any other model, edit and use the following script: '/scripts/annotation-conversion-lookup-table-generator.R'
+conversiontables: reference-sequences/gene-conversion-tables
+
+# The File Suffices indicating which Files contain Sequences or Barcodes in the "split sequences" directory.
+# The Complete Filename is Reconstructed as {fileprefix}{filesuffix}
+filesuffix:
+  align:
+    - _R2.fastq.gz
+  codecount:
+    - _R1.fastq.gz
+
+
+
+### Extra Shell Parameters for Modules
+
+params:
+  # Module 1 - STAR Index
+  starindex:
+    gtf:
+      # For GTF files (Eukaryotes)
+      - "--sjdbOverhang 100" # the Default Value
+      - "--genomeChrBinNbits 10"
+      - "--genomeSuffixLengthMax 1000"
+    gff:
+      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check whether CDS and Exon are features in the GFF File.
+      - "--sjdbGTFfeatureExon CDS" 
+      - "--sjdbGTFtagExonParentTranscript gene"
+
+  # Module 2 - STAR Align
+  star:
+    # Keep the STAR Index in Memory for the next Aligment Run. This saves Time because loading an Index takes approximatley 5 Minutes
+    - "--genomeLoad LoadAndKeep"
+      
+  # Module 3 - Mapping Barcodes
+  # Extra Parameters for the featureCounts Package
+  featureCounts:
+    - '-F GTF'
+    - '-g gene_id'
+    - '-t exon'
+    - '--primary'
+
+
+
+#### Test Run
+
+# Whether this is a test run. This limits the amounts of samples used to speed up testing.
+istest: true
+# Samples for Test Runs. The Names must be taken from the 'fileprefix' Column in the 'samples' File 
+testset:
+  - LNS2_1 
+  - LNS_W0_P2_7
