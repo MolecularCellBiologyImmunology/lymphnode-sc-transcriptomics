@@ -1,4 +1,4 @@
-# Snakemake Workflow for Module 3: Mapping the reads into barcodes
+# Snakemake Workflow for Module 1: Parsing raw sequence reads
 
 # Include common settings
 include: "../common.snakefile"

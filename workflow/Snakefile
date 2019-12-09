@@ -1,4 +1,4 @@
-# Base scRNAseq analysis Snakemake that combines all other Snakefiles in ./workflows together. 
+# Base scRNAseq analysis Snakemake that combines all other Snakefiles in ./submodules together. 
 
 ##### Load Config and Sample Sheets #####
 import easygui
@@ -6,42 +6,43 @@ print("Please choose a configuration file to run Snakemake with.")
 config_file = easygui.fileopenbox()
 
 # Include common settings
-include: "./workflows/common.snakefile"
+include: "./submodules/common.snakefile"
 
-# Modulization through Subworkflows: 
+# Modulization through Submodules: 
 subworkflow annotate_raw_sequences:
     workdir:
-        "./workflows/annotate_raw_sequences"
+        "./submodules/annotate_raw_sequences"
     snakefile:
-        "./workflows/annotate_raw_sequences/Snakefile"        
+        "./submodules/annotate_raw_sequences/Snakefile"        
 subworkflow star_index:
     workdir:
-        "./workflows/star_index"
+        "./submodules/star_index"
     snakefile:
-        "./workflows/star_index/Snakefile"
+        "./submodules/star_index/Snakefile"
 subworkflow star_align:
     workdir:
-        "./workflows/star_align"
+        "./submodules/star_align"
     snakefile:
-        "./workflows/star_align/Snakefile"
+        "./submodules/star_align/Snakefile"
 subworkflow map_barcodes:
     workdir:
-        "./workflows/map_barcodes"
+        "./submodules/map_barcodes"
     snakefile:
-        "./workflows/map_barcodes/Snakefile"
+        "./submodules/map_barcodes/Snakefile"
 subworkflow generate_counttable:
        workdir:
-        "./workflows/generate_counttable"
+        "./submodules/generate_counttable"
     snakefile:
-       "./workflows/generate_counttable/Snakefile"
+       "./submodules/generate_counttable/Snakefile"
 
 # Main workflow rule, determining output of workflow
 rule all:
     input:
-        module1 = star_index(           expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
-        module2 = star_align(           expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'        , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        module3 = map_barcodes(         expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        module4 = generate_counttable(  expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
+        annotate_raw_sequences( expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
+        star_index(             expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
+        star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'        , tmpstore=tmpstore, fileprefix=fileprefixes)),
+        map_barcodes(           expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
+        generate_counttable(    expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
 
 
 
