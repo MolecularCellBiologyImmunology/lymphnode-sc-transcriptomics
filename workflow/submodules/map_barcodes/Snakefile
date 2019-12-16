@@ -10,7 +10,7 @@ extrafc = ' '.join(config['params']['featureCounts'])
 ##### functions producing input #####
 def get_fastq(wildcards):
     seqbase = str(data / config['sequences'])
-    path = seqbase + "{fileprefix}{filesuffix}".format(filesuffix=config['filesuffix']['codecount'][0], **wildcards)
+    path = seqbase + "{fileprefix}{filesuffix}".format(filesuffix=config['filesuffix']['barcodes'][0], **wildcards)
     return path
 
 ##### target rules #####

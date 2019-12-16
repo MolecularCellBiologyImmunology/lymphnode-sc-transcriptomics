@@ -16,10 +16,10 @@ refdir: reference-sequences/genomes
 index: reference-sequences/indexed-genomes
 # The Local Data Repository Relevant for the Analyzed Experiment. If following the Advice at the Head of this File, this would be the Path to the Directory where this Config File resides.
 repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
-# Directory with sequence files
-sequences: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
-# Directory with sequence files, split by cDNA and barcodes
-sequences_split: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_2018_Aug
+# Directory with sequence files (Drop-seq output)
+sequences: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences
+# Directory with sequence files, split by cDNA and barcodes (Generated from sequences, or Cel-Seq output)
+sequences_split: research-sbi-mouse-lymph-node-stromal-cell-time-series/sequences_split
 # Directory where Large Temporary Files will be stored
 tmpstore: research-sbi-mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files
 # Directory where Output Files will be stored
@@ -53,7 +53,7 @@ conversiontables: reference-sequences/gene-conversion-tables
 filesuffix:
   align:
     - _R2.fastq.gz
-  codecount:
+  barcodes:
     - _R1.fastq.gz
 
 
@@ -61,7 +61,30 @@ filesuffix:
 ### Extra Shell Parameters for Modules
 
 params:
-  # Module 1 - STAR Index
+  # Module 1 - Parsing of Raw Sequences
+  barcoding:
+    cell_bc_start:
+      index: 69
+      from_end: FALSE
+    cell_bc_end:     
+      index: 80
+      from_end: FALSE
+    
+    umi_start: 
+      index: 81
+      from_end: FALSE
+    umi_end: 
+      index: 88
+      from_end: FALSE
+    
+    cdna_start: 
+          index: 89
+      from_end: FALSE
+    cdna_end: 
+      index: 67
+      from_end: TRUE
+
+  # Module 2 - STAR Index
   starindex:
     gtf:
       # For GTF files (Eukaryotes)
@@ -73,12 +96,12 @@ params:
       - "--sjdbGTFfeatureExon CDS" 
       - "--sjdbGTFtagExonParentTranscript gene"
 
-  # Module 2 - STAR Align
-  star:
+  # Module 3 - STAR Align
+  staralign:
     # Keep the STAR Index in Memory for the next Aligment Run. This saves Time because loading an Index takes approximatley 5 Minutes
     - "--genomeLoad LoadAndKeep"
       
-  # Module 3 - Mapping Barcodes
+  # Module 4 - Mapping Barcodes
   # Extra Parameters for the featureCounts Package
   featureCounts:
     - '-F GTF'

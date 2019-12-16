@@ -8,12 +8,7 @@ config_file = easygui.fileopenbox()
 # Include common settings
 include: "./submodules/common.snakefile"
 
-# Modulization through Submodules: 
-subworkflow annotate_raw_sequences:
-    workdir:
-        "./submodules/annotate_raw_sequences"
-    snakefile:
-        "./submodules/annotate_raw_sequences/Snakefile"        
+# Modulization through Submodules:     
 subworkflow star_index:
     workdir:
         "./submodules/star_index"
@@ -38,9 +33,8 @@ subworkflow generate_counttable:
 # Main workflow rule, determining output of workflow
 rule all:
     input:
-        annotate_raw_sequences( expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
         star_index(             expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
-        star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'        , tmpstore=tmpstore, fileprefix=fileprefixes)),
+        star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'         , tmpstore=tmpstore, fileprefix=fileprefixes)),
         map_barcodes(           expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
         generate_counttable(    expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
 

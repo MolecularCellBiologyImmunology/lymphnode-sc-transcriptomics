@@ -10,6 +10,15 @@ from gatb import Bank
 import sqlite3
 from common.utils import chunks
 
+def parse_indices(sequence, parameters):
+    indices = {}
+    for index in parameters:
+        if parameters[index]['from_end']:
+            indices[index] = len(sequence) - parameters[index]['index']
+        else: 
+            indices[index] = parameters[index]['index']
+    return(indices)
+
 r = []
 print("Reading source file into in-memory database of barcodes: {}".format(snakemake.input['fastqfile']))
 con = sqlite3.connect(":memory:")
@@ -22,8 +31,9 @@ for chunk in chunks(fastq_parser, 10000):
     r = []
     for seq in chunk:
         sequence = seq.sequence.decode("utf-8")
-        umi = sequence[0:6]
-        cel = sequence[6:12]
+        indices = parse_indices(sequence, config['params']['barcoding'])
+        umi = sequence[indices["umi_start"]:indices["umi_end"]]
+        cel = sequence[indices["cell_bc_start"]:indices["cell_bc_end"]]
         seqid = seq.comment.decode("utf-8").split(" ")[0]
         r.append((seqid, cel, umi))
     cur.executemany('INSERT INTO barcodes VALUES (?,?,?)', r)

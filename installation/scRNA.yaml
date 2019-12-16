@@ -25,7 +25,6 @@ dependencies:
   - cryptography=2.2.1
   - cryptography-vectors=2.4.2
   - curl=7.63.0
-  - datetime = 4.3
   - decorator=4.3.0
   - docutils=0.14
   - dropbox=9.2.0
@@ -131,6 +130,7 @@ dependencies:
   - numpy-base=1.15.4
   - pip:
     - cython==0.28.5
+    - datetime=4.3
     - htseq==0.11.0
     - pygatb==0.1.2
     - libuuid=2.32.1

@@ -17,7 +17,7 @@ rule align:
     output:
         expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
     params:
-        extra = ' '.join(config['params']['star'])
+        extra = ' '.join(config['params']['staralign'])
     threads: 24
     script: 'scripts/STAR_align.py'
 
