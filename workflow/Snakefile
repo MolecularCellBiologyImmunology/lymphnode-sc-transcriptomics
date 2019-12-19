@@ -1,10 +1,10 @@
 # Base scRNAseq analysis Snakemake that combines all other Snakefiles in ./submodules together. 
 
 # Load config
-#import easygui
-#print("Please choose a configuration file to run Snakemake with.")
-#config_file = easygui.fileopenbox()
-config_file = 'snakemake_config.yaml'
+import easygui
+print("Please choose a configuration file to run Snakemake with.")
+config_file = easygui.fileopenbox()
+#config_file = 'snakemake_config.yaml'
 
 # Include common settings
 include: "./common.snakefile"
@@ -26,7 +26,7 @@ subworkflow map_barcodes:
     snakefile:
         "./submodules/map_barcodes/Snakefile"
 subworkflow generate_counttable:
-       workdir:
+    workdir:
         "./submodules/generate_counttable"
     snakefile:
        "./submodules/generate_counttable/Snakefile"
@@ -34,14 +34,10 @@ subworkflow generate_counttable:
 # Main workflow rule, determining output of workflow
 rule all:
     input:
-        module1 = star_index
-        module2 = star_align
-        module3 = map_barcodes
-        module4 = combine_spread_plates
-        # star_index(             expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
-        # star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'         , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        # map_barcodes(           expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        # generate_counttable(    expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
+        star_index(         expand("{indexdir}/{reference}/{indexfiles}", indexdir = config['indexdir'], reference = config['reference'], indexfiles = indexfiles )),
+        star_align(         expand('{tmppath}/star_align/{reference}/{fileprefixes}/Aligned.out.bam', tmppath = tmppath, reference = config['reference'], fileprefixes= fileprefixes )),
+        map_barcodes(       expand('{tmppath}/mapping/{reference}/{fileprefixes}/counts.tsv', tmppath = tmppath, reference = config['reference'], fileprefixes= fileprefixes )),
+        generate_counttable(expand('{outputpath}/count_tables/ALL.csv', outputpath = outputpath ))
 
 
 

@@ -1,23 +1,23 @@
 # Snakemake Workflow for Module 4: When multiple plates are present, combining all plate count tables into a single normalized count table
 
 # Include common settings
-include: "../common.snakefile"
+include: "../../common.snakefile"
 
 rule all:
     input:
-        combinedplates = expand('{output}/combined_count_tables/counttables_combined_ALL.csv', output = output)
+        combinedplates = expand('{outputpath}/count_tables/ALL.csv', outputpath = outputpath)
 
 rule combine_plates:
     input:
-        plates = expand('{tmpstore}/mapping/{fileprefix}/counts.tsv', tmpstore=tmpstore, fileprefix=fileprefixes),
-        inputfolder = expand('{tmpstore}/mapping/', tmpstore=tmpstore),
+        plates = expand('{tmppath}/mapping/{reference}/{fileprefix}/counts.tsv', tmppath = tmppath, reference = config['reference'], fileprefix=fileprefixes),
+        inputfolder = expand('{tmppath}/mapping/{reference}', tmppath = tmppath, reference = config['reference']),
         annotations = annotationfile,
         conversiontable = conversionfolder
     output:
-        combinedplates = '{output}/combined_count_tables/counttables_combined_ALL.csv'
+        expand('{outputpath}/count_tables/ALL.csv', outputpath = outputpath)
     params:
-        outputfolder = '{output}/combined_count_tables',
-        rpackagesfolders  = rpackagesfolders,
+        outputfolder = expand('{outputpath}/count_tables', outputpath = outputpath),
+        rpackagesfolders = rpackagesfolders,
         samples = fileprefixes,
         samplescolumn = samplescolumn
     script:

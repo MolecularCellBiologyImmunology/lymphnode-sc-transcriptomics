@@ -14,7 +14,7 @@
 
 # The location of the top level data directory.
 # All subsequent paths should be given relative to this path!
-datadir: /data
+datadir: O:/m.kok2/PROJECTS/SCRNASEQ/Snakemake Analyzed Datasets
 
 #####   REFERENCE GENOMES   #####
 
@@ -41,7 +41,7 @@ reference: mouse-grcm38
 # The local data repository relevant for the analyzed experiment. If following 
 # the advice at the head of this file, this would be the path to the directory 
 # where this config file resides (<datadir><repo>).
-repo: mouse-lymph-node-stromal-cell-time-series
+repo: research-sbi-mouse-lymph-node-stromal-cell-time-series
 
 # NOTE: All following directories are subdirectories of the <datadir><repo>
 # directory.
@@ -211,4 +211,4 @@ UMIcorrection: true
 
 # The theoretical number of UMIs, usually 4^n where n is the length of the UMI 
 # barcode (UMIcardinality is the same as 'K' in eq. 3)
-UMIcardinality: 4096
+UMIcardinality: 65536

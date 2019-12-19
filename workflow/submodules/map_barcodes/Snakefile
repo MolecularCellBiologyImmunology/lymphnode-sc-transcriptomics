@@ -1,7 +1,7 @@
 # Snakemake Workflow for Module 3: Mapping the reads into barcodes
 
 # Include common settings
-include: "../common.snakefile"
+include: "../../common.snakefile"
 
 ##### featureCount settings #####
 # extra options
@@ -23,7 +23,7 @@ rule all:
                 ],
                 reference = config['reference'],
                 fileprefix = samples['fileprefix'],
-                tmppath = config['tmppath'])
+                tmppath = tmppath)
 
 # convert bam files to sam format using samtools
 rule bamtosam:
@@ -40,7 +40,7 @@ rule addbc:
         samfile = '{tmppath}/star_align/{reference}/{fileprefix}/Aligned.out.sam',
         fastqfile = expand('{seqdir}/{{fileprefix}}{filesuffix}', 
             seqdir = config['seqdir'], 
-            filesuffix = config['filesuffix']['codecount']
+            filesuffix = config['filesuffix']['barcodes']
         )
     output:
         temp('{tmppath}/star_align/{reference}/{fileprefix}/Aligned.barcoded.sam')

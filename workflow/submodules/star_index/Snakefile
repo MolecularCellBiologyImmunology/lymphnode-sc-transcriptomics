@@ -2,7 +2,7 @@
 # sequence
 
 # Include common settings
-include: "../common.snakefile"
+include: "../../common.snakefile"
 
 # STAR extra options
 extra = ' '.join(config['params']['starindex'][config['annotationformat']])
@@ -37,9 +37,7 @@ rule index:
             gtffile = config['gtffile'],
             genomedir = config['genomedir'])
     output:
-        expand("{{indexdir}}/{{reference}}/{indexfiles}",
-            indexfiles = indexfiles
-        )
+        expand("{{indexdir}}/{{reference}}/{indexfiles}", indexfiles = indexfiles)
     params: targetindex = "{indexdir}/{reference}"
     threads: 8
     shell: 'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {params.targetindex} --genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf} {extra}'

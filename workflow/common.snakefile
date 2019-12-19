@@ -24,7 +24,7 @@ except NameError:
     config_file = None
 
 if config_file is None:
-    config_file = '../../snakemake_config.yaml'
+    config_file = '../snakemake_config.yaml'
 
 configfile: config_file
 validate(config, schema="schemas/config.schema.yaml")
@@ -42,7 +42,7 @@ validate(samples, schema="schemas/annotations.schema.yaml")
 if config['istest']:
    samples = samples.loc[config['testset']]
 samples.drop(columns='fileprefix')
-config['fileprefixes'] = samples['fileprefix']
+fileprefixes = samples['fileprefix']
 
 # File with Reference Genome Annotations
 referencefile = str(datadir / config['repo'] / config['references'])
@@ -69,18 +69,18 @@ else:
 ##### Other Paths #####
 
 # Directory for Temporary Files, Intermediate Results
-config['tmppath'] = str(datadir / config['repo'] / config['tmpstore'])
+tmppath = str(datadir / config['repo'] / config['tmpstore'])
 
 # Directory where output files will be stored
-output = pathlib.Path(str(datadir / config['output']))
+outputpath = pathlib.Path(str(datadir / config['output']))
 raceidoutputsbydate = pathlib.Path(str(datadir / config['output'] / 'raceid3stemid2') + date_time)
 
 # Constructing main directory where the reference genomes and gtf files are
 # located
-config['genomedir'] = str(datadir / config['refdir'])
+config['genomedir'] = str(datadir / config['refdir']) # / config['reference'] ?
 
 # Constructing main directory where the STAR index files are located
-config['indexdir'] = str(datadir / config['indexdir'])
+config['indexdir'] = str(datadir / config['indexdir']) # / config['reference'] ?
 
 # Names of the reference files
 # Fasta file
@@ -89,7 +89,7 @@ config['fastafile'] = references.loc[config['reference'], 'genome']
 config['gtffile'] = references.loc[config['reference'], 'gtf']
 
 # Expected index files
-# indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
+indexfiles = ['SA','SAindex','chrLength.txt','chrName.txt','chrNameLength.txt']
 
 # Locations of R packages
 rpackagesfolders = config['rpackagesfolders']

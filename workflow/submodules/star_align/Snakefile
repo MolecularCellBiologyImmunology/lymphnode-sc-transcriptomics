@@ -1,29 +1,39 @@
 # Snakemake Workflow for Module 2: Aligning sequences with STAR
 
 # Include common settings
-include: "../common.snakefile"
+include: "../../common.snakefile"
 
 ##### target rules #####
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand('{tmppath}/star_align/{reference}/{fileprefix}/Aligned.out.bam', 
-            tmppath = config['tmppath'],
+        expand('{tmppath}/star_align/{reference}/{fileprefixes}/Aligned.out.bam', 
+            tmppath = tmppath,
             reference = config['reference'],
-            fileprefix = config['fileprefixes']
-        )
+            fileprefixes = fileprefixes)
 
 # STAR Alignment
 rule align:
     input:
-        fq = expand('{seqdir}/{{fileprefix}}{filesuffix}', seqdir = config['seqdir'], filesuffix = config['filesuffix']['align'][0]),
-        index = expand('{indexdir}/{reference}/SA', indexdir = config['indexdir'], reference = config['reference'])
-    output: '{tmppath}/star_align/{reference}/{fileprefix}/Aligned.out.bam'
+        fq = expand('{seqdir}/{fileprefixes}{filesuffix}', 
+            seqdir = config['seqdir'], 
+            fileprefixes = fileprefixes, 
+            filesuffix = config['filesuffix']['align'][0]),
+        index = expand('{indexdir}/{reference}/SA', 
+            indexdir = config['indexdir'], 
+            reference = config['reference'])
+    output: 
+        expand('{{tmppath}}/star_align/{{reference}}/{fileprefixes}/Aligned.out.bam', fileprefixes = fileprefixes)
     params:
-        indexdir = expand('{indexdir}/{reference}', indexdir = config['indexdir'], reference = config['reference']),
-        extra = ' '.join(config['params']['star'])
-    threads: 8
-    script: 'scripts/STAR_align.py'
+        indexdir = expand('{indexdir}/{reference}', 
+            indexdir = config['indexdir'], 
+            reference = config['reference']),
+        extra = ' '.join(config['params']['star']),
+        outputdir = '{{tmppath}}/star_align/{{reference}}'
+    threads: 
+        8
+    script: 
+        'scripts/STAR_align.py'
 
 # Loading a STAR index file is time-consuming. We therefore use the option in 
 # STAR to load the index in memory once for all sequence files that must be 

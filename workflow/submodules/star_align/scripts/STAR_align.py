@@ -17,12 +17,14 @@ fq = snakemake.input.get("fq")
 assert fq is not None, "input-> fq is a required input parameter"
 input_str = fq
 
+
 # if fq.endswith(".gz"):
 #     readcmd = "--readFilesCommand unpigz -c"
 # else:
 #     readcmd = ""
 
-outprefix = os.path.dirname(snakemake.output[0]) + "/"
+fileprefix = os.path.splitext(os.path.basename(input_str))[0]
+outprefix = os.path.join(os.path.dirname(outputdir) + "/" + fileprefix + "/")
 
 # print("Will execute the following statement:\n")
 # print(format(
