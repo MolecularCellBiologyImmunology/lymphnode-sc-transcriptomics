@@ -1,13 +1,9 @@
 # #######################################
-# Build from minimal Debian Jessie image 
-#
-# Use the docker CMD which is 'bash' 
-# for this container
+# Build from Debian Miniconda3 image 
 # #######################################
 
 Bootstrap: docker
-From: debian:8.11-slim
-IncludeCmd: yes
+From: continuumio/miniconda3
 
 %help
     This container provides STAR, pigz and featureCounts
@@ -15,7 +11,8 @@ IncludeCmd: yes
     'singularity run <containername> <program name> <arguments>'
 
 %labels
-    MAINTAINER d.molenaar@vu.nl
+    Maintainer d.molenaar@vu.nl
+
 
 %post
     # #######################################
@@ -26,43 +23,63 @@ IncludeCmd: yes
     BIN=/usr/local/bin
     apt-get update
 
+
+    # #####################################
+    # Install Python packages
+    # #####################################
+
     # #######################################
     # Install pigz, the parallel implementa-
     # tion of gzip
     # #######################################
     apt-get -y install pigz
 
-    # #######################################
-    # Install STAR
-    # #######################################
-    VER=2.6.1d
+# #######################################
+# Install STAR
+# #######################################
+%apphelp STAR
+    Run the STAR aligner. See https://github.com/alexdobin/STAR
+
+%appinstall STAR
+    VER=2.7.0c
     apt-get -y install make 
     apt-get -y install gcc zlib1g-dev g++ cmake
     apt-get -y install wget
     URL=https://github.com/alexdobin/STAR/archive/${VER}.tar.gz
     wget ${URL}
     tar -xzf ${VER}.tar.gz
-    cd STAR-${VER}/source
+    cd ${SCIF_APPROOT}/STAR-${VER}/source
     make CXXFLAGSextra=-march=native STAR && make CXXFLAGSextra=-march=native STARlong
-    cp STAR ${BIN} && cp STARlong ${BIN}
-    cd / && rm -r STAR-${VER} && rm ${VER}.tar.gz
+    cp STAR ${SCIF_APPROOT}/bin && cp STARlong ${SCIF_APPROOT}/bin
+    rm -r ${SCIF_APPROOT}/STAR-${VER} && rm ${SCIF_APPROOT}/${VER}.tar.gz
+
+%apprun STAR
+    exec STAR "$@"
+
+
     
-    # #######################################
-    # Install the Subread package
-    # Subread provides the featureCounts pro-
-    # gram
-    # http://subread.sourceforge.net/
-    # #######################################
-    apt-get -y install make 
-    apt-get -y install gcc zlib1g-dev 
-    apt-get -y install wget
-    VER=1.6.3
-    URL=https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
-    wget ${URL}
-    tar -xvzf subread-${VER}-source.tar.gz
-    cd subread-${VER}-source/src
-    make -f Makefile.Linux
-    cp ../bin/utilities/* ${BIN}
-    rm -rf ../bin/utilities
-    cp ../bin/* ${BIN}
-    cd / && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
+# #######################################
+# Install the Subread package
+# Subread provides the featureCounts pro-
+# gram
+# http://subread.sourceforge.net/
+# #######################################
+%apphelp Subread
+# apt-get -y install make 
+# apt-get -y install gcc zlib1g-dev 
+# apt-get -y install wget
+# VER=1.6.3
+# URL=https://sourceforge.net/projects/subread/files/subread-${VER}/subread-${VER}-source.tar.gz
+# wget ${URL}
+# tar -xvzf subread-${VER}-source.tar.gz
+# cd subread-${VER}-source/src
+# make -f Makefile.Linux
+# cp ../bin/utilities/* ${BIN}
+# rm -rf ../bin/utilities
+# cp ../bin/* ${BIN}
+# cd / && rm -rf subread-${VER}-source && rm subread-${VER}-source.tar.gz
+
+# #####################################
+# Install Python packages
+# Listed in scRNA.yaml
+# #####################################

@@ -1,11 +1,28 @@
+<<<<<<< HEAD
 # NOTES:
 # This file should contain everything to configure the workflow on a global scale. 
 # It is advisable that you configure this file seperately for each experiment and copy it in its data repository.
+=======
+# This file should contain everything to configure the workflow on a global 
+# scale. 
 
+# NOTE: It is advisable that you copy, move and configure this file to and for 
+# each experimental data repository.
+>>>>>>> 8c09e430e2c951f2f88f1430c049d6f0f852b194
 
+################################################################################
+#                                                                              #
+#                      Data directories, file paths                            #
+#                                                                              #
+################################################################################
 
-### Data Directories, File Paths & Experimental Settings
+#####   TOP DATA DIRECTORY  #####
 
+# The location of the top level data directory.
+# All subsequent paths should be given relative to this path!
+datadir: /data
+
+<<<<<<< HEAD
 # The Location of the Main Data Directory.
 # NOTE: All subsequent paths should be given relative to this path.
 data: /media/sf_Data
@@ -50,6 +67,64 @@ conversiontables: reference-sequences/gene-conversion-tables
 
 # The File Suffices indicating which Files contain Sequences or Barcodes in the "split sequences" directory.
 # The Complete Filename is Reconstructed as {fileprefix}{filesuffix}
+=======
+#####   REFERENCE GENOMES   #####
+
+# Main directory with reference genomes (<datadir>/<refdir>)
+# Reference genomes and their gtf files should be stored in subdirectories of
+# this directory with name <reference>, where <reference> is for example 
+# "mouse-grcm38". The variable <reference> is the same as the one in the
+# "reference" column of the "references" file (see below).
+refdir: reference-sequences/genomes
+
+# The STAR index main directory (<datadir>/<indexdir>)
+# Index files will be stored in subdirectories with name <reference>, see below. 
+indexdir: reference-sequences/indexed-genomes
+
+# The reference genome, see the <references> file for valid entries. A 
+# <reference> folder is expected to be a subfolder of <datadir>/<refdir>, 
+# and to contain a gzipped reference genome file and a corresponding gtf file.
+# The star-index workflow will create a folder <datadir>/<indexdir>/<reference>
+# with the genome index files.
+reference: mouse-grcm38
+
+#####   EXPERIMENTAL DATA   #####
+
+# The local data repository relevant for the analyzed experiment. If following 
+# the advice at the head of this file, this would be the path to the directory 
+# where this config file resides (<datadir><repo>).
+repo: mouse-lymph-node-stromal-cell-time-series
+
+# NOTE: All following directories are subdirectories of the <datadir><repo>
+# directory.
+
+# Directory name where large temporary files will be stored 
+# (Full path: <datadir>/<repo>/<tmpstore>).
+tmpstore: snakemake_temporary_files
+# Directory where output files will be stored
+# (Full path: <datadir>/<repo>/<output>)
+output: snakemake_output
+# Directory with sequence files
+# (Full path: <datadir>/<repo>/<sequences>)
+sequences: sequences_2018_Aug
+#
+# The following files are expected to be located in subdirectories of the
+# <repo> directory 
+#
+# File with experimental sample annotations (<datadir>/<repo>/<samples>)
+samples: annotations_2018_Aug/annotations.tsv
+# File with experimental reference genome annotations
+# (Ful path: <datadir>/<repo>/<references>)
+references: annotations_2018_Aug/reference.tsv
+# File with known cell barcodes
+# (Full path: <datadir>/<repo>/<celbc>)
+celbc: annotations_common/celseq_barcodes.192.txt
+
+#####   FILE SUFFIX ENCODING   #####
+
+# The file suffix encodes which files contain sequences and code counts.
+# The complete file name is reconstructed as {fileprefix}{filesuffix}
+>>>>>>> 8c09e430e2c951f2f88f1430c049d6f0f852b194
 filesuffix:
   align:
     - _R2.fastq.gz
@@ -57,8 +132,39 @@ filesuffix:
     - _R1.fastq.gz
 
 
+#####   TEST RUN SAMPLES   #####
 
+<<<<<<< HEAD
 ### Extra Shell Parameters for Modules
+=======
+# Whether this is a test run. This limits the amounts of samples used to speed 
+# up testing.
+istest: false
+# Samples for test runs. The names must be taken from the 'fileprefix' column in
+# the 'samples' file 
+testset:
+  - LNS2_1
+  - LNS_W0_P2_7
+
+
+#####   PACKAGES   #####
+# TODO: move location/installation of packages to R-scripts that use them
+
+# Folder(s) with R packages
+rpackagesfolders: 
+  - C:/Users/Mike/Documents/R/win-library/3.6
+  - C:/Program Files/R/R-3.6.0/library
+
+
+################################################################################
+#                                                                              #
+#                            Parameter settings                                #
+#                                                                              #
+################################################################################
+
+
+#####   SHELL PARAMETERS FOR MODULES 1-3   #####
+>>>>>>> 8c09e430e2c951f2f88f1430c049d6f0f852b194
 
 params:
   # Module 1 - Parsing of Raw Sequences
@@ -86,19 +192,42 @@ params:
 
   # Module 2 - STAR Index
   starindex:
+    # Indexing requires a large amount of memory. Indexing a mouse genome 
+    # requires ~31 G memory. Additional threads don't seem to consume much more
+    # memory but do speed up the process a lot. The 'extra' parameter settings
+    # reported below affect memory consumption and speed.
+    #
+    # NOTE: We tested indexing of mouse gemome on a machine with 8 cores and
+    # 39.2 G memory. Using STAR 2.6.0a and 8 threads (snakemake -j 8)
+    # computation time was ~ 0.5 hr. We used the following parameters (default
+    # values):
+    #   - sjdbOverhang 100
+    #   - genomeChrBinNbits 18
+    #   - genomeSuffixLengthMax -1
     gtf:
       # For GTF files (Eukaryotes)
-      - "--sjdbOverhang 100" # the Default Value
-      - "--genomeChrBinNbits 10"
-      - "--genomeSuffixLengthMax 1000"
+      - "--sjdbOverhang 100" # the default value
+      - "--genomeChrBinNbits 18" # the default value 
+      - "--genomeSuffixLengthMax -1" # the default value 
     gff:
-      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check whether CDS and Exon are features in the GFF File.
+      # For Bacterial Genomes having GFF-3 Format Genome Annotation Files. Check
+      # whether CDS and Exon are features in the GFF File.
       - "--sjdbGTFfeatureExon CDS" 
       - "--sjdbGTFtagExonParentTranscript gene"
+      # You should also adapt these, please see the STAR manual for best values
+        # - "--genomeSAindexNbases 14"
+        # - "--genomeChrBinNbits 14"
 
+<<<<<<< HEAD
   # Module 3 - STAR Align
   staralign:
     # Keep the STAR Index in Memory for the next Aligment Run. This saves Time because loading an Index takes approximatley 5 Minutes
+=======
+  # Module 2 - STAR Align
+  star:
+    # Keep the STAR index in memory for the next aligment run. This saves time
+    # because loading a mouse genome index takes approximately 5 minutes.
+>>>>>>> 8c09e430e2c951f2f88f1430c049d6f0f852b194
     - "--genomeLoad LoadAndKeep"
       
   # Module 4 - Mapping Barcodes
@@ -110,7 +239,9 @@ params:
     - '--primary'
 
 
+#####   QUALITY CONTROL   #####
 
+<<<<<<< HEAD
 #### Test Run
 
 # Whether this is a test run. This limits the amounts of samples used to speed up testing.
@@ -119,3 +250,124 @@ istest: true
 testset:
   - LNS2_1 
   - LNS_W0_P2_7
+=======
+# The variable by which data should be grouped when performing quality control.
+# Quality checks will be performed per group. This variable must be the name of
+# a column in the <samples> file. If no grouping is needed then the value of
+# this parameter should be set to "null" or "~", i.e. the line should read
+# QCgrouping: null OR QCgrouping: ~
+# TODO: test null value of QCgrouping
+QCgrouping: experiment
+
+#####   DATA ANALYSIS   #####
+
+# What column of the experimental "samples" annotations file defines the 
+# different samples. These will have their count tables kept seperate on top of 
+# all being combined. If no split is necessary, input FALSE.
+# TODO: Change 'FALSE' input to canonical "null" or "~", see above.
+samplescolumn: time
+
+# The Kind of Annotation format that is used (gtf for Eukaryotes, gff for 
+# Bacterial Genomes having GFF-3 Format Genome Annotation File, refers to 
+# Entries in params:starindex)
+annotationformat: gtf
+
+# Folder with conversion ID's between ENSEMBL and other custom formats that will
+# be added in the output.
+# NOTE: See example for MMusculus. Should a new table be made for any other 
+# model, edit and use the following script: 
+# '/scripts/annotation-conversion-lookup-table-generator.R'
+conversiontables: reference-sequences/gene-conversion-tables
+
+
+#### Parameters for correction of UMI counts
+# To infer the number of transcripts of a gene, a correction on the number of 
+# observed UMI's per gene can be made that accounts for the possibility that the
+# same UMI is attached to different RNA molecules of the same gene. See eq. 3 in
+# Grun et al. (2014), Nature Methods 11:637--640 
+# http://dx.doi.org/10.1038/nmeth.2930
+
+# Do you want to apply this correction?
+UMIcorrection: true
+
+# The theoretical number of UMIs, usually 4^n where n is the length of the UMI 
+# barcode (UMIcardinality is the same as 'K' in eq. 3)
+UMIcardinality: 4096
+
+#### Parameters for Sample Filtering (Module 5)  
+
+# Cells with less Total Transcripts than this number are removed from the
+# Analysis. This number depends on the Dataset and the Experiment Performed, but
+# should be at least 1000.
+mintotal: 1500
+
+# Genes should be expressed "minexpr" amount of times in at least "minnumber" of
+# cells, else they will not be considered in the clustering analysis.
+minexpr: 5
+minnumber: 1
+
+# If you suspect your samples are affected by a batch effect, LBatch can used.
+# Default is "null" or "~".
+# In order to apply batch effect removal, a list with a vector of cell ids for
+# each batch needs to be defined. See
+# https://cran.r-project.org/web/packages/RaceID/vignettes/RaceID.html.
+# knn is an additional input parameter that controls the number of nearest
+# neighbours during batch effect removal. Default is "null" or "~".
+# TODO: Let LBatch be a column in the sampe annotation table
+LBatch: null
+knn: null
+
+# List of gene names to be filtered out completely for cell type inference.
+# Default is "null" or "~".
+FGenes: null
+
+# CGenes, like FGenes, is a list of gene names, with the default being NULL. 
+# Instead of being ignored completely, genes that are tested for enrichment are
+# only removed if they have a Pearson’s correlation of >ccor to a gene in
+# CGenes.
+# TODO: move list of mitochondrial genes to a file in the folder for common 
+# annotations. NOTE that mitochondrial genes can also be recognized by the
+# fact that the "reference" column in the HQFeatureCounts file has value "MT".
+CGenes: 
+  - Pcna
+  - Mki67
+  - Malat1
+  - Hspa1a
+  - Jun
+  - Fos
+ccor: 0.4 # TODO: what is this parameter?
+
+##### PARAMETERS FOR RaceID3/StemID2 (MODULE 5)
+
+# Maximum number of clusters for the computation of the gap statistic or
+# derivation of the cluster number by the saturation criterion. 
+# Default is 30. Higher numbers cost more computational time, but if more major
+# cell types are expected, a higher number should be chosen.
+maxclustnr: 30
+
+# Amount of booststrapping runs for clusterboot, the function performing
+# bootstrapping of k-medoids clustering and quantifying the robustness of all
+# clusters by Jaccard’s similarity. Higher numbers cost more computational time
+# but give more robust results. Default is 50.
+bootnr: 50
+
+##### PARAMETERS FOR StemID2
+
+# Enable StemID analysis to get stem cell likelihood scores per cluster.
+RunStemID: TRUE
+
+# Number of randomizations to be performed. Default is 2000. As a rule of thumb,
+# this should be at least one order of magnitude larger than the desired p-value
+# on the significance of the number of cells on a connection.
+pdishuf: 2000
+
+# Only links are drawn with link score greater than this. The link score
+# corresponds to 1 –fraction of link not covered by a cell, so a positive number
+# between 0 and 1. 
+# Link score close to zero correspond to a situation where most cells on a link
+# reside close to the connected cluster center, while a score close to one
+# arises in a situation where the link is covered  uniformly  with  cells.
+# At higher values only links are shown that represent higher confidence
+# predictions for actual differentiation trajectories. Default is 0.3.
+scthr: 0.3
+>>>>>>> 8c09e430e2c951f2f88f1430c049d6f0f852b194

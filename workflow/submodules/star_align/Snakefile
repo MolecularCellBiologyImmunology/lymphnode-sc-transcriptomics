@@ -1,4 +1,4 @@
-# Snakemake Workflow for Module 2: Aligning sequences with STAR Index Files
+# Snakemake Workflow for Module 2: Aligning sequences with STAR
 
 # Include common settings
 include: "../common.snakefile"
@@ -7,33 +7,37 @@ include: "../common.snakefile"
 # pseudorule consuming all the final output
 rule all:
     input:
-        expand('{tmpstore}/star_align//{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix = fileprefixes)
+        expand('{tmppath}/star_align/{reference}/{fileprefix}/Aligned.out.bam', 
+            tmppath = config['tmppath'],
+            reference = config['reference'],
+            fileprefix = config['fileprefixes']
+        )
 
 # STAR Alignment
 rule align:
     input:
-        fq = expand((os.path.join(config['data'], config['sequences'], '') + "{fileprefix}" + "{filesuffix}".format(filesuffix=config['filesuffix']['align'][0])), fileprefix=fileprefixes) 
-        index = indexdir,
-    output:
-        expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam', tmpstore=tmpstore, reference = reference, fileprefix=samples['fileprefix'])
+        fq = expand('{seqdir}/{{fileprefix}}{filesuffix}', seqdir = config['seqdir'], filesuffix = config['filesuffix']['align'][0]),
+        index = expand('{indexdir}/{reference}/SA', indexdir = config['indexdir'], reference = config['reference'])
+    output: '{tmppath}/star_align/{reference}/{fileprefix}/Aligned.out.bam'
     params:
-        extra = ' '.join(config['params']['staralign'])
-    threads: 24
+        indexdir = expand('{indexdir}/{reference}', indexdir = config['indexdir'], reference = config['reference']),
+        extra = ' '.join(config['params']['star'])
+    threads: 8
     script: 'scripts/STAR_align.py'
 
-# Loading a STAR index file is time-consuming. We therefore use the option
-# in STAR to load the index in memory once for all sequence files that must 
-# be mapped against the same genome
+# Loading a STAR index file is time-consuming. We therefore use the option in 
+# STAR to load the index in memory once for all sequence files that must be 
+# qmapped against the same genome
 onstart:
     print('Loading the genome index file')
-    shell('STAR --genomeLoad LoadAndExit --genomeDir ' + indexdir)
+    shell('STAR --genomeLoad LoadAndExit --genomeDir ' + str(config['indexdir'] / config['reference']))
 
 # Remove the index from memory when finished mapping all sequence files
 onsuccess:
     print('Removing the genome index file from memory')
-    shell('STAR --genomeLoad Remove --genomeDir ' + indexdir)
+    shell('STAR --genomeLoad Remove --genomeDir ' + str(config['indexdir'] / config['reference']))
 
 # Remove the index from memory when exiting due to an error
 onerror:
     print('Removing the genome index file from memory')
-    shell('STAR --genomeLoad Remove --genomeDir ' + indexdir)
+    shell('STAR --genomeLoad Remove --genomeDir ' + str(config['indexdir'] / config['reference']))

@@ -12,3 +12,10 @@ _STARtmp/
 *.bam
 reports/
 results/
+container/
+.Rproj.user
+.mypy_cache/
+/.project
+__pycache__/
+.mypy_cache/
+.pytest_cache/

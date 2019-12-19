@@ -26,7 +26,7 @@ cur = con.cursor()
 print("")
 cur.execute('CREATE TABLE barcodes (seqid TEXT, celbc TEXT, umi TEXT)')
 # reading from file and writing to database in chunks to save memory
-fastq_parser = Bank(snakemake.input['fastqfile'])
+fastq_parser = Bank(snakemake.input.fastqfile[0])
 for chunk in chunks(fastq_parser, 10000):
     r = []
     for seq in chunk:
@@ -41,8 +41,8 @@ r = None
 print("Creating index on read indentifiers")
 cur.execute('CREATE UNIQUE INDEX seqidx ON barcodes (seqid)')
 
-print("Writing output file: {}".format(snakemake.output[0]))
-fi = open(snakemake.input['samfile'], 'r') 
+print("Writing output file: {}".format(snakemake.output))
+fi = open(snakemake.input.samfile, 'r') 
 fo = open(snakemake.output[0], 'w', buffering=32768)
 for line in fi:
     if line.startswith('@'):
@@ -57,17 +57,3 @@ for line in fi:
         fo.write('\t'.join(elements) + '\n')
 fi.close()
 fo.close()
-
-# for chunkoflines in chunks(fi, 10000):
-#     for line in chunkoflines:
-#         outlines = ''
-#         line = line[:-1] # removing '\n' at end of line
-#         elements = line.split('\t')
-#         cur.execute('SELECT celbc, umi FROM barcodes WHERE seqid=:seqid', {'seqid': elements[0]})
-#         bcs = cur.fetchone()
-#         elements.append('bc:Z:' + bcs[0])
-#         elements.append('um:Z:' + bcs[1])
-#         outlines += '\t'.join(elements) + '\n'
-#     fo.write(outlines)
-# fi.close()
-# fo.close()

@@ -1,10 +1,12 @@
 ---
 output: html_document
 params:
-  featuretable: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/HqFeatureCounts.tsv
+  featuretable: /data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv
   cellbcfile: /data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt
-  countsfile: /data/temporary/mapping/mouse-grcm38/LNS_W0_P4_3/counts.tsv
+  countsfile: /data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/counts.tsv
   samplename: LNS_W0_P4_3
+  UMIcardinality: 256
+  UMIcorrection: TRUE
 ---
 
 ---
@@ -20,14 +22,20 @@ library(ggplot2)
 ```
 
 ```{r parameters}
-# note that these are overriden in the rendering R-script, not in the Snakefile
+# Note that these parameter settings are overriden in the rendering R-script 
+# (render_reports.R), not in the Snakefile
 mapfile <- params[['featuretable']]
 cellbcfile <- params[['cellbcfile']]
 countsfile <- params[['countsfile']]
+UMIcardinality <- as.integer(params[['UMIcardinality']])
+UMIcorrection <- as.logical(params[['UMIcorrection']])
 
-# mapfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
+# Settings for testing this script directly:
+# mapfile <- '/data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/HqFeatureCounts.tsv'
 # cellbcfile <- '/data/mouse-lymph-node-stromal-cell-time-series/annotations_common/celseq_barcodes.192.txt'
-# countsfile <- '/data/temporary/mapping/mouse-grcm38/LNS2_1/counts.tsv'
+# countsfile <- '/data/mouse-lymph-node-stromal-cell-time-series/snakemake_temporary_files/mapping/mouse-grcm38/LNS2_1/counts.tsv'
+# UMIcardinality <- as.integer('256')
+# UMIcorrection <- as.logical('TRUE')
 
 d <- read_tsv(mapfile, comment='@', na='NA')
 bc <- read_tsv(cellbcfile, col_names = c('barcodenr','cellbc'))
@@ -36,12 +44,28 @@ bc <- read_tsv(cellbcfile, col_names = c('barcodenr','cellbc'))
 ```{r counts}
 counts_per_cell_and_gene <- bc %>%
   left_join(d) %>%
-  distinct(cellbc, geneid, umi) %>%
-  group_by(cellbc, geneid) %>%
+  distinct(cellbc, geneid, reference, umi) %>%
+  group_by(cellbc, geneid, reference) %>%
   summarise(reads = n())
+
+# To infer the number of transcripts of a gene, a correction on the number of 
+# observed UMI's per gene can be made that accounts for the possibility that the
+# same UMI is attached to different RNA molecules of the same gene. See eq. 3 in
+# Grun et al. (2014), Nature Methods 11:637--640 
+# http://dx.doi.org/10.1038/nmeth.2930
+if (UMIcorrection) {
+    if (UMIcardinality < 4) {
+        # TODO: generate error message, UMI cardinality too low, do 
+        # nothing
+    } else {
+        counts_per_cell_and_gene <- counts_per_cell_and_gene %>%
+            mutate(transcripts = -UMIcardinality * log(1 - (reads/UMIcardinality)))
+    }
+}
 
 # write_tsv(counts_per_cell_and_gene %>% filter(!is.na(geneid)), path=countsfile)
 write_tsv(counts_per_cell_and_gene, path=countsfile)
+
 ```
 
 ```{r readdist}

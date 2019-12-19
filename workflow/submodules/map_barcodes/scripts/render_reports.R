@@ -6,6 +6,8 @@ rmarkdown::render(
         featuretable = snakemake@input[['featuretable']],
         cellbcfile = snakemake@input[['cellbcfile']],
         countsfile = snakemake@output[['countsfile']],
-        samplename = snakemake@wildcards[['fileprefix']]
+        samplename = snakemake@wildcards[['fileprefix']],
+        UMIcorrection = snakemake@params[['UMIcorrection']],
+        UMIcardinality = snakemake@params[['UMIcardinality']]
     )
 )
