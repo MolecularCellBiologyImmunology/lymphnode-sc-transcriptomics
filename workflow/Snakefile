@@ -1,12 +1,13 @@
 # Base scRNAseq analysis Snakemake that combines all other Snakefiles in ./submodules together. 
 
-##### Load Config and Sample Sheets #####
-import easygui
-print("Please choose a configuration file to run Snakemake with.")
-config_file = easygui.fileopenbox()
+# Load config
+#import easygui
+#print("Please choose a configuration file to run Snakemake with.")
+#config_file = easygui.fileopenbox()
+config_file = 'snakemake_config.yaml'
 
 # Include common settings
-include: "./submodules/common.snakefile"
+include: "./common.snakefile"
 
 # Modulization through Submodules:     
 subworkflow star_index:
@@ -33,10 +34,14 @@ subworkflow generate_counttable:
 # Main workflow rule, determining output of workflow
 rule all:
     input:
-        star_index(             expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
-        star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'         , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        map_barcodes(           expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
-        generate_counttable(    expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
+        module1 = star_index
+        module2 = star_align
+        module3 = map_barcodes
+        module4 = combine_spread_plates
+        # star_index(             expand("{indexdir}/{indexfile}"                                     , indexdir=indexdir, indexfile=indexfiles)),
+        # star_align(             expand('{tmpstore}/star_align/{fileprefix}/Aligned.out.bam'         , tmpstore=tmpstore, fileprefix=fileprefixes)),
+        # map_barcodes(           expand('{tmpstore}/mapping/{fileprefix}/counts.tsv'                 , tmpstore=tmpstore, fileprefix=fileprefixes)),
+        # generate_counttable(    expand('{output}/generate_counttable/counttables_combined_ALL.csv'  , output=output)),
 
 
 

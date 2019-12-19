@@ -93,25 +93,3 @@ config['gtffile'] = references.loc[config['reference'], 'gtf']
 
 # Locations of R packages
 rpackagesfolders = config['rpackagesfolders']
-
-##### Filter Settings #####
-
-mintotal = config['mintotal']
-minexpr = config['minexpr']
-minnumber = config['minnumber']
-LBatch = config['LBatch']
-knn = config['knn']
-CGenes = config['CGenes']
-FGenes = config['FGenes']
-ccor = config['ccor']
-
-##### RaceID/StemID Settings #####
-
-# RaceID3
-maxclustnr = config['maxclustnr']
-bootnr = config['bootnr']
-
-# StemID2
-RunStemID = config['RunStemID']
-pdishuf= config['pdishuf']
-scthr = config['scthr']
