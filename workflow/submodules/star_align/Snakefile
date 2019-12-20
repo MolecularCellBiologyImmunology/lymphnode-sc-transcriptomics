@@ -1,6 +1,7 @@
 # Snakemake Workflow for Module 2: Aligning sequences with STAR
 
 # Include common settings
+import os
 include: "../../common.snakefile"
 
 ##### target rules #####
@@ -40,14 +41,14 @@ rule align:
 # qmapped against the same genome
 onstart:
     print('Loading the genome index file')
-    shell('STAR --genomeLoad LoadAndExit --genomeDir ' + str(config['indexdir'] / config['reference']))
+    shell('STAR --genomeLoad LoadAndExit --genomeDir ' + os.path.join(config['indexdir'], config['reference']))
 
 # Remove the index from memory when finished mapping all sequence files
 onsuccess:
     print('Removing the genome index file from memory')
-    shell('STAR --genomeLoad Remove --genomeDir ' + str(config['indexdir'] / config['reference']))
+    shell('STAR --genomeLoad Remove --genomeDir ' + os.path.join(config['indexdir'], config['reference']))
 
 # Remove the index from memory when exiting due to an error
 onerror:
     print('Removing the genome index file from memory')
-    shell('STAR --genomeLoad Remove --genomeDir ' + str(config['indexdir'] / config['reference']))
+    shell('STAR --genomeLoad Remove --genomeDir ' + os.path.join(config['indexdir'], config['reference']))

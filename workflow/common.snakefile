@@ -72,8 +72,7 @@ else:
 tmppath = str(datadir / config['repo'] / config['tmpstore'])
 
 # Directory where output files will be stored
-outputpath = pathlib.Path(str(datadir / config['output']))
-raceidoutputsbydate = pathlib.Path(str(datadir / config['output'] / 'raceid3stemid2') + date_time)
+outputpath = pathlib.Path(str(datadir / config['repo'] / config['output']))
 
 # Constructing main directory where the reference genomes and gtf files are
 # located
