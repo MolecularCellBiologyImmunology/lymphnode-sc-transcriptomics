@@ -24,7 +24,10 @@ rule align:
             indexdir = config['indexdir'], 
             reference = config['reference'])
     output: 
-        expand('{{tmppath}}/star_align/{{reference}}/{fileprefixes}/Aligned.out.bam', fileprefixes = fileprefixes)
+        expand('{tmppath}/star_align/{reference}/{fileprefixes}/Aligned.out.bam', 
+        tmppath = tmppath,
+        reference = config['reference'],
+        fileprefixes = fileprefixes)
     params:
         indexdir = expand('{indexdir}/{reference}', 
             indexdir = config['indexdir'], 
