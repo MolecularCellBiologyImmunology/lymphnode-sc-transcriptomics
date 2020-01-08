@@ -6,7 +6,7 @@ properties:
     type: string
     description: sample identifier which also occurs in the file name
   experiment:
-    type: string
+#     type: string
     description: the experiment to which the sample belongs
 
 required:

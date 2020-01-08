@@ -29,8 +29,8 @@ properties:
       type: string
   reference:
     type: string
-  samplescolumn:
-    type: string
+  # samplescolumn:
+  #  type: string
   annotationformat:
     type: string
     enum: ['gtf','gff']
