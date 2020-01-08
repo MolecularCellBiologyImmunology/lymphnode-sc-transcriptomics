@@ -11,7 +11,7 @@ marttable <- read_tsv(paste(snakemake@input$conversiontable, "/genelist.tsv", se
 annotations <- read_tsv(snakemake@input$annotations)
 if (snakemake@config['istest'] == TRUE) {annotations <- filter(annotations, annotations$fileprefix %in% snakemake@params$samples)}
 
-if (snakemake@params$samplescolumn != FALSE) {
+if (snakemake@params$samplescolumn != "~") {
 ### Combine & Spread Plates (Per Sample and All), Spread, Write Outputs
 alltables <- data.frame()
 variable = colnames(snakemake@params$samplescolumn)[1]

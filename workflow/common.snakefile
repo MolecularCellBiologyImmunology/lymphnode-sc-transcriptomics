@@ -59,12 +59,12 @@ config['cellbcfile'] = str(datadir / config['repo'] / config['celbc'])
 config['seqdir'] = str(datadir / config['repo'] / config['sequences']) 
 
 # Column defining samples
-if config['samplescolumn'] != '':
+if config['samplescolumn'] != '~':
     samplescolumn = pd.read_table(annotationfile).set_index(config['samplescolumn'], drop=False)
     samplescolumn.drop(columns=config['samplescolumn'])
     samplescolumn = samplescolumn[config['samplescolumn']]
 else:
-    samplescolumn = ''
+    samplescolumn = '~'
 
 ##### Other Paths #####
 

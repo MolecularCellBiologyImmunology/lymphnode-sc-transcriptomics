@@ -187,9 +187,8 @@ QCgrouping: experiment
 
 # What column of the experimental "samples" annotations file defines the 
 # different samples. These will have their count tables kept seperate on top of 
-# all being combined. If no split is necessary, input FALSE.
-# TODO: Change 'FALSE' input to canonical "null" or "~", see above.
-samplescolumn: time
+# all being combined. If no split is necessary, input "~".
+samplescolumn: ~
 
 # The Kind of Annotation format that is used (gtf for Eukaryotes, gff for 
 # Bacterial Genomes having GFF-3 Format Genome Annotation File, refers to 
