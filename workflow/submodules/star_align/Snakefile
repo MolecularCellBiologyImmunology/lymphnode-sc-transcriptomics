@@ -33,7 +33,9 @@ rule align:
             indexdir = config['indexdir'], 
             reference = config['reference']),
         extra = ' '.join(config['params']['star']),
-        outputdir = '{{tmppath}}/star_align/{{reference}}'
+        outputdir = expand('{tmppath}/star_align/{reference}',
+            tmppath = tmppath,
+            reference = config['reference'])
     threads: 
         8
     script: 
