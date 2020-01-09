@@ -40,4 +40,4 @@ rule index:
         expand("{{indexdir}}/{{reference}}/{indexfiles}", indexfiles = indexfiles)
     params: targetindex = "{indexdir}/{reference}"
     threads: 8
-    shell: 'STAR --runThreadN {threads} --runMode genomeGenerate --genomeDir {params.targetindex} --genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf} {extra}'
+    shell: 'STAR --runThreadN 8 --runMode genomeGenerate --genomeDir {params.targetindex} --genomeFastaFiles {input.fasta} --sjdbGTFfile {input.gtf} {extra}' # {threads}
