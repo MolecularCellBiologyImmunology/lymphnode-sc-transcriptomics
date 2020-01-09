@@ -38,6 +38,6 @@ rule all:
         star_align(         expand('{tmppath}/star_align/{reference}/{fileprefixes}/Aligned.out.bam', tmppath = tmppath, reference = config['reference'], fileprefixes= fileprefixes )),
         map_barcodes(       expand('{tmppath}/mapping/{reference}/{fileprefixes}/counts.tsv', tmppath = tmppath, reference = config['reference'], fileprefixes= fileprefixes )),
         generate_counttable(expand('{outputpath}/count_tables/ALL.csv', outputpath = outputpath ))
-
+    threads: 8
 
 
